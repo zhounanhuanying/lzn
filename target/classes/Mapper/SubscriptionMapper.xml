@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.SubscriptionMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.SysServer">
+        <id column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="server_name" jdbcType="VARCHAR" property="serverName"/>
+        <result column="server_IP" jdbcType="VARCHAR" property="serverIp"/>
+        <result column="server_username" jdbcType="VARCHAR" property="serverUsername"/>
+        <result column="server_pwd" jdbcType="VARCHAR" property="serverPwd"/>
+        <result column="identicationInfo" jdbcType="VARCHAR" property="identicationInfo"/>
+        <result column="identicationInfo_s" jdbcType="VARCHAR" property="identicationInfos"/>
+        <result column="departments" jdbcType="VARCHAR" property="departments"/>
+        <result column="departments_s" jdbcType="VARCHAR" property="departmentss"/>
+        <result column="studentLevel" jdbcType="VARCHAR" property="studentLevel"/>
+        <result column="studentLevel_s" jdbcType="VARCHAR" property="studentLevels"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="grade_s" jdbcType="VARCHAR" property="grades"/>
+    </resultMap>
+
+    <resultMap id="SysSubscriptionBaseResultMap" type="com.bfdb.entity.websocket.SysSubscriptionAlarm">
+        <id column="subscriptionalarm_id" jdbcType="INTEGER" property="subscriptionalarmId"/>
+        <result column="server_id" jdbcType="INTEGER" property="serverId"/>
+        <result column="sub_id" jdbcType="VARCHAR" property="subId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+      server_id, `server_name`, server_IP, server_username, server_pwd, identicationInfo,
+    departments, studentLevel, grade,verification_Status
+    </sql>
+    <select id="getSysServerList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sysserver
+    </select>
+    <!--根据服务器id查询订阅信息-->
+    <select id="getSubscription" parameterType="java.lang.Integer" resultMap="SysSubscriptionBaseResultMap">
+        SELECT subscriptionalarm_id, server_id, sub_id
+        FROM syssubscriptionalarm      WHERE server_id = #{serverId}
+    </select>
+    <!--查询订阅信息-->
+    <select id="selectBySysServerList" resultMap="BaseResultMap">
+            SELECT
+            ssss.server_id,
+            ssss.`server_name`,
+            ssss.server_IP,
+            ssss.server_username,
+            ssss.server_pwd,
+            ssss.identicationInfo,
+            ssss.departments,
+            ssss.studentLevel,
+            ssss.grade,
+            ssss.verification_Status
+        FROM
+            sysserver ssss
+        LEFT JOIN syssubscriptionalarm suh ON ssss.server_id = suh.server_id
+    </select>
+    <!--修改订阅后成功的信息-->
+    <update id="updateSubScription" parameterType="com.bfdb.entity.websocket.SysSubscriptionAlarm">
+        update syssubscriptionalarm
+        <set>
+            <if test="serverId != null">
+                server_id = #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="subId != null">
+                sub_id = #{subId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where subscriptionalarm_id = #{subscriptionalarmId,jdbcType=INTEGER}
+    </update>
+    <!--新增订阅信息-->
+    <insert id="insertSubscription" parameterType="com.bfdb.entity.websocket.SysSubscriptionAlarm">
+    INSERT INTO syssubscriptionalarm (server_id,sub_id)
+    VALUES(
+    #{serverId},#{subId}
+    )
+    </insert>
+    <!--删除订阅信息-->
+    <delete id="deleteSubscription" parameterType="java.lang.Integer">
+        DELETE FROM syssubscriptionalarm
+        WHERE subscriptionalarm_id=#{subscriptionalarmId}
+    </delete>
+
+</mapper>

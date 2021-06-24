@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.CommonUrlMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.CommonAddress">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="common_url" jdbcType="VARCHAR" property="commonUrl" />
+        <result column="url_name" jdbcType="VARCHAR" property="urlName" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="filter" jdbcType="VARCHAR" property="filter" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, common_url, url_name, sort, `filter`
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from common_address
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByCommonUrl" parameterType="com.bfdb.entity.CommonAddress" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from common_address
+        where common_url = #{commonUrl,jdbcType=INTEGER}
+    </select>
+    <!--查询url-->
+    <select id="selectByList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from common_address ORDER BY sort
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from common_address
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.CommonAddress"
+            useGeneratedKeys="true">
+     insert into common_address (common_url, url_name, sort,
+      `filter`)
+    values (#{commonUrl,jdbcType=VARCHAR}, #{urlName,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER},
+      #{filter,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.CommonAddress"
+            useGeneratedKeys="true">
+        insert into common_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="commonUrl != null">
+                common_url,
+            </if>
+            <if test="urlName != null">
+                url_name,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="filter != null">
+                filter,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="commonUrl != null">
+                #{commonUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="urlName != null">
+                #{urlName,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="filter != null">
+                #{filter,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.CommonAddress">
+        update common_address
+        <set>
+            <if test="commonUrl != null">
+                common_url = #{commonUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="urlName != null">
+                url_name = #{urlName,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="filter != null">
+                `filter` = #{filter,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.CommonAddress">
+    update common_address
+    set common_url = #{commonUrl,jdbcType=VARCHAR},
+      url_name = #{urlName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="selectMaxSort" resultType="int">
+        SELECT MAX(sort) FROM common_address
+    </select>
+</mapper>

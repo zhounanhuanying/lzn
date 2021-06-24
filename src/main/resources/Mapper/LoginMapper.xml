@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.bfdb.mapper.LoginMapper" >
+
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.User" >
+        <id column="user_id" javaType="java.lang.Integer" property="userId"/>
+        <result column="user_name" javaType="java.lang.String" property="userName"/>
+        <result column="password"  javaType="java.lang.String" property="password"/>
+        <!--<result column="user_type" javaType="java.lang.String" property="userType"/>-->
+    </resultMap>
+
+    <resultMap id="permission" type="com.bfdb.entity.Permission" >
+        <id column="permission_id" javaType="java.lang.Integer" property="permissionId"/>
+        <result column="permission_name" javaType="java.lang.String" property="permissionName"/>
+        <result column="description"  javaType="java.lang.String" property="description"/>
+    </resultMap>
+
+
+    <select id="getUserByName" parameterType="String" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE user_name = #{name}
+    </select>
+
+    <select id="findPermissionByUserId" resultMap="permission" parameterType="integer">
+        select DISTINCT p. * from user u,role r,user_role ur,permission
+        p,role_permission rp where u.user_id = ur.user_id and r.role_id =
+        ur.role_id and r.role_id = rp.role_id and rp.permission_id = p.permission_id and
+        u.user_id = #{userId}
+    </select>
+
+</mapper>

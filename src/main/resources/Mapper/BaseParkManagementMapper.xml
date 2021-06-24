@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.BaseParkManagementMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.BasePark">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="parktype" jdbcType="INTEGER" property="parkType" />
+        <result column="parkname" jdbcType="VARCHAR" property="parkName" />
+        <result column="parkcode" jdbcType="VARCHAR" property="parkCode" />
+        <result column="parklogoimage" jdbcType="VARCHAR" property="parkLogoImage" />
+        <result column="isdelete" jdbcType="INTEGER" property="isDelete" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="createtime" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,parktype,parkname,parkcode,parklogoimage,isdelete,sort,content,createtime,updatetime
+    </sql>
+
+    <select id="dataCount"  resultType="int">
+        SELECT count(*) FROM base_park
+    </select>
+
+    <select id="getBaseParkList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT *
+        FROM (
+        SELECT <include refid="Base_Column_List"></include>
+        FROM base_park
+        <where>
+            <if test="_parameter != null">
+                <if test="parkName!=null and parkName!=''">
+                    AND parkname LIKE CONCAT('%',#{parkName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="isDelete!=null and isDelete!=''">
+                    AND isdelete = #{isDelete,jdbcType=INTEGER}
+                </if>
+            </if>
+        </where>
+        ) AS b
+        LEFT JOIN datadictionary da ON da.dic_code = b.parktype
+        ORDER BY b.createtime desc
+    </select>
+
+    <select id="queryBaseParkByParkCode" resultType="int" parameterType="java.lang.String">
+        SELECT count(*) FROM base_park
+        <where>
+            parkcode = #{parkCode,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <!--查询园区list-->
+    <select id="fallBasePark" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM base_park
+    </select>
+
+    <select id="queryParkNameById" resultType="String" parameterType="java.lang.String">
+        SELECT parkname FROM base_park
+        <where>
+            id = #{parkId,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="queryBasePark" resultMap="BaseResultMap">
+        SELECT id,parkname
+        FROM base_park
+        where isdelete = 1
+    </select>
+
+    <insert id="insertBasePark" keyProperty="id" parameterType="com.bfdb.entity.BasePark" useGeneratedKeys="true">
+        insert into base_park
+        (parktype,parkname,parkcode,parklogoimage,isdelete,sort,content,createtime,updatetime)
+        values (#{parkType,jdbcType=INTEGER},#{parkName,jdbcType=VARCHAR},
+        #{parkCode,jdbcType=VARCHAR},#{parkLogoImage,jdbcType=VARCHAR},#{isDelete,jdbcType=INTEGER},
+        #{sort,jdbcType=INTEGER},#{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateBaseParkById" parameterType="com.bfdb.entity.BasePark">
+        update base_park
+        <set>
+            <if test="parkType != null">
+                parktype = #{parkType,jdbcType=VARCHAR},
+            </if>
+            <if test="parkName != null">
+                parkname = #{parkName,jdbcType=VARCHAR},
+            </if>
+            <if test="parkCode != null">
+                parkcode = #{parkCode,jdbcType=VARCHAR},
+            </if>
+            <if test="parkLogoImage != null">
+                parklogoimage = #{parkLogoImage,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                isdelete = #{isDelete,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                createtime = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                updatetime = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="deleteBaseParkById" parameterType="int">
+        update base_park set isdelete=2 where id in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

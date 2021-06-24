@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.SysServerMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.SysServer">
+        <id column="server_id" jdbcType="INTEGER" property="serverId" />
+        <result column="server_name" jdbcType="VARCHAR" property="serverName" />
+        <result column="server_IP" jdbcType="VARCHAR" property="serverIp" />
+        <result column="client_IP" jdbcType="VARCHAR" property="clientIp" />
+        <result column="server_username" jdbcType="VARCHAR" property="serverUsername" />
+        <result column="server_pwd" jdbcType="VARCHAR" property="serverPwd" />
+        <result column="identicationInfo" jdbcType="VARCHAR" property="identicationInfo" />
+        <result column="identicationInfo_s" jdbcType="VARCHAR" property="identicationInfos" />
+        <result column="departments" jdbcType="VARCHAR" property="departments" />
+        <result column="departments_s" jdbcType="VARCHAR" property="departmentss" />
+        <result column="studentLevel" jdbcType="VARCHAR" property="studentLevel" />
+        <result column="studentLevel_s" jdbcType="VARCHAR" property="studentLevels" />
+        <result column="grade" jdbcType="VARCHAR" property="grade" />
+        <result column="grade_s" jdbcType="VARCHAR" property="grades" />
+        <result column="verification_Status" jdbcType="VARCHAR" property="verificationStatus" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        server_id, `server_name`, server_IP, client_Ip,server_username, server_pwd, identicationInfo,
+    departments, studentLevel, grade,verification_Status
+    </sql>
+    <insert id="insertSysServer" parameterType="com.bfdb.entity.SysServer" keyColumn="server_id"
+            keyProperty="serverId" useGeneratedKeys="true">
+        insert into sysserver
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serverId != null">
+                server_id,
+            </if>
+            <if test="serverName != null">
+                `server_name`,
+            </if>
+            <if test="serverIp != null">
+                server_IP,
+            </if>
+            <if test="clientIp != null">
+                client_Ip,
+            </if>
+            <if test="serverUsername != null">
+                server_username,
+            </if>
+            <if test="serverPwd != null">
+                server_pwd,
+            </if>
+            <if test="identicationInfo != null">
+                identicationInfo,
+            </if>
+            <if test="departments != null">
+                departments,
+            </if>
+            <if test="studentLevel != null">
+                studentLevel,
+            </if>
+            <if test="grade != null">
+                grade,
+            </if>
+            <if test="verificationStatus != null">
+                verification_Status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serverId != null">
+                #{serverId,jdbcType=INTEGER},
+            </if>
+            <if test="serverName != null">
+                #{serverName,jdbcType=VARCHAR},
+            </if>
+            <if test="serverIp != null">
+                #{serverIp,jdbcType=VARCHAR},
+            </if>
+            <if test="clientIp != null">
+                #{clientIp,jdbcType=INTEGER},
+            </if>
+            <if test="serverUsername != null">
+                #{serverUsername,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPwd != null">
+                #{serverPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="identicationInfo != null">
+                #{identicationInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="departments != null">
+                #{departments,jdbcType=VARCHAR},
+            </if>
+            <if test="studentLevel != null">
+                #{studentLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="verificationStatus != null">
+                #{verificationStatus,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--查询服务器信息-->
+    <select id="getSysServerList" resultType="com.bfdb.entity.SysServer">
+        SELECT
+                ss.server_id,
+                ss.server_name,
+                ss.server_IP,
+                ss.client_Ip,
+                ss.server_username,
+                ss.identicationInfo,
+                ss.identicationInfo AS identicationInfo_s,
+                ss.departments,
+                ss.departments AS departments_s,
+                ss.studentLevel,
+                ss.studentLevel AS studentLevel_s,
+                ss.grade,
+                ss.grade grade_s,
+                ss.server_pwd,
+                ss.verification_Status,
+                ssa.sub_id
+        FROM
+        sysserver ss
+        LEFT JOIN syssubscriptionalarm ssa ON ss.server_id = ssa.server_id
+        <where>
+            <if test="_parameter != null">
+                <if test="serverName!=null and serverName!=''">
+                    ss.server_name LIKE CONCAT('%',#{serverName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="serverIp!=null and serverIp!=''">
+                    ss.server_IP = #{serverIp,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+        limit #{page},#{limit}
+    </select>
+
+    <!--查询订阅成功的服务器信息-->
+    <select id="getSysServerListSuccess" resultType="com.bfdb.entity.SysServer">
+        SELECT
+        ss.server_id,
+        ss.server_name,
+        ss.server_IP,
+        ss.client_Ip,
+        ss.server_username,
+        ss.identicationInfo,
+        ss.identicationInfo AS identicationInfo_s,
+        ss.departments,
+        ss.departments AS departments_s,
+        ss.studentLevel,
+        ss.studentLevel AS studentLevel_s,
+        ss.grade,
+        ss.grade grade_s,
+        ss.server_pwd,
+        ss.verification_Status,
+        ssa.sub_id
+        FROM
+        sysserver ss,syssubscriptionalarm ssa
+        where ss.server_id = ssa.server_id and ss.verification_Status='0'
+    </select>
+
+   <!--删除服务器信息-->
+    <delete id="deleteSysServerById">
+            DELETE FROM sysserver WHERE server_id=#{serverId}
+    </delete>
+    <!--修改服务器信息-->
+    <update id="updateSysServer" parameterType="com.bfdb.entity.SysServer">
+        update sysserver
+        <set>
+            <if test="serverName != null">
+                `server_name` = #{serverName,jdbcType=VARCHAR},
+            </if>
+            <if test="serverIp != null">
+                server_IP = #{serverIp,jdbcType=VARCHAR},
+            </if>
+            <if test="clientIp != null">
+                client_IP = #{clientIp,jdbcType=VARCHAR},
+            </if>
+            <if test="serverUsername != null">
+                server_username = #{serverUsername,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPwd != null">
+                server_pwd = #{serverPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="identicationInfo != null">
+                identicationInfo = #{identicationInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="departments != null">
+                departments = #{departments,jdbcType=VARCHAR},
+            </if>
+            <if test="studentLevel != null">
+                studentLevel = #{studentLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                grade = #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="verificationStatus != null">
+                verification_Status = #{verificationStatus,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where server_id = #{serverId,jdbcType=INTEGER}
+    </update>
+    <!--查询服务器条数-->
+    <select id="dataCount" resultType="int">
+        SELECT count(*) FROM sysserver
+        <where>
+            <if test="_parameter != null">
+                <if test="serverName!=null and serverName!=''">
+                     server_name LIKE CONCAT('%',#{serverName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="serverIp!=null and serverIp!=''">
+                    ss.server_IP = #{serverIp,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--根据服务器ip查询服务器信息-->
+    <select id="getSysServerByServerIp" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sysserver where server_IP=#{serverIp,jdbcType=VARCHAR}
+    </select>
+
+    <!--查询是否开启页面显示的人证核验终端的集合-->
+    <select id="getSysServerByVerificationStatusList" resultType="com.bfdb.entity.SysServer">
+       SELECT
+            server_id,
+            `server_name`,
+            server_IP,
+            client_Ip,
+            server_username,
+            server_pwd,
+            identicationInfo,
+            departments,
+            studentLevel,
+            grade,
+            verification_Status
+        FROM
+	     sysserver
+        WHERE      verification_Status='0'
+    </select>
+
+</mapper>

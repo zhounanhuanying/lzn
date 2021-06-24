@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>采集设备页面</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <!--解决数据表格复选框位置不对-->
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            top: 35%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="serverManager" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline">
+            <label class="layui-form-label">服务器名称：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="serverName" id="serverId" class="layui-input">
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="serverSearch()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary">重置</button>
+    </div>
+</form>
+<div class="layui-fluid list-box">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container list-btn-group">
+                            <a class="layui-btn test icon-add" data-type="getCheckLength" onclick="addService()">添加</a>
+                            <a class="layui-btn test icon-revise" data-type="batchEdit" id="edit"
+                               onclick="editService()">修改</a>
+                            <a class="layui-btn test icon-delete" data-type="batchDelete" id="delete"
+                               onclick="deleteService()">删除</a>
+                            <a class="layui-btn test icon-freshen" data-type="getCheckLength" id="renew"
+                               onclick="refreshService()">刷新</a>
+                        </div>
+                    </script>
+                    <script type="text/html" id="barGreenAndRed">
+                        {{#  if(d.subId != null){ }}
+                        <div><img src="../../Content/style/images/greep.png">
+                        </div>
+                        {{#  } else{ }}
+                        <div><img src="../../Content/style/images/red.png">
+                        </div>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="barDemo">
+                        {{#  if(d.subId != null){ }}
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="cancelSubscriptionAlarm">取消订阅</a>
+                        {{#  } else{ }}
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="subscriptionAlarm">订阅</a>
+                        {{# } }}
+                    </script>
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--添加服务弹窗-->
+<div class="layui-row layui-popup" id="tab-addService" style="display: none;">
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="add">
+            <!--服务器型号选择-->
+            <div id="tianshanServer">
+                <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">服务器名：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="serverName" id="serverNameAdd" class="layui-input" required lay-verify="required">
+                    </div>
+                </div>
+            </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">服务器IP：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="serverIp" id="serverIPAdd" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">订阅IP：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="clientIp" id="clientIpAdd"  class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">用户名：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="serverUsername" id="serverUsernameAdd" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">用户密码：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="serverPwd" id="serverPwdAdd" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">人员类型：</label>
+                        <div class="layui-input-inline">
+                            <select name="identicationInfo" id="identicationInfo"
+                                    class="form-control" lay-filter="identicationInfo">
+                                <option value="">请选择</option>
+                                <option th:each="dataDictionary:${identicationInfoList}"
+                                        th:value="${dataDictionary.dicCode}"
+                                        th:text="${dataDictionary.dicName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">办公地点：</label>
+                        <div class="layui-input-inline">
+                            <select class="form-control" name="departments" id="departments">
+                                <option value="">请选择</option>
+                                <option th:each="dataDictionary:${departmentsList}"
+                                        th:value="${dataDictionary.dicCode}"
+                                        th:text="${dataDictionary.dicName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="layui-form-item editxueli"  style="display: none">-->
+                    <!--<div class="layui-inline">-->
+                        <!--<span class="asterisk">*</span>-->
+                        <!--<label class="layui-form-label">学历：</label>-->
+                        <!--<div class="layui-input-inline">-->
+                            <!--<select name="studentLevel" id="studentLevel">-->
+                                <!--<option value="">请选择</option>-->
+                                <!--<option th:each="dataDictionary:${studentLevelList}"-->
+                                        <!--th:value="${dataDictionary.dicCode}"-->
+                                        <!--th:text="${dataDictionary.dicName}"></option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="layui-form-item editxueji"  style="display: none">-->
+                    <!--<div class="layui-inline">-->
+                        <!--<span class="asterisk">*</span>-->
+                        <!--<label class="layui-form-label">学级：</label>-->
+                        <!--<div class="layui-input-inline">-->
+                            <!--<select class="form-control" name="grade" id="grade">-->
+                                <!--<option value="">请选择</option>-->
+                                <!--<option th:each="dataDictionary:${gradeList}"-->
+                                        <!--th:value="${dataDictionary.dicCode}"-->
+                                        <!--th:text="${dataDictionary.dicName}"></option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="layui-form-item" >
+                    <div class="layui-inline">
+                        <label class="layui-form-label">终端采集自动：</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="verificationStatus"  value="1" title="是">
+                            <input type="radio" name="verificationStatus"  value="0" title="否"  checked="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--编辑服务弹窗-->
+<div class="layui-row layui-popup" id="tab-editService" style="display: none;">
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="editform">
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    <input type="hidden" name="serverId" id="serverIdId" class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">服务器名：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="serverName" id="serverNameId" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <!--服务器型号选择-->
+            <div id="tianshanServer-edit">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">服务器IP：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="serverIp" id="serverIPId" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">订阅IP：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="clientIp" id="clientIPId" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">用户名：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="serverUsername" id="serverUsernameId" class="layui-input">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">用户密码：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="serverPwd" id="serverPwdId" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">人员类型：</label>
+                        <div class="layui-input-inline">
+                            <select name="identicationInfo"
+                                    class="form-control" lay-filter="identicationInfo" id="identicationInfo1">
+                                <option value="">请选择</option>
+                                <option th:each="dataDictionary:${identicationInfoList}"
+                                        th:value="${dataDictionary.dicCode}"
+                                        th:text="${dataDictionary.dicName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">办公地点：</label>
+                        <div class="layui-input-inline">
+                            <select class="form-control" name="departments" id="departments1">
+                                <option value="">请选择</option>
+                                <option th:each="dataDictionary:${departmentsList}"
+                                        th:value="${dataDictionary.dicCode}"
+                                        th:text="${dataDictionary.dicName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="layui-form-item editxueli" style="display: none">-->
+                    <!--<div class="layui-inline">-->
+                        <!--<span class="asterisk">*</span>-->
+                        <!--<label class="layui-form-label">学历：</label>-->
+                        <!--<div class="layui-input-inline">-->
+                            <!--<select name="studentLevel" id="studentLevel1">-->
+                                <!--<option value="">请选择</option>-->
+                                <!--<option th:each="dataDictionary:${studentLevelList}"-->
+                                        <!--th:value="${dataDictionary.dicCode}"-->
+                                        <!--th:text="${dataDictionary.dicName}"></option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="layui-form-item editxueji"  style="display: none">-->
+                    <!--<div class="layui-inline">-->
+                        <!--<span class="asterisk">*</span>-->
+                        <!--<label class="layui-form-label">学级：</label>-->
+                        <!--<div class="layui-input-inline">-->
+                            <!--<select class="form-control" name="grade" id="grade1">-->
+                                <!--<option value="">请选择</option>-->
+                                <!--<option th:each="dataDictionary:${gradeList}"-->
+                                        <!--th:value="${dataDictionary.dicCode}"-->
+                                        <!--th:text="${dataDictionary.dicName}"></option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="layui-form-item" >
+                    <div class="layui-inline">
+                        <label class="layui-form-label">终端采集自动：</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="verificationStatus" id="verificationStatus0" value="1" title="是">
+                            <input type="radio" name="verificationStatus"  id="verificationStatus1" value="0" title="否">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--表格渲染js-->
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var serverName = "";
+    $(function () {
+        data();
+    });
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    })
+
+    function data() {
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , layer = layui.layer
+                , laydate = layui.laydate
+                , form = layui.form
+                , table = layui.table;
+
+            form.render(null, 'component-form-group');
+
+            laydate.render({
+                elem: '#LAY-component-form-group-date'
+            });
+            table.render({
+                elem: '#test-table-operate',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url: basePath + '/sysServer/getSysServerList?&&ieRandom=' + new Date().getTime()
+                , id: 'tableId'
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: []
+                , height: 'full-85'
+                , cols: [
+                    [
+                        {type: 'checkbox', fixed: 'left'}
+                        , {field: 'serverId', title: '序号', width: 100}
+                        , {field: 'serverName', title: '服务器名', width: 100}
+                        , {field: 'serverIp', title: '服务器IP', width: 200}
+                        , {field: 'clientIp', title: '订阅IP', width: 200}
+                        , {field: 'serverUsername', title: '用户名', width: 100}
+                        , {field: 'serverPwd', title: '用户密码', width: 100}
+                        , {field: 'identicationInfo', title: '人员类型', width: 100}
+                        , {field: 'departments', title: '办公地点', width: 200}
+                        , {field: 'studentLevel', title: '学历', width: 100}
+                        , {field: 'grade', title: '学级', width: 100}
+                        , {field: 'verificationStatuss', title: '终端采集自动', width: 150}
+                        , {
+                        field: 'barGreenAndRed',
+                        width: 100,
+                        title: '订阅状态',
+                        align: 'center',
+                        toolbar: '#barGreenAndRed' }
+                        , {field: 'barDemo', align: 'center', title: '常用操作', toolbar: '#barDemo'}
+                    ]
+                ],
+                where: {serverName: serverName},
+                page: true,
+                limits: [20, 40],
+                limit: 20
+            });
+
+            function edit() {
+                alert("编辑弹窗");
+            }
+
+        });
+    }
+
+    function serverSearch() {
+        serverName = $("#serverId").val();
+        data();
+    }
+</script>
+
+<!--添加、删除,修改服务器js-->
+<script>
+    //添加服务器
+    function addService() {
+        layer.open({
+            title: '添加采集设备信息'
+            , type: 1
+            , content: $("#tab-addService")
+            , btn: ['确定', '取消']
+            , btnAlign: 'c'
+            , shade: 0.3
+            , yes: function (index) {
+                var emptyValidationResult = emptyValidation();
+                if (!emptyValidationResult) {
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    url: basePath + "/sysServer/insertSysServer",
+                    data: $("#add").serialize(),
+                    success: function (result) {
+                        if (result.code == 0) {
+                            layer.close(index);
+                            layer.msg("添加采集设备信息成功！", {time: 1000, icon: 1}, function () {
+                                location.reload(true);
+                            });
+                        } else if (result.code == -2) {
+                            layer.msg("服务器IP不正确，请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                            });
+                        } else if (result.code == -3) {
+                            layer.msg("服务器IP已存在，请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                            });
+                        } else {
+                            layer.msg("添加服务器失败,请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                            });
+                        }
+                    }
+                    , error: function (msg) {
+                        layer.msg("添加服务器失败,请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                        });
+                    }
+
+                });
+            }
+            , area: ["450px", "550px"]
+        });
+    };
+
+    //修改服务器
+    function editService() {
+        layui.use(['table', 'layer', 'jquery', 'form'], function () {
+            var table = layui.table
+                , layer = layui.layer
+                , $ = layui.$
+                , form = layui.form;
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+            if (data.length > 0) {
+                if (data.length > 1) {
+                    layer.alert("只能选择一条要编辑的数据!")
+                } else {
+                    var str = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        str[i] = data[i]
+                    }
+                    ;
+                    var subId = str[0].subId;
+                    if (subId != null && subId != "") {
+                        layer.msg("请先取消订阅", {time: 2000, icon: 2, shift: 6}, function () {
+                        });
+                        return false;
+                    }
+                    // alert(JSON.stringify(str[0]));
+                    $("#serverIdId").val(str[0].serverId);
+                    $("#serverNameId").val(str[0].serverName);
+                    $("#serverIPId").val(str[0].serverIp);
+                    $("#clientIPId").val(str[0].clientIp);
+                    $("#serverUsernameId").val(str[0].serverUsername);
+                    $("#serverPwdId").val(str[0].serverPwd);
+                    if (str[0].verificationStatus == '0') {
+                        $("#verificationStatus1").prop("checked", true);
+                    } else {
+                        $("#verificationStatus0").prop("checked", true);
+                    }
+                    //判断人员类型
+                    if (str[0].identicationInfos != "" && str[0].identicationInfos != null) {
+                        $("#identicationInfo1").find("option[value='" + str[0].identicationInfos + "']").prop("selected", 'selected');
+                    } else {
+                        $("#identicationInfo1").val("");
+                        form.render('select');
+                    }
+                    if (str[0].departmentss != "" && str[0].departmentss != null) {
+                        $("#departments1").find("option[value=" + str[0].departmentss + "]").prop('selected', 'selected');
+                    } else {
+                        $("#departments1").val("");
+                        form.render('select');
+                    }
+
+                    if (str[0].identicationInfos == '2') {
+                        $('.editxueli').show();
+                        $("#studentLevel1").find("option[value=" + str[0].studentLevels + "]").prop('selected', 'selected');
+                        $('.editxueji').show();
+                        $("#grade1").find("option[value=" + str[0].grades + "]").prop('selected', 'selected');
+                        form.render('select');
+                    } else if (str[0].identicationInfos == '3') {
+                        $('.editxueli').show();
+                        $("#studentLevel1").find("option[value=" + str[0].studentLevels + "]").prop('selected', 'selected');
+                        $('.editxueji').show();
+                        $("#grade1").find("option[value=" + str[0].grades + "]").prop('selected', 'selected');
+                        form.render('select');
+                    } else {
+                        $("#studentLevel1").val("");
+                        $('.editxueli').hide();
+                        $("#grade1").val("");
+                        $('.editxueji').hide();
+                        form.render('select');
+                    }
+                    form.render();
+                    layer.open({
+                        title: '编辑添加采集设备信息'
+                        , type: 1
+                        , content: $("#tab-editService")
+                        , btn: ['确定', '取消']
+                        , btnAlign: 'c'
+                        , shade: 0.3
+                        , success: function (layero, index) {
+                            layui.use('form', function () {
+                                var form = layui.form;
+                                form.render(null, 'formTestFilter');  //加载成功后重新渲染当前表单
+                            })
+                        }
+                        , yes: function (index) {
+                            var emptyValidationResult = emptyValidationForUpdate();
+                            if (!emptyValidationResult) {
+                                return false;
+                            }
+                            $.ajax({
+                                type: "POST",
+                                headers: {
+                                    "access_token": access_token//此处放置请求到的用户token
+                                },
+                                url: basePath + "/sysServer/updateSysServer",
+                                data: $("#editform").serialize(),
+                                success: function (result) {
+                                    // layer.msg("修改采集设备信息成功", {time: 800, icon: 1}, function () {
+                                    //     location.reload(true);
+                                    // });
+                                    if (result.code == 0) {
+                                        layer.close(index);
+                                        layer.msg("修改采集设备信息成！", {time: 1000, icon: 1}, function () {
+                                            location.reload(true);
+                                        });
+                                    } else if (result.code == -2) {
+                                        layer.msg("服务器IP不正确，请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                                        });
+                                    } else if (result.code == -3) {
+                                        layer.msg("服务器IP已存在，请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                                        });
+                                    } else {
+                                        layer.msg("添加服务器失败,请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                                        });
+                                    }
+                                    //layer.alert("添加用户成功");
+                                }
+                                , error: function (msg) {
+                                    layer.msg("修改采集设备信息失败,请重新添加", {time: 1000, icon: 2, shift: 6}, function () {
+                                    });
+                                }
+
+                            });
+                            // layer.close(index);
+                        }
+                        , area: ["450px", "550px"]
+                    });
+                }
+            } else {
+                layer.alert("请选择一条要编辑的数据!")
+            };
+        });
+    };
+
+    //删除服务器
+    function deleteService() {
+        layui.use(['table', 'layer', 'jquery'], function () {
+            var table = layui.table
+                , layer = layui.layer;
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+            //alert(JSON.stringify(data));
+            var ids = new Array();
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    ids[i] = data[i].serverId
+                }
+                ;
+                //是否删除这'+data.length+'数据
+                layer.confirm('确定删除所选数据吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        traditional: true,
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        url: basePath + '/sysServer/deleteSysServerList',
+                        type: 'post',
+                        data: {"data": JSON.stringify(data)},
+                        success: function (result) {
+                            if (result.code == 1) {
+                                layer.msg("删除成功！", {time: 2000, icon: 6}, function () {
+                                    location.reload(true);
+//                                    data2();
+                                });
+                            } else if (result.code == -1) {
+                                layer.msg("请先取消设备绑定！", {time: 2000, icon: 2, shift: 6}, function () {
+                                    location.reload(true);
+//                                    data2();
+                                });
+                            } else if (result.code == -2) {
+                                layer.msg("请先取消订阅！", {time: 2000, icon: 2, shift: 6}, function () {
+                                    location.reload(true);
+//                                    data2();
+                                });
+                            } else {
+                                layer.msg("删除失败！", {time: 2000, icon: 2, shift: 6}, function () {
+                                    location.reload(true);
+//                                    data2();
+                                });
+                            }
+                        },
+                        error: function () {
+                            alert("删除错误,请重新编写!");
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else {
+                layer.alert("请选择要删除的数据!")
+            }
+        });
+    };
+
+    //刷新数据
+    function refreshService() {
+        location.reload(true);
+    }
+
+    //非空校验
+    function emptyValidation() {
+        var serverNameAdd = $("#serverNameAdd").val();
+        var serverIPAdd = $("#serverIPAdd").val();
+        var clientIpAdd = $("#clientIpAdd").val();
+        var serverUsernameAdd = $("#serverUsernameAdd").val();
+        var serverPwdAdd = $("#serverPwdAdd").val();
+
+        if (serverNameAdd == null || "" == (serverNameAdd)) {
+            layer.msg("服务名不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (serverIPAdd == null || "" == (serverIPAdd)) {
+            layer.msg("服务IP不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (clientIpAdd == null || "" == (clientIpAdd)) {
+            layer.msg("订阅IP不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var identicationInfos = $("option:selected", "[name='identicationInfo']").val();
+        if (identicationInfos == null || "" == (identicationInfos)) {
+            layer.msg("人员类型不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var departments = $("option:selected", "[name='departments']").val();
+        if (departments == null || "" == (departments)) {
+            layer.msg("办公地点不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        if (serverUsernameAdd == null || "" == (serverUsernameAdd)) {
+            layer.msg("用户名不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+
+        if (serverPwdAdd == null || "" == (serverPwdAdd)) {
+            layer.msg("密码不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+
+        return true;
+    }
+    function emptyValidationForUpdate() {
+        var formEdit = $("#editform").serializeArray();
+        var formMap = {};
+        formEdit.forEach(function (e) {
+            var formEditName = e.name;
+            var formEditValue = e.value;
+            formMap[formEditName] = formEditValue;
+        });
+        var serverNameAdd = formMap['serverName'];
+        var serverIPAdd = formMap['serverIp'];
+        var clientIPAdd = formMap['clientIp'];
+        var serverUsernameAdd = formMap['serverUsername'];
+        var serverPwdAdd = formMap['serverPwd'];
+        //人员类型
+        var identicationInfos = $("option:selected", "[id='identicationInfo1']").val();
+        //办公地点
+        var departments = $("option:selected", "[id='departments1']").val();
+        if (serverNameAdd == null || "" == (serverNameAdd)) {
+            layer.msg("服务器名不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (serverIPAdd == null || "" == (serverIPAdd)) {
+            layer.msg("服务IP不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (clientIPAdd == null || "" == (clientIPAdd)) {
+            layer.msg("订阅IP不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+
+        if (serverUsernameAdd == null || "" == (serverUsernameAdd)) {
+            layer.msg("用户名不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+
+        if (serverPwdAdd == null || "" == (serverPwdAdd)) {
+            layer.msg("密码不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (identicationInfos == null || "" == (identicationInfos)) {
+            layer.msg("人员类型不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        if (departments == null || "" == (departments)) {
+            layer.msg("办公地点不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+</script>
+<script>
+    layui.use(['table', 'layer', 'jquery'], function () {
+        var table = layui.table
+            , layer = layui.layer
+            , $ = layui.$;
+        table.render();
+        table.on('tool(test-table-operate)', function (obj) {
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'subscriptionAlarm') {
+                showloading(true);
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    url: basePath + "/subscription/subscriptionAlarm",
+                    data: data,
+                    success: function (result) {
+                        showloading(false);
+                        if (result.code == 0) {
+                            layer.msg("订阅成功！", {time: 2000, icon: 6}, function () {
+                                location.reload(true);
+//                                data2();
+                            })
+                        } else if (result.code == -1) {
+                            layer.msg("订阅失败，服务器未接通！", {time: 2000, icon: 5, shift: 6}, function () {
+                                location.reload(true);
+//                                data2();
+                            });
+                        } else {
+                            layer.msg("订阅失败！", {time: 2000, icon: 5, shift: 6}, function () {
+                                location.reload(true);
+//                                data2();
+                            });
+
+                        }
+                    }
+                });
+            } else if (layEvent === 'cancelSubscriptionAlarm') {
+                showloading(true);
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    url: basePath + "/subscription/cancelSubscriptionAlarm",
+                    data: data,
+                    success: function (result) {
+                        showloading(false);
+                        if (result.code == 0) {
+                            layer.msg("取消订阅成功！", {time: 2000, icon: 6}, function () {
+                                location.reload(true);
+//                                data2();
+                            })
+                        } else if (result.code == -2) {
+                            layer.msg("取消订阅失败！服务器未接通！", {time: 2000, icon: 5, shift: 6}, function () {
+                                location.reload(true);
+//                                data2();
+                            });
+                        } else {
+                            layer.msg("取消订阅失败！", {time: 2000, icon: 5, shift: 6}, function () {
+                                location.reload(true);
+//                                data2();
+                            });
+                        }
+                    }
+                });
+            }
+        })
+    });
+</script>
+<script>
+    function showloading(t) {
+        if (t) {//如果是true则显示loading
+            console.log(t);
+            var loadingIndex = layer.load(2, { //icon支持传入0-2
+                shade: [0.3, 'gray'], //0.5透明度的灰色背景
+                content: '请稍等...',
+                success: function (layero) {
+                    layero.find('.layui-layer-content').css({
+                        'padding-top': '39px',
+                        'width': '60px'
+                    });
+                }
+            });
+        } else {
+            console.log("关闭loading层:" + t);
+            layer.closeAll('loading');
+        }
+    }
+</script>
+<script>
+    layui.use(['form', 'upload', 'element', 'layer'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        //点击select进行切换隐藏学历
+        form.on('select(identicationInfo)', function (data) {
+            var show = data.value;
+            switch (show) {
+                case '0':
+                    $(".editxueji").hide();
+                    $(".editxueli").hide();
+                    break;
+                case '1':
+                    $(".editxueji").hide();
+                    $(".editxueli").hide();
+                    break;
+                case '2':
+                    $(".editxueji").show();
+                    $(".editxueli").show();
+                    break;
+                case '3':
+                    $(".editxueji").show();
+                    $(".editxueli").show();
+                    break;
+                case '4':
+                    $(".editxueji").hide();
+                    $(".editxueli").hide();
+                    break;
+                case '5':
+                    $(".editxueji").hide();
+                    $(".editxueli").hide();
+                    break;
+                case '6':
+                    $(".editxueji").hide();
+                    $(".editxueli").hide();
+                    break;
+                default:
+                    $(".editxueji").hide();
+                    $(".editxueli").hide();
+                    break;
+            }
+        });
+        //重新加载
+        layui.form.render("select");
+
+    });
+</script>
+</body>
+</html>

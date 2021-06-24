@@ -1,0 +1,206 @@
+.elecScheduling-panel{
+    width:100%;
+    height:100%;
+    background:url(../images/pb-bg.png) no-repeat;
+    background-size:100% 100%;
+    overflow:hidden;
+}
+.elecScheduling-content{
+    height: 86vh;
+    margin: 7vh auto;
+    display: flex;
+    width: 70vw;
+}
+.elecScheduling-left{
+    width:32vw;
+    height:100%;
+}
+.elecScheduling-center{
+    width:37vw;
+    height:100%;
+    margin:0 1vw;
+
+}
+.elecScheduling-right{
+    width:27vw;
+    height:100%;
+}
+.elecScheduling-col{
+    background:#fff;
+    width:100%;
+    margin-bottom:2vh;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px #0D86DE;
+}
+.elecScheduling-col>.elecScheduling-title{
+    height:4vh;
+    line-height:4vh;
+    background:#9FD9FE;
+    padding:0 10px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    font-size:18px;
+}
+
+.elecScheduling-left>.elecScheduling-col{
+    height:27vh;
+}
+.elecScheduling-center>.elecScheduling-col1{
+    height:25vh;
+}
+.elecScheduling-center>.elecScheduling-col2{
+    height:58vh;
+}
+.elecScheduling-right>.elecScheduling-col1{
+    height:27vh;
+    background:#98D1FC ;
+    color:#fff;
+    font-size:35px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.elecScheduling-right>.elecScheduling-col1>span,.elecScheduling-right>.elecScheduling-col1>p{
+    width:100%;
+}
+.elecScheduling-right>.elecScheduling-col1>p{
+    line-height:0;
+}
+.elecScheduling-right>.elecScheduling-col1>span{
+    text-align: right;
+    padding:1vw 1vw 0 0 ;
+}
+.elecScheduling-right>.elecScheduling-col2{
+    height:56vh;
+}
+.elecScheduling-left>.elecScheduling-col>.elecScheduling-con{
+    height:23vh;
+}
+.elecScheduling-center>.elecScheduling-col1>.elecScheduling-con{
+    height:21vh;
+}
+.elecScheduling-center>.elecScheduling-col2>.elecScheduling-con{
+    height:54vh;
+}
+.elecScheduling-right>.elecScheduling-col2>.elecScheduling-con{
+    height:52vh;
+}
+
+
+.elecScheduling-con{
+    display: flex;
+}
+.elecScheduling-tx{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.elecScheduling-tx p{
+    text-align: center;
+    color:#408FAD;
+    margin:0 auto;
+    font-size:18px;
+}
+.elecScheduling-tx>img{
+    width:8vw;
+    height:8vw;
+    border-radius: 50%;
+    margin:auto;
+}
+.elecScheduling-name{
+    display: flex;
+    flex-wrap: wrap;
+    width:50%;
+    align-content: center;
+}
+.elecScheduling-name>h2,.elecScheduling-name>span{
+    font-size:25px;
+    text-align: center;
+    width:100%;
+    font-weight: 800;
+    display:inline-block;
+    margin-bottom:1vh;
+    color:#2E87A5;
+}
+.elecScheduling-person{
+    width:33%;
+    height:100%;
+    margin:auto;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+}
+.yd-bg{
+    width:6vw;
+    height:6vw;
+    background:url(../images/pb-yd.png) no-repeat;
+    background-size: 6vw;
+}
+.sd-bg{
+    width:6vw;
+    height:6vw;
+    background:url(../images/pb-sd.png) no-repeat;
+    background-size: 6vw;
+}
+.wd-bg{
+    width:6vw;
+    height:6vw;
+    background:url(../images/pb-wd.png) no-repeat;
+    background-size: 6vw;
+}
+.elecScheduling-person .top{
+    text-align: center;
+    color:#fff;
+    font-size:30px;
+    line-height:6vw;
+}
+.elecScheduling-person h3{
+    color:#3CC6F9;
+    font-size:18px;
+    margin-top:1vh;
+}
+.elecScheduling-ul{
+    width:100%;
+}
+.elecScheduling-ul li{
+    display: flex;
+    border-bottom:1px dashed #C1E2FE;
+    width:100%;
+    height:4vh;
+    line-height:4vh;
+}
+.elecScheduling-ul li>span{
+    width:33%;
+    text-align: center;
+}
+.elecScheduling-info{
+    width:100%;
+    padding:1vh 1vw;
+}
+.elecScheduling-info>p{
+    margin-top:1vh;
+    text-indent: 1vw;
+}
+.elecScheduling-con>.elecScheduling-data{
+    font-size:18px;
+    width:100%;
+    display: flex;
+    justify-content: center;
+    margin: 7vh 0;
+}
+.elecScheduling-con>.elecScheduling-data>p{
+    font-size:45px !important;
+    width:8vw;
+    height:8vh;
+    line-height:8vh;
+    text-align: center;
+    background:#E3E5FC;
+}
+.elecScheduling-con>.elecScheduling-data>span{
+    margin-top: 3vh;
+    margin-left: 1vw;
+}

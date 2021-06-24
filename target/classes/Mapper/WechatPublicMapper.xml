@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.WechatPublicMapper">
+  <resultMap id="BaseResultMap" type="com.bfdb.entity.WechatPublic">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="qr_code_path" jdbcType="VARCHAR" property="qrCodePath" />
+    <result column="collection_entry_path" jdbcType="VARCHAR" property="collectionEntryPath" />
+    <result column="face _collection_page_path" jdbcType="VARCHAR" property="faceCollectionPagePath" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, qr_code_path, collection_entry_path, `face _collection_page_path`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from wechat_public
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from wechat_public
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.WechatPublic" useGeneratedKeys="true">
+    insert into wechat_public (qr_code_path, collection_entry_path, 
+      `face _collection_page_path`)
+    values (#{qrCodePath,jdbcType=VARCHAR}, #{collectionEntryPath,jdbcType=VARCHAR}, 
+      #{faceCollectionPagePath,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.WechatPublic" useGeneratedKeys="true">
+    insert into wechat_public
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="qrCodePath != null">
+        qr_code_path,
+      </if>
+      <if test="collectionEntryPath != null">
+        collection_entry_path,
+      </if>
+      <if test="faceCollectionPagePath != null">
+        `face _collection_page_path`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="qrCodePath != null">
+        #{qrCodePath,jdbcType=VARCHAR},
+      </if>
+      <if test="collectionEntryPath != null">
+        #{collectionEntryPath,jdbcType=VARCHAR},
+      </if>
+      <if test="faceCollectionPagePath != null">
+        #{faceCollectionPagePath,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.WechatPublic">
+    update wechat_public
+    <set>
+      <if test="qrCodePath != null">
+        qr_code_path = #{qrCodePath,jdbcType=VARCHAR},
+      </if>
+      <if test="collectionEntryPath != null">
+        collection_entry_path = #{collectionEntryPath,jdbcType=VARCHAR},
+      </if>
+      <if test="faceCollectionPagePath != null">
+        `face _collection_page_path` = #{faceCollectionPagePath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.WechatPublic">
+    update wechat_public
+    set qr_code_path = #{qrCodePath,jdbcType=VARCHAR},
+      collection_entry_path = #{collectionEntryPath,jdbcType=VARCHAR},
+      `face _collection_page_path` = #{faceCollectionPagePath,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectwechatPublic" resultMap="BaseResultMap">
+    select * from wechat_public
+  </select>
+</mapper>

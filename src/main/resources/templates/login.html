@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          name="viewport"/>
+    <title>Facelnfo DB系统</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/fonts/iconfont.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/bootstrap.min.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/skin/black/login.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+</head>
+<style>
+    .loading{
+        display: none;
+        position: fixed;
+        z-index: 99;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+    }
+</style>
+<body>
+
+<div class="loading">
+<div style="margin-top: 20%">
+    <img src="/Content/Images/logo/load.gif">
+    <p class="loading_context">页面加载中，请稍候。。。</p>
+
+</div>
+
+</div>
+<div class="loginbg clearfix" id="loginDiv">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="loginLogo">
+            <h1></h1>
+        </div>
+    </div>
+    <div class="loginBox" id="login">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+        <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+            <div class="loginBox_left"></div>
+        </div>
+        <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+            <div class="loginBox_right">
+                <h2>平台登录</h2>
+                <form class="bs-example bs-example-form" method="post" action="/loginToken" id="loginForm">
+                    <ul class="login_info">
+
+                        <li>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="iconfont icon-zhanghu"></i></span>
+                                <input id="UserName" name="userName" type="text" class="form-control"
+                                       autocomplete="off"/>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="iconfont icon-mima"></i></span>
+                                <input id="UserPwd" name="password" type="password" class="form-control"/>
+                            </div>
+                            <div style="color:#F90;padding:7px; position:absolute; display: none;margin-left: 132px "
+                                 id="capital">大写锁定已开启
+                            </div>
+                        </li>
+                    </ul>
+
+                    <ul class="login_btn">
+                        <li id="checkLogin" onclick="login()">登&nbsp;&nbsp;录</li>
+                        <li id="unSet" style="background: transparent;border: 1px solid rgba(1, 199, 244, 0.35);"
+                            onclick="reset()">重&nbsp;&nbsp;置
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+    </div>
+
+    <div class="layui-row layui-popup" id="configurationWizardDiv" style="display: none;">
+        <div>
+            <form class="layui-form" lay-filter="formTestFilter" id="configurationWizardForm">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                    <legend>数据库设置</legend>
+                </fieldset>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label ">URL： </label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="jdbcURL" id="jdbcURL" class="layui-input" placeholder="123.56.96.237:3306/zbk1">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户名：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="jdbcUsername" id="jdbcUsername" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline ">
+                        <label class="layui-form-label">密码：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="jdbcPassword" id="jdbcPassword" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" align="right">
+                    <button type="button" class="layui-btn layui-btn-xs" onclick="testConnectionJDBCBtn1()">测试连接</button>
+                </div>
+<!--                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">-->
+<!--                    <legend>图片展示IP设置</legend>-->
+<!--                </fieldset>-->
+<!--                <div class="layui-form-item" pane="">-->
+<!--                    <label class="layui-form-label">告警图片：</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                    <input type="radio" id="saveImageTrue1" name="saveImage" value="true" title="保存" >-->
+<!--                    <input type="radio" id="saveImageFalse" name="saveImage" value="false" title="不保存">-->
+<!--                    </div>-->
+<!--                    <label class="layui-form-label">告警图片：</label>-->
+<!--                    <div class="layui-input-inline">-->
+<!--                        <input type="checkbox" name="saveImage" id="saveImageTrue" lay-skin="switch"-->
+<!--                               lay-filter="switchTest" lay-text="保存|不保存">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="layui-form-item">-->
+<!--                    <div class="layui-inline ">-->
+<!--                        <label class="layui-form-label">图片展示IP：</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input type="text" name="photoURL" id="alarmEquipmentIP" class="layui-input">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </form>
+        </div>
+    </div>
+    <!--<div class="login-bottom">
+        <h2></h2>
+    </div>-->
+</div>
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    //回车事件绑定
+    document.onkeydown = function (e) {
+        var ev = document.all ? window.event : e;
+        if (ev.keyCode == 13) {
+            if ($(".layui-layer-btn0").length > 0) {
+                layer.closeAll();
+            } else {
+                $("#checkLogin").click();
+            }
+        }
+    };
+
+    //登录方法
+    var login = function () {
+        var   userName=$("[name='userName']").val();
+        var   password=$("[name='password']").val();
+        var getloginVo =  {"userName": userName,"password" : password};
+        // alert(JSON.stringify(getloginVo));
+        $.ajax({
+            url: basePath + "/login",
+            type: "POST",
+            contentType: 'application/json',
+            dataType:'json',//json 返回值类型
+            data: JSON.stringify(getloginVo),
+            success: function (data) {
+//                var obj = eval("("+data+")");//将json数据转为对象
+                if (data.code == 0) {
+                    layui.use('layer', function () {
+                        var layer = layui.layer;
+                        layer.open({
+                            title: '登录异常'
+                            , content: '用户不存在或者密码不正确'
+                            , icon: 2
+                            , yes: function (index, layer) {
+                                window.location.href = basePath + "/login";
+                                layer.close(index);
+                            },
+                        });
+                    });
+                } else {
+                    var access_token = data.access_token;
+                    var storage = window.localStorage;
+                    storage.setItem("access_token", access_token);//本地存储，存储在客户端
+                    window.location.href = basePath + "/index";
+                }
+            },
+            error: function (data) {
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        title: '登录异常'
+                        , content: '用户名或密码错误'
+                        , icon: 2
+                        , yes: function (index, layer) {
+                            window.location.href = basePath + "/login";
+                            layer.close(index);
+                        },
+                    });
+                });
+            }
+        });
+    };
+</script>
+<!--大小写提示-->
+<script type="text/javascript" th:inline="javascript">
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    });
+    $(function () {
+//        var icw =initConfigurationWhether();
+//        if(icw==0){
+////            configurationWizard();
+//        }
+       initConfigurationWhether();
+        // if(icw==0){
+        //     configurationWizard();
+        // }
+        // alert(testConnectionJDBCBtn())
+        var s = testConnectionJDBCBtn();
+        if (s == 1){
+            configurationWizard();
+        }
+        aa();
+    })
+    function emptyValidationConfiguration() {
+        var jdbcURL = $("#jdbcURL").val();
+        if(jdbcURL==null || "" == (jdbcURL)){
+            layer.msg("URL不能为空！", {time:1000, icon:2, shift:6}, function(){
+            });
+            return false;
+        }
+        var jdbcUsername = $("#jdbcUsername").val();
+        if(jdbcUsername==null || "" == (jdbcUsername)){
+            layer.msg("用户名不能为空！", {time:1000, icon:2, shift:6}, function(){
+            });
+            return false;
+        }
+        var jdbcPassword = $("#jdbcPassword").val();
+        if(jdbcPassword==null || "" == (jdbcPassword)){
+            layer.msg("密码为空！", {time:1000, icon:2, shift:6}, function(){
+            });
+            return false;
+        }
+        return true;
+    }
+    //测试连接
+    function testConnectionJDBCBtn() {
+        var test;
+        var emptyValidationResult = emptyValidationConfiguration();
+        if(!emptyValidationResult){
+            return false;
+        }
+        $.ajax({
+            type : "POST",
+            async:false,
+            url  : basePath+"/configuration/testConnectionJDBC",
+            data : $("#configurationWizardForm").serialize(),
+            success : function(result) {
+                // alert(result.code)
+                if(result.code==0){
+                    test = 0;
+                }else{
+                    test = 1;
+                }
+            }
+        });
+        return test;
+    }
+    function testConnectionJDBCBtn1() {
+        if (testConnectionJDBCBtn() == 0){
+            layer.msg("连接成功！", {time:1000, icon:6}, function(){
+            })
+        }else {
+            layer.msg("连接失败！", {time:1000, icon:5, shift:6}, function(){
+            })
+        }
+    }
+    function configurationWizard() {
+        document.getElementById("login").style.display="none";
+        layui.use(['index', 'form', 'laydate','table','jquery'], function(){
+            var layer = layui.layer
+                , $ = layui.$
+                , form = layui.form;
+           layer.open({
+                title:'部署配置',
+                type: 1,
+                closeBtn:0,
+                btn: ['确定'],
+                btnAlign: 'c',
+                yes: function (index) {
+                    var emptyValidationResult = emptyValidationConfiguration();
+                    if(!emptyValidationResult){
+                        return false;
+                    }
+                    $.ajax({
+                        type : "POST",
+                        url  : basePath+"/configuration/initConfiguration",
+                        data : $("#configurationWizardForm").serialize(),
+                        success : function(result) {
+                            if(result.code==-2){
+                                layer.msg("图片展示IP不合法！", {time:2000, icon:5, shift:6}, function(){
+                                    $(".loading").css("display","none");
+                                    $("#loginDiv").css('filter', '');
+                                })
+                            }else{
+                                layer.msg("配置失败！", {time:2000, icon:5, shift:6}, function(){
+                                    $(".loading").css("display","none");
+                                    $("#loginDiv").css('filter', '');
+                                })
+                            }
+                        },
+                        error(d){
+                            layer.close(index);
+                            $(".loading").css("display","block");
+                            $("#loginDiv").css('filter', 'blur(10px)');
+                            setInterval(function () {
+                                location.reload();
+                                return;
+                            },90000)
+                        }
+                    });
+                },
+                area:["400px","550px"],
+                content:$("#configurationWizardDiv")
+            })
+        });
+
+    };
+
+
+    function initConfigurationWhether(){
+        // document.getElementById("loginDiv").style.display="none";
+        // var returninitConfigurationWhether;
+        $.ajax({
+            type : "get",
+            async: false,
+            url  : basePath+"/configuration/initConfigurationWhetherPath",
+            success : function(result) {
+                var data2 = result.data;
+                if(""!=data2 && null !=data2){
+                    var jdbcURL = data2.jdbcURL;
+                    var jdbcUsername = data2.jdbcUsername;
+                    var jdbcPassword = data2.jdbcPassword;
+                    $("#jdbcURL").attr("value",jdbcURL);
+                    $("#jdbcUsername").attr("value",jdbcUsername);
+                    $("#jdbcPassword").attr("value",jdbcPassword);
+                }
+                // if(result.code==0){
+                //     returninitConfigurationWhether=0;
+                // }else{
+                //     returninitConfigurationWhether=1;
+                // }
+            }
+        });
+        // return returninitConfigurationWhether;
+    }
+
+    function aa()  {
+        var inputPWD = document.getElementById('UserPwd');
+        var capital = false;
+        var capitalTip = {
+            elem: document.getElementById('capital'),
+            toggle: function (s) {
+                var sy = this.elem.style;
+                var d = sy.display;
+                if (s) {
+                    sy.display = s;
+                } else {
+                    sy.display = d == 'none' ? '' : 'none';
+                }
+            }
+        }
+        var detectCapsLock = function (event) {
+            if (capital) {
+                return
+            }
+            ;
+            var e = event || window.event;
+            var keyCode = e.keyCode || e.which; // 按键的keyCode
+            var isShift = e.shiftKey || (keyCode == 16) || false; // shift键是否按住
+            if (
+                ((keyCode >= 65 && keyCode <= 90) && !isShift) // Caps Lock 打开，且没有按住shift键
+                || ((keyCode >= 97 && keyCode <= 122) && isShift)// Caps Lock 打开，且按住shift键
+            ) {
+                capitalTip.toggle('block');
+                capital = true
+            } else {
+                capitalTip.toggle('none');
+            }
+        }
+        inputPWD.onkeypress = detectCapsLock;
+        inputPWD.onkeyup = function (event) {
+            var e = event || window.event;
+            if (e.keyCode == 20 && capital) {
+                capitalTip.toggle();
+                return false;
+            }
+        }
+    }
+
+    //重置按钮
+    function reset() {
+        $("#UserName").val("");
+        $("#UserPwd").val("");
+    }
+
+    //功能优化
+    function teacherLogin() {
+        layui.use('layer', function () {
+            layer.alert("功能正在开发中，敬请期待...");
+        })
+    }
+
+    function informationLogin() {
+        layui.use('layer', function () {
+            layer.alert("功能正在开发中，敬请期待...");
+        })
+    }
+
+</script>
+</body>
+</html>

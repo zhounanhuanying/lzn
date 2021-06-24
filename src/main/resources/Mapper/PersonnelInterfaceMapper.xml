@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.PersonnelInterfaceMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.PersonnelInterface">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="interface_url" jdbcType="VARCHAR" property="interfaceUrl" />
+        <result column="interface_name" jdbcType="VARCHAR" property="interfaceName" />
+    </resultMap>
+    <sql id="Base_Column_List">
+   id, interface_url, interface_name
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from personnel_interface
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <!--查询接口管理全部-->
+    <select id="selectPersonnelInterfaceAll" resultMap="BaseResultMap">
+        select         <include refid="Base_Column_List"/>        from personnel_interface
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from personnel_interface
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.PersonnelInterface" useGeneratedKeys="true">
+    insert into personnel_interface (interface_url, interface_name)
+    values (#{interfaceUrl,jdbcType=VARCHAR}, #{interfaceName,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.PersonnelInterface" useGeneratedKeys="true">
+        insert into personnel_interface
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="interfaceUrl != null">
+                interface_url,
+            </if>
+            <if test="interfaceName != null">
+                interface_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="interfaceUrl != null">
+                #{interfaceUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="interfaceName != null">
+                #{interfaceName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.PersonnelInterface">
+        update personnel_interface
+        <set>
+            <if test="interfaceUrl != null">
+                interface_url = #{interfaceUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="interfaceName != null">
+                interface_name = #{interfaceName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.PersonnelInterface">
+    update personnel_interface
+    set interface_url = #{interfaceUrl,jdbcType=VARCHAR},
+      interface_name = #{interfaceName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

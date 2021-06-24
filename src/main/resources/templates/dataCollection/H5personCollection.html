@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,
+          maximum-scale=1.0,user-scalable=0">
+    <title>人脸信息采集</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/style.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/spotlight.bundle.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <script th:src="@{/Content/check/IDcardverification.js}"></script>
+    <script th:src="@{/Content/H5js/exif.js}"></script>
+    <style>
+        .success-icon {
+            text-align: center;
+            position: fixed;
+            top: 20%;
+            left: 36%;
+            z-index: 9;
+        }
+
+        .success-icon > i {
+            font-size: 100px;
+            color: #009688;
+        }
+
+        /*.upload {*/
+        /*    margin: 0;*/
+        /*    width: 100%;*/
+        /*}*/
+
+        .upLoadBox {
+            position: relative;
+            width: 32%;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .upload {
+            position: relative;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .upload button {
+            display: block;
+            width: 100%;
+            height: 50px;
+            background-color: orange;
+            border: none;
+        }
+
+        .upload input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: block;
+            width: 100%;
+            height: 50px;
+            opacity: 0;
+        }
+
+        .upload img {
+            margin: 0 auto;
+            display: block;
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="success-icon" style="display: none"><i class="layui-icon layui-icon-ok-circle"></i>
+    <div style="font-size: 20px;color: green;margin-left: 20px">提交成功！</div>
+</div>
+<div class="layui-fluid" style="display: block">
+    <div id="PreviewImg" onclick="closeImg();"
+
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      display: none;"></div>
+
+    <div class="layui-row layui-col-space15" id="showImg">
+        <div class="layui-col-xs12 layui-col-sm12 personinfo-top">
+<!--            <i id="return" class="layui-icon layui-icon-left"-->
+<!--               style="position: absolute;top:13px;left:15px;color: white"></i>-->
+            <h3><img th:src="@{/Content/Images/logo.png}" alt=""></h3>
+            <span>为加强校园人员管控，需采集人员信息，请认真填写并提交信息，以免影响您的出入</span>
+        </div>
+        <div class="layui-col-xs12 personinfo-content">
+            <div clas="layui-row layui-col-space15">
+                <div class="layui-col-sm12 layui-col-sm12">
+                    <div class="layui-card">
+                        <div class="layui-card-body">
+
+                            <ul clas="layui-row layui-col-space10">
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label layui-form-required">姓名：</label>
+                                            <div class="layui-input-inline">
+                                                <input class="layui-input" name="personName" id="personName"
+                                                       placeholder="请输入姓名" autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="layui-col-sm12" id="noMargin">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label layui-form-required">性别：</label>
+                                            <div class="layui-input-block">
+                                                <input type="radio" name="gender" id="add-gender" th:each="sexs:${sexList}"
+                                                       lay-filter="testRadio" th:value="${sexs.dicCode}"
+                                                       th:title="${sexs.dicName}" checked>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">手机号：</label>
+                                            <div class="layui-input-inline">
+                                                <input type="tel" class="layui-input"
+                                                       id="telephone" name="telephone" placeholder="请输入手机号"
+                                                       autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                        <label class="layui-form-label layui-form-required">人员类型:</label>
+                                            <div class="layui-input-inline">
+                                            <select name="identicationInfo" lay-verify="required" id="add-identicationInfo"
+                                                    class="border-style" lay-filter="identicationInfo">
+                                                <option value="">请选择人员类型</option>
+                                                <option th:each="dataDictionary:${identicationInfoList}"
+                                                        th:value="${dataDictionary.dicCode}"
+                                                        th:text="${dataDictionary.dicName}"></option>
+                                            </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <span id="tishi"></span>
+                                <!--<li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">生日:</label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="birthday" id="add-birthday" class="layui-input" autocomplete="off"
+                                                       placeholder="请输入出生日期" lay-verify="date" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>-->
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">地址:</label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="residentialAddress" id="add-residentialAddress" class="layui-input"
+                                                       placeholder="请输入家庭住址" autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">民族:</label>
+                                            <div class="layui-input-inline">
+                                                <select name="ethnicity" lay-verify="required" id="add-ethnicity" class="border-style"
+                                                        lay-filter="ethnicity">
+                                                        <option value="">请选择民族</option>
+                                                        <option th:each="dataDictionary:${ethnicityList}"
+                                                                th:value="${dataDictionary.dicCode}"
+                                                                th:text="${dataDictionary.dicName}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                               <!-- <div style="color: red">身份证号和学工号二选一即可</div>-->
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label layui-form-required">学工号：</label>
+                                            <div class="layui-input-inline">
+                                                <input style="width: 198px" class="layui-input" name="identityTypeCode" id="identityTypeCode"
+                                                       placeholder="请输入学工号" autocomplete="off">
+                                                <!--openid-->
+                                                <input class="layui-input" name="openId" id="openId" type="hidden">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <span id="shenfenzheng"></span>
+                                <!--<li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">身份证号：</label>
+                                            <div class="layui-input-inline">
+                                                <input style="width: 198px" type="tel" class="layui-input" id="identityNo" name="identityNo" placeholder="请输入身份证号" autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>-->
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label layui-form-required">所属园区:</label>
+                                            <div class="layui-input-inline">
+                                                <select name="park" lay-verify="required" id="add-parkId"
+                                                        class="border-style" lay-filter="Add-parkIdOnchange">
+                                                    <option value="">请选择所属园区</option>
+                                                    <option th:each="parkList:${parkList}"
+                                                            th:value="${parkList.id}"
+                                                            th:text="${parkList.parkName}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <span id ="danwei"></span>
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form">
+                                        <div class="layui-form-item">
+                                        <label class="layui-form-label">备注：</label>
+                                        <div class="layui-input-inline textarea-inline">
+                                            <textarea type="text" name="description" id="add-description" class="layui-textarea"
+                                                placeholder="不超过500字符"></textarea>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="layui-col-sm12">
+                                    <div class="layui-form-item item-height">
+                                        <label class="layui-form-label layui-form-required">人脸照片：</label>
+                                        <div class="describe">
+                                            （请上传近期免冠正面照，肩膀以上即可，白色背景，照片清晰）
+                                        </div>
+                                        <div class="layui-input-block upload-imgbox">
+                                            <div class="upLoadBox" id="demo2">
+                                                <!--<input type="file" id="H5Test1" accept="image/*" />-->
+                                                <div class="upload">
+                                                <input type="file" id="H5Test1" accept="image/*" name="upload" onchange="start_upload1(this)">
+                                                </div>
+                                            </div>
+                                            <!--<div class="upLoadBox" id="demo22">
+                                                <div class="upload">
+                                                <input type="file" id="H5Test2" accept="image/*" onchange="start_upload2(this)">
+                                                </div>
+                                            </div>
+                                            <div class="upLoadBox" id="demo23">
+                                                <div class="upload">
+                                                <input type="file" id="H5Test3" accept="image/*" onchange="start_upload3(this)">
+                                                </div>
+                                            </div>-->
+
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <button lay-filter="reg" id="butSubmit"
+                                    class="layui-btn layui-btn-normal layui-btn-fluid btn-submit" type="button"
+                                    lay-submit="">提交
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<i id="deleteIcon"  class="layui-icon layui-icon-delete" style="font-size: 30px;position: absolute"></i>-->
+</div>
+
+<!--ztree弹窗-->
+        <div class="layui-col-sm12 layui-col-sm12">
+                        <form class="layui-form large-form1" lay-filter="formTestFilter">
+                            <!-- ztree树 -->
+                            <input id="orgIdaaaa" type="text" style = "display:none">
+                            <input id="orgIdbbbb" type="text" style = "display:none">
+                            <input id="orgIdcccc" type="text" style = "display:none">
+                            <div class="ztree-orangization" id="orgTree2">
+                                <ul id="orgTree" class="ztree" style="height:98%" ></ul>
+                            </div>
+                        </form>
+        </div>
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+
+    // 跳转到首页
+    $(document).on('click', '#return', function () {
+        location.href = "/WxIndex";
+    });
+
+
+    $("body").height($(window).height());
+    layui.use(['form', 'upload','laydate', 'element', 'layer'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+         var laydate = layui.laydate;
+        //定义一个数组用来存储长传成功的图片
+        var photo = [];
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+        });
+        $('.select-margin').find('input').attr("readonly", "readonly");
+        /*给隐藏的openid 输入框赋值*/
+        $('#demo_1').find('input').attr("readonly", "readonly");
+        /*form.on('radio(testRadio)', function (data) {
+            var show = "";
+            //获取radio的value值
+            var apm = document.getElementsByName("identicationInfo");
+            for (var i = 0; i < apm.length; i++) {
+                if (apm[i].checked)
+                    show = apm[i].value;
+            }
+            switch (show) {
+                case '0':
+                    $(".others").hide();
+                    break;
+                case '1':
+                    $(".others").hide();
+                    break;
+                case '2':
+                    $(".others").show();
+                    break;
+                case '3':
+                    $(".others").show();
+                    break;
+                case '4':
+                    $(".others").hide();
+                    break;
+                case '5':
+                    $(".others").hide();
+                    break;
+                case '6':
+                    $(".others").hide();
+                    break;
+                default:
+                    $(".others").hide();
+                    break;
+            }
+        });*/
+
+    });
+
+    function initSelectTree(id, isMultiple, chkboxType, zNodes) {
+        var setting = {
+
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            check: {
+                enable: false,
+                chkStyle: "radio",
+                radioType: "all",
+
+            },
+            chkboxType: { "Y": "ps", "N": "ps" },
+            callback: {
+                onClick: onClick,
+                onCheck: onCheck
+            }
+        };
+        if (isMultiple) {
+            setting.check.enable = isMultiple;
+        }
+        if (chkboxType !== undefined && chkboxType != null) {
+            setting.check.chkboxType = chkboxType;
+        }
+        var html = '<div class = "layui-select-title" >' +
+            '<input id="' + id + 'Show"' + 'type = "text" placeholder = "请选择" value = "" class = "layui-input" readonly>' +
+            '<i class= "layui-edge" ></i>' +
+            '</div>';
+        $("#" + id).append(html);
+
+        $("#" + id).append('<dl  class="layui-anim layui-anim-upbit" ><div class="tree-content scrollbar">' +
+            '<input hidden id="' + id + 'Hide" ' +
+            'name="' + $(".select-tree").attr("id") + '">' +
+            '<ul id="' + id + 'Tree" class="ztree scrollbar" style="margin-top:0;"></ul>' +
+            '</div></dl>');
+        $("#" + id).bind("click", function () {
+            if ($(this).parent().find(".tree-content").css("display") !== "none") {
+                hideMenu()
+            } else {
+                $(this).addClass("layui-form-selected");
+                var Offset = $(this).offset();
+                var width = $(this).width() - 2 - 15;
+                $(this).parent().find(".tree-content").css({
+                    left: Offset.left + "px",
+                    top: Offset.top + $(this).height() + "px",
+                    height: 250 + "px",
+                }).slideDown("fast");
+                $(this).parent().find(".tree-content").css({
+                    width: width,
+
+                });
+                $("body").bind("mousedown", onBodyDown);
+            }
+        });
+        $.fn.zTree.init($("#" + id + "Tree"), setting, zNodes);
+        hideMenu();
+    }
+
+
+    function onClick(event, treeId, treeNode) {
+        var zTree = $.fn.zTree.getZTreeObj(treeId);
+        if (zTree.setting.check.enable == true) {
+            zTree.checkNode(treeNode, !treeNode.checked, false)
+            if(treeNode.orgType === 3){
+                assignment(treeId, zTree.getCheckedNodes());
+            }
+        } else {
+            assignment(treeId, zTree.getSelectedNodes());
+            hideMenu();
+        }
+    }
+
+    function onCheck(event, treeId, treeNode) {
+        var zTree = $.fn.zTree.getZTreeObj(treeId);
+        assignment(treeId, zTree.getCheckedNodes());
+    }
+
+    function hideMenu() {
+        $(".select-tree").removeClass("layui-form-selected");
+        $(".tree-content").fadeOut("fast");
+        $("body").unbind("mousedown", onBodyDown);
+    }
+
+    function assignment(treeId, nodes) {
+        var names = "";
+        var ids = "";
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            names += nodes[i].name + ",";
+            ids += nodes[i].id + ",";
+        }
+        if (names.length > 0) {
+            names = names.substring(0, names.length - 1);
+            ids = ids.substring(0, ids.length - 1);
+        }
+        treeId = treeId.substring(0, treeId.length - 4);
+        $("#" + treeId + "Show").attr("value", names);
+        $("#" + treeId + "Show").attr("title", names);
+        $("#" + treeId + "Hide").attr("value", ids);
+    }
+
+    function onBodyDown(event) {
+        if ($(event.target).parents(".tree-content").html() == null) {
+            hideMenu();
+        }
+    }
+    // 查询组织机构树形结构图
+    function LoadOrganazationTree(parkId) {
+       $.ajax({
+            url: basePath + "/baseOrganizition/getOrganizationTree",
+             type: "GET",
+            data: {parkId: parkId},
+            dataType: "json",
+            async: true,
+            success: function (data) {
+
+                if (data.data.length == 0 || data.data == null) {
+                    layer.alert("所选园区没有数据！！！请选择其他园区", {icon: 2});
+                    layer.close(index);
+                } else {
+                    initSelectTree("PDEPT_KEY", true, {"Y": "ps", "N": "s"}, data.data);
+                    var treeObj = $.fn.zTree.getZTreeObj("PDEPT_KEYTree");
+                    var node = treeObj.getNodes();
+                    treeObj.selectNode(node[0].children[0].children[0]);
+                    treeObj.checkNode(node, true, true, true);
+                    //zTree.selectNode(node, true);   //将指定ID的节点选中
+                }
+            }, error: function (XMLHttpRequest, textStatus, errorThrown) {
+                layer.alert("获取组织架构错误" + XMLHttpRequest.status + "错误请联系管理员！", {icon: 2});
+            }
+        });
+    }
+
+    layui.use(['layer', 'jquery', 'form'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+        form.on('select(identicationInfo)', function(data){
+            var identicationInfo = $('#add-identicationInfo').val();
+            if(identicationInfo == 7 ){
+                $("#tishi").hide();
+                $('#shenfenzheng').show();
+                $('#shenfenzheng').html("<li class=\"layui-col-sm12\">\n" +
+                    "                                    <div class=\"layui-form\">\n" +
+                    "                                        <div class=\"layui-form-item\">\n" +
+                    "                                            <label class=\"layui-form-label\">身份证号：</label>\n" +
+                    "                                            <div class=\"layui-input-inline\">\n" +
+                    "                                                <input style=\"width: 198px\" type=\"tel\" class=\"layui-input\" id=\"identityNo\" name=\"identityNo\" placeholder=\"请输入身份证号\" autocomplete=\"off\">\n" +
+                    "                                            </div>\n" +
+                    "                                        </div>\n" +
+                    "                                    </div>\n" +
+                    "                                </li>")
+            }else {
+                $("#tishi").show()
+                $('#shenfenzheng').hide();
+            }
+        });
+    });
+
+    layui.use(['layer', 'jquery', 'form'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+        form.on('select(Add-parkIdOnchange)', function(data){
+            parkId = $('#add-parkId').val();
+            if(parkId != undefined && parkId != null && parkId != "" ){
+                LoadOrganazationTree(parkId);
+                $('#danwei').html("<li class=\"layui-col-sm12\">\n" +
+                    "        <div class=\"layui-form\">\n" +
+                    "        <div class=\"layui-form-item\">\n" +
+                    "        <label class=\"layui-form-label layui-form-required\" style=\"float:left\">年级/班级</label>\n" +
+                    "        <div class=\"layui-input-block\">\n" +
+                    "        <div name=\"PDEPT_KEY\" lay-filter=\"PDEPT_KEY\" id=\"PDEPT_KEY\" class=\"layui-form-select select-tree\"></div>\n" +
+                    "        </div>\n" +
+                    "        </div>\n" +
+                    "        </div>\n" +
+                    "        </li>")
+            }else {
+                $('#danwei').html("<div style=\"color: red\">(提示：年级/班级在选择所属园区之后选择)</div>")
+            }
+        });
+    });
+
+    function closeImg() {
+        // $("#PreviewImg").hide()
+        $("#showImg").css('filter','');
+        $("#PreviewImg").css("display","none");
+    }
+    function  showImg(that) {
+        // let s=$("#PreviewImg");
+        // s.show();
+        // s.attr({ src: that, alt: "图片加载失败" });
+        $("#showImg").css('filter','blur(10px)');
+        $("#PreviewImg").css("display","block");
+        $("#PreviewImg").html("<img src="+that+" style='height: 350px;width: 80%;z-index: 150;margin-top: 50%;margin-left: 10%;'/>");
+    }
+
+    function start_upload1(obj) {
+        if (!isCanvasSupported) {
+        } else {
+            compress(event, function (base64Img) {
+                // 如需保存  或 把base64转成图片  ajax提交后台处理
+                $('#H5Test1').hide();
+                $('#demo2').append('<div style="position: absolute;width: 100%;top:0;">' +
+                    '<img style="width: 100%" src="' + base64Img + '"  class="layui-upload-img" onclick="showImg(this.src)">' +
+                    '<i class="layui-icon layui-icon-close" style="font-size:16px;position: absolute;top:0;right:0;color: red" onclick="deleteImg(this)">' +
+                    '</i></div>')
+                $("#demo2").append('<input type="hidden"  name="add_pic2" value="' + base64Img + '"/>');
+            });
+        }
+    }
+
+    function start_upload2(obj) {
+        if (!isCanvasSupported) {
+        } else {
+            compress(event, function (base64Img) {
+                // 如需保存  或 把base64转成图片  ajax提交后台处理
+                $('#H5Test2').hide();
+                $('#demo22').append('<div style="position: absolute;width: 100%;top:0;">' +
+                    '<img style="width: 100%" src="' + base64Img + '"  class="layui-upload-img" onclick="showImg(this.src)">' +
+                    '<i class="layui-icon layui-icon-close" style="font-size:16px;position: absolute;top:0;right:0;color: red" onclick="deleteImg(this)">' +
+                    '</i></div>')
+                $("#demo22").append('<input type="hidden"  name="add_pic2" value="' + base64Img + '"/>');
+            });
+        }
+    }
+
+    function start_upload3(obj) {
+        if (!isCanvasSupported) {
+        } else {
+            compress(event, function (base64Img) {
+                // 如需保存  或 把base64转成图片  ajax提交后台处理
+                $('#H5Test3').hide();
+                $('#demo23').append('<div style="position: absolute;width: 100%;top:0;">' +
+                    '<img style="width: 100%" src="' + base64Img + '"  class="layui-upload-img" onclick="showImg(this.src)">' +
+                    '<i class="layui-icon layui-icon-close" style="font-size:16px;position: absolute;top:0;right:0;color: red" onclick="deleteImg(this)">' +
+                    '</i></div>')
+                $("#demo23").append('<input type="hidden"  name="add_pic2" value="' + base64Img + '"/>');
+            });
+        }
+    }
+
+    //判断是否存在画布
+    function isCanvasSupported() {
+        var elem = document.createElement('canvas');
+        return !!(elem.getContext && elem.getContext('2d'));
+    }
+    //压缩方法
+    function compress(event, callback) {
+        var file = event.currentTarget.files[0],
+            reader = new FileReader(),
+            image = new Image();
+        if(file){
+            EXIF.getData(file, function() {
+                Orientation = EXIF.getTag(this, 'Orientation');
+            });
+            reader.onload = function (ev) {
+                image.src = ev.target.result;
+                image.onload = function () {
+                    var imgWidth = this.width,
+                        imgHeight = this.height;
+                    // 控制上传图片的宽高
+                    if(imgWidth > imgHeight && imgWidth > 750){
+                        imgWidth = 750;
+                        imgHeight = Math.ceil(750 * this.height / this.width);
+                    }else if(imgWidth < imgHeight && imgHeight > 1334){
+                        imgWidth = Math.ceil(1334 * this.width / this.height);
+                        imgHeight = 1334;
+                    }
+                    var canvas = document.createElement("canvas"),
+                        ctx = canvas.getContext('2d');
+                    canvas.width = imgWidth;
+                    canvas.height = imgHeight;
+                    if(Orientation && Orientation != 1){
+                        switch(Orientation){
+                            case 6:     // 旋转90度
+                                canvas.width = imgHeight;
+                                canvas.height = imgWidth;
+                                ctx.rotate(Math.PI / 2);
+                                // (0,-imgHeight) 从旋转原理图那里获得的起始点
+                                ctx.drawImage(this, 0, -imgHeight, imgWidth, imgHeight);
+                                break;
+                            case 3:     // 旋转180度
+                                ctx.rotate(Math.PI);
+                                ctx.drawImage(this, -imgWidth, -imgHeight, imgWidth, imgHeight);
+                                break;
+                            case 8:     // 旋转-90度
+                                canvas.width = imgHeight;
+                                canvas.height = imgWidth;
+                                ctx.rotate(3 * Math.PI / 2);
+                                ctx.drawImage(this, -imgWidth, 0, imgWidth, imgHeight);
+                                break;
+                        }
+                    }else{
+                        ctx.drawImage(this, 0, 0, imgWidth, imgHeight);
+                    }
+                    callback(canvas.toDataURL("image/jpeg", 0.8));
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+
+    function deleteImg(obj) {
+        $(obj).parent("div").parent("div").find('input').show();
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").remove();
+    }
+    function getFaceAddressList() {
+        var faceAddressList = new Array();
+        //获取value值
+        var apm = document.getElementsByName("add_pic2");
+        for (var i = 0; i < apm.length; i++) {
+            var arr =
+                {
+                    "faceAddress": apm[i].value,
+                }
+            //把创建的arr添加
+            faceAddressList.push(arr);
+        }
+        return faceAddressList;
+    }
+
+    // 选择日期
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#add-birthday' //指定元素
+        });
+    });
+
+    //照片信息
+    function getPersonNewTable() {
+        var personNewTable = {};
+        personNewTable.personName = $("[name='personName']").val();//姓名
+        personNewTable.gender = $('#noMargin input[name="gender"]:checked ').val();//性别
+        personNewTable.telephone = $("[name='telephone']").val();//手机号
+        personNewTable.identityNo = $("[name='identityNo']").val();//身份证
+        // personNewTable.birthday = $("[id='add-birthday']").val();//生日
+        personNewTable.residentialAddress = $("[id='add-residentialAddress']").val();//家庭住址
+        personNewTable.ethnicity = $("option:selected", "[id='add-ethnicity']").val();//民族
+        personNewTable.identicationInfo = $("option:selected", "[id='add-identicationInfo']").val();//人员类型
+        personNewTable.identityTypeCode = $("[name='identityTypeCode']").val();//教工号或学号或学工号
+        personNewTable.openId = $("[name='openId']").val();//教工号或学工号
+        personNewTable.parkId = $("option:selected", "[id='add-parkId']").val();//园区
+        personNewTable.schoolClass = $("[id='PDEPT_KEYHide']").val();//组织机构
+        personNewTable.description = $("[id='add-description']").val();//备注
+        return personNewTable;
+    }
+
+    //保存提交
+    $("#butSubmit").click(function () {
+        //验证信息是否正常
+        var emptyValidationResult = emptyValidationDataDic();
+        if (!emptyValidationResult) {
+            return false;
+        }
+        var datats = {};
+        datats.personNewTable = getPersonNewTable();
+        datats.faceAddressList = getFaceAddressList();
+        var formData = new FormData();
+        formData.append("datats", JSON.stringify(datats));
+        $.ajax({
+            url: basePath + '/personTable/insertPersonNewTable',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data.code == 200) {
+                    /* layer.msg('人员信息提交成功！！！', {time: 2000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸*/
+                    $(".layui-fluid").hide();
+                    $(".success-icon").show();
+                } else if (data.code == 1) {
+                    layer.msg('人员信息提交失败！！！该身份证号已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else if (data.code == 2) {
+                    layer.msg('人员信息提交失败！！！该学工号已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                }
+
+            }
+            ,
+            error: function (returndata) {
+                alert("error" + JSON.stringify(returndata));
+            }
+        });
+    });
+
+    //验证信息是否为空
+    function emptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var personName = $("#personName").val();
+        if (reg.test(personName) === true || personName == null || "" == (personName)) {
+            layer.msg("姓名不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var gender = $("#add-gender").val();
+        if (reg.test(gender) === true || gender == null || "" == (gender)) {
+            layer.msg("性别为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var identicationInfo = $("#add-identicationInfo").val();
+        if (reg.test(identicationInfo) === true || identicationInfo == null || "" == (identicationInfo)) {
+            layer.msg("人员类型为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var parkId = $("#add-parkId").val();
+        if (reg.test(parkId) === true || parkId == null || "" == (parkId)) {
+            layer.msg("所属园区为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var org = $("#PDEPT_KEYShow").val();
+        if (reg.test(org) === true || org == null || "" == (org) || "" == (identicationInfo)) {
+            layer.msg("年级/班级不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var telephone = $("#telephone").val();
+        if (!telephoneUtils(telephone) && telephone != "") {
+            layer.msg('手机号码填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        var identityNo = $("#identityNo").val();
+        var identityTypeCode = $("#identityTypeCode").val();
+        if (identityNo == null || "" == (identityNo)) {
+            if (identityTypeCode == null || "" == (identityTypeCode)) {
+                layer.msg("身份证号和学工号必须选填一个！", {time: 1000, icon: 5, offset: '250px'});
+                return false;
+            } else if (identityTypeCode != null || "" != (identityTypeCode)) {
+                if (reg.test(identityTypeCode) === true || identityTypeCode == null || "" == (identityTypeCode)) {
+                    layer.msg("教工号或学工号不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!identityTypeCodeUtils(identityTypeCode) && identityTypeCode != "") {
+                    layer.msg('学工号不能超过15位数或者不是纯数字，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+            }
+        } else if (identityNo != null && "" != (identityNo)) {
+            if (identityTypeCode != null && "" != (identityTypeCode)) {
+                if (reg.test(identityNo) === true || identityNo == null || "" == (identityNo) || identityNo.length != 18) {
+                    layer.msg("身份证不能为空或存在空格且必须是18位！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                //验证身份证号是否正常
+                if (!validateIdCard(identityNo) && identityNo != "") {
+                    layer.msg('身份证填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+                if (reg.test(identityTypeCode) === true || identityTypeCode == null || "" == (identityTypeCode)) {
+                    layer.msg("教工号或学工号不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!identityTypeCodeUtils(identityTypeCode) && identityTypeCode != "") {
+                    layer.msg('学工号不能超过15位数或者不是纯数字，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+            } else if (identityTypeCode == null || "" == (identityTypeCode)) {
+                if (reg.test(identityNo) === true || identityNo == null || "" == (identityNo) || identityNo.length != 18) {
+                    layer.msg("身份证不能为空或存在空格且必须是18位！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                //验证身份证号是否正常
+                if (!validateIdCard(identityNo) && identityNo != "") {
+                    layer.msg('身份证填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+            }
+
+        }
+
+        /*var departments = $("option:selected", "[name='departments']").val();
+        if (reg.test(departments) === true || departments == null || "" == (departments)) {
+            layer.msg("办公地点不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }*/
+
+        var faceAddress = $("[name='add_pic2']").val();
+        if (reg.test(faceAddress) === true || faceAddress == null || "" == (faceAddress)) {
+            layer.msg("人脸照片为必填项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

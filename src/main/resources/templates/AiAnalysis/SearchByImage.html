@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>以图搜图界面</title>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/searchPictures.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+</head>
+<body>
+<div class="search-pictures">
+    <div class="search-pictures-operation">
+        <div class="search-pictures-left">
+            <div class="pictures-upload">
+                <div class="pic-div pic-show">
+                    <img src="/Content/style/images/pic_del.png" alt="">
+                    <img src="/Content/style/images/upload_pic.png" alt="">
+                </div>
+                <div class="pic-div pic-show">
+                    <img src="/Content/style/images/pic_del.png" alt="">
+                    <img src="/Content/style/images/upload_pic.png" alt="">
+                </div>
+                <div class="pic-div pic-show">
+                    <img src="/Content/style/images/pic_del.png" alt="">
+                    <img src="/Content/style/images/upload_pic.png" alt="">
+                </div>
+                <div class="pic-div add-pics">
+                    <img src="/Content/style/images/pic_add.png" alt="">
+                    <input type="file">
+                </div>
+            </div>
+            <div class="batch-upload">
+                <button class="layui-btn layui-btn-sm layui-btn-normal">ZIP批量上传</button>
+            </div>
+            <div class="matching-degree">
+                <span>0</span>
+                <span>100</span>
+                <div class="layui-progress layui-progress-big">
+                    <div class="layui-progress-bar" lay-percent="20%"></div>
+                </div>
+                <label class="slide">20</label>
+            </div>
+        </div>
+
+        <div class="sure-btn">
+            <button class="layui-btn layui-btn-sm layui-btn-normal">确认</button>
+        </div>
+    </div>
+    <div class="search-pictures-list">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <span>全部导入</span>
+            </div>
+            <div class="layui-card-body matching-info">
+                <div class="matching-info-block">
+                    <div class="master-drawing">
+                        <img src="/Content/style/images/sample_pic.png" alt="">
+                        <label for="">样图</label>
+                    </div>
+                    <div class="matching-info-show">
+                        <div class="layui-carousel" id="more" lay-filter="test1">
+                            <div carousel-item="">
+                                <div class="matching-info-list">
+                                    <ul>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>条目2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="matching-info-block">
+                    <div class="master-drawing">
+                        <img src="/Content/style/images/sample_pic.png" alt="">
+                        <label for="">样图</label>
+                    </div>
+                    <div class="matching-info-show">
+                        <div class="layui-carousel" id="more2" lay-filter="test1">
+                            <div carousel-item="">
+                                <div class="matching-info-list">
+                                    <ul>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div>
+                                                <img src="/Content/style/images/sample_pic.png" alt="">
+                                                <div class="personnel-info">
+                                                    <span>张杰</span>
+                                                    <label class="id">123456789012345678</label>
+                                                    <label class="card">1522635</label>
+                                                    <label class="type">外部人员</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>条目2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="matching-info-block">
+                    <div class="master-drawing">
+                        <img src="/Content/style/images/sample_pic.png" alt="">
+                        <label for="">样图</label>
+                    </div>
+                    <div class="matching-info-show">
+                        <div class="layui-carousel" id="more3" lay-filter="test1">
+                            <div class="no-pic">
+                                <img src="/Content/style/images/pic-no.png">
+                                <span>无匹配人脸图片</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-card-footer">
+                <div id="page" class="list-page"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script src="css/layui/layui.js"></script>-->
+<script>
+    layui.use(['element','carousel','laypage'],function(){
+        var $=layui.jquery,
+            element=layui.element,
+            carousel=layui.carousel,
+            laypage=layui.laypage;
+
+        //更多
+        carousel.render({
+            elem: '#more'
+            ,width:'100%'
+            ,height: '100%'
+            ,anim: 'default'
+            ,autoplay:false
+            ,arrow: 'always'
+            ,indicator:'none'
+        });
+        carousel.render({
+            elem: '#more2'
+            ,width:'100%'
+            ,height: '100%'
+            ,anim: 'default'
+            ,autoplay:false
+            ,arrow: 'always'
+            ,indicator:'none'
+        });
+
+
+        //分页
+        laypage.render({
+            elem: 'page'
+            ,count: 1
+            ,prev: '<em><</em>'
+            ,next: '<em>></em>'
+            ,layout: ['prev','page', 'next', 'skip', 'count', 'limit']
+            ,jump: function(obj){
+                console.log(obj)
+            }
+        });
+    })
+</script>
+</body>
+
+</html>

@@ -1,0 +1,305 @@
+﻿
+html{
+    height:100%;
+}
+*{
+    margin:0;
+    padding:0;
+}
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: url('imags/login/1920bg.png') no-repeat;
+    font-size: 14px;
+    font-family: "微软雅黑";
+    overflow: hidden;
+    position: relative;
+}
+h1,h2,h3,ul,li,img,input{
+    border:none;
+    list-style:none;
+}
+.loginLogo{
+    width: 80%;
+    height: 100px;
+    margin: 50px auto;
+}
+.loginLogo h1 {
+    width:100%;
+    height:100%;
+    background: url('../../../../Content/Images/logo/loginMain.png') no-repeat center;
+    background-size: contain;
+}
+.loginBox{
+    margin-top:150px;
+}
+.loginBox_left{
+    width:100%;
+    height:600px;
+    background: url('../../../../Content/Images/logo/loginbg.png') no-repeat center;
+    background-size:600px;
+}
+.loginBox_right{
+    width: 54%;
+    height: 460px;
+    background: rgba(61,123,242,0.4);
+    /*border: 1px solid #01c7f4;*/
+    margin: 7% auto;
+    padding-top: 1px;
+}
+.loginBox_right h2{
+    color:#01c7f4;
+    font-size:26px;
+    text-align:center;
+    margin:30px auto;
+}
+.login_info{
+    width:100%;
+}
+.login_info li{
+    margin-bottom:40px;
+}
+.login_info li{
+    height:50px;
+    width:90%;
+    margin:20px auto;
+    background:#fff;
+}
+.login_info li input{
+    height:100%;
+    width:100%;
+}
+.userNameError,.userPwdError{
+    height:50px;
+    line-height:50px;
+}
+.login_btn{
+    width:100%;
+    margin-top:30px;
+}
+.login_btn li{
+    margin-bottom:40px;
+}
+.login_btn li{
+    height:50px;
+    width:90%;
+    margin:20px auto;
+    background:#01c7f4;
+    text-align:center;
+    color:#fff;
+    line-height:50px;
+    font-size:26px;
+    cursor:pointer
+}
+
+.login_info .input-group-addon {
+    padding: 0 12px;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    color: #01c7f4;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+}
+.login_info .form-control{
+    height:50px;
+    border:0;
+    box-shadow:none;
+    background:#fff;
+}
+.login_info .iconfont{
+    font-size:26px;
+}
+@font-face {font-family: "iconfont";
+    src: url('iconfont.eot?t=1542175906410'); /* IE9*/
+    src: url('iconfont.eot?t=1542175906410#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAUYAAsAAAAAB5QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAADMAAABCsP6z7U9TLzIAAAE8AAAARAAAAFY8i0gdY21hcAAAAYAAAABVAAABhmUe0PVnbHlmAAAB2AAAAU0AAAF8o5yZTGhlYWQAAAMoAAAALwAAADYTQv8waGhlYQAAA1gAAAAcAAAAJAfeA4RobXR4AAADdAAAAAwAAAAMDAAAAGxvY2EAAAOAAAAACAAAAAgAXgC+bWF4cAAAA4gAAAAfAAAAIAERAEpuYW1lAAADqAAAAUUAAAJtPlT+fXBvc3QAAATwAAAAJwAAADhE7VE/eJxjYGRgYOBikGPQYWB0cfMJYeBgYGGAAJAMY05meiJQDMoDyrGAaQ4gZoOIAgCKIwNPAHicY2BkYWCcwMDKwMHUyXSGgYGhH0IzvmYwYuRgYGBiYGVmwAoC0lxTGByeiTzTZm7438AQw9zA0AgUZgTJAQDiAwwjeJztkMERgCAMBDeAPByfFuEMFuTL8mkDL0G78GY2l1zgE2ABsjhFAbsxXJdSizyzRl7iTZUbqe+9jQGfS6ZdlSf/Z5VfW9TjnZJfaxJ9m2APHsMOQgAAAHicJY8/S8NgEIfv3ksaXCQNzR8KFpJouzQJrU0LglnqmK52cG4ylEpRVxWXNhFKnTq4uwh2K4i46aCrfhDxAxh9Y+Hl3rvf8cBzwAB+L+mVxuDBPoBYKlhVv9ZxsWZvoqRt4X9gN/xWJ8A85rWCOt/xqqnEk3XP8wa96LaOqL3PN2ZvBtO3+aAsTrs9pOV0siTsdU8WCn1SMogSxpJokNChouuKIF4/CML9tCAKimHwUbx4duqzfrIShFXSn9XrT+eSxK7ilLE0jlOiNAYQuPsdTegIDDChAXsAaPtrIzXXL3Ivk4sVXdxZe6smP0gyXfSLrfau2dRUsYLNdqtqFUgv03w4nFPZCxADj7n/fyZhFIYRZrf4pco/H7KqysyV1ewMnQOHP/wecYijIw5lN2sYx15wHEaMReEos+QSYknGcc4+WjnkAMAfHfNM6gAAAHicY2BkYGAAYimRLULx/DZfGbhZGEDghuDdRQj6fz0LA3MBkMvBwAQSBQAANQl0AHicY2BkYGBu+N/AEMPCAAJAkpEBFTADAEcJAmwEAAAABAAAAAQAAAAAAAAAAF4AvnicY2BkYGBgZrBjYGEAASYg5gJCBob/YD4DAA8FAVwAeJxlj01OwzAQhV/6B6QSqqhgh+QFYgEo/RGrblhUavdddN+mTpsqiSPHrdQDcB6OwAk4AtyAO/BIJ5s2lsffvHljTwDc4Acejt8t95E9XDI7cg0XuBeuU38QbpBfhJto41W4Rf1N2MczpsJtdGF5g9e4YvaEd2EPHXwI13CNT+E69S/hBvlbuIk7/Aq30PHqwj7mXle4jUcv9sdWL5xeqeVBxaHJIpM5v4KZXu+Sha3S6pxrW8QmU4OgX0lTnWlb3VPs10PnIhVZk6oJqzpJjMqt2erQBRvn8lGvF4kehCblWGP+tsYCjnEFhSUOjDFCGGSIyujoO1Vm9K+xQ8Jee1Y9zed0WxTU/3OFAQL0z1xTurLSeTpPgT1fG1J1dCtuy56UNJFezUkSskJe1rZUQuoBNmVXjhF6XNGJPyhnSP8ACVpuyAAAAHicY2BigAAuBuyAmZGJkZmRhYG9KiMxLz2jlCU3MzeRgQEALCsEwAA=') format('woff'),
+    url('iconfont.ttf?t=1542175906410') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+    url('iconfont.svg?t=1542175906410#iconfont') format('svg'); /* iOS 4.1- */
+}
+
+.iconfont {
+    font-family:"iconfont" !important;
+    font-size:16px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zhanghu:before { content: "\e62b"; }
+
+.icon-mima:before { content: "\e614"; }
+
+
+
+/*.login-bottom {
+    width: 370px;
+    height: 60px;
+    margin: 0 auto;
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    margin-left: -185px;
+    background: url(../../../../Content/Images/logo/bottom-copy.png) no-repeat;
+}*/
+
+/*.login-bottom h2{
+
+    width:100%;
+    height:100%;
+}*/
+
+li.login-type{
+    background: none;
+    font-size: 16px;
+    text-align:inherit;
+}
+.teacher-login{
+    background: url(../../../../Content/Images/logo/teacher-account.png) no-repeat;
+    width: 48%;
+}
+.teacher-login span{
+    margin-left:60px;
+}
+.info-login{
+    background: url(../../../../Content/Images/logo/information-account.png) no-repeat;
+}
+.info-login span{
+    margin-left:60px;
+}
+@media screen and (max-width:1600px) and (min-width:1500px){
+    .loginBox_left{
+        height: 480px;
+        background-size: 480px;
+    }
+    .loginLogo h1 {
+        background-size: 80%;
+    }
+    .loginBox_right{
+        height: 400px;
+    }
+    .login_btn li {
+        height: 40px;
+        margin: 0px auto 20px;
+        line-height: 40px;
+        font-size: 20px;
+    }
+    .login_info .form-control{
+        height:40px;
+    }
+    .login_info li {
+        height: 40px;
+        margin: 20px auto 35px;
+    }
+    .userNameError, .userPwdError {
+        height: 35px;
+        line-height: 35px;
+    }
+}
+
+@media screen and (max-width:1499px) and (min-width:1400px){
+    .loginBox_left{
+        height: 400px;
+        background-size: 400px;
+    }
+    .loginBox_right{
+        height: 400px;
+    }
+    .login_btn li {
+        height: 40px;
+        margin: 0px auto 20px;
+        line-height: 40px;
+        font-size: 20px;
+    }
+    .login_info .form-control{
+        height:40px;
+    }
+    .login_info li {
+        height: 40px;
+        margin: 20px auto 35px;
+    }
+    .userNameError, .userPwdError {
+        height: 35px;
+        line-height: 35px;
+    }
+    .loginBox_right h2 {
+        font-size: 24px;
+        margin: 15px auto;
+    }
+}
+@media screen and (max-width:1399px){
+    .loginBox_left{
+        height: 390px;
+        background-size: 390px;
+    }
+    .loginLogo h1 {
+        background-size: 60%;
+    }
+    .loginBox_right{
+        height: 300px;
+    }
+    .login_btn li {
+        height: 30px;
+        margin: 0px auto 10px;
+        line-height: 30px;
+        font-size: 20px;
+    }
+    .login_info .form-control{
+        height:30px;
+    }
+    .login_info li {
+        height: 30px;
+        margin: 20px auto 10px;
+    }
+    .teacher-login{
+        background-size: 36px;
+        width: 124px;
+        height: 40px;
+    }
+    .teacher-login span {
+        margin-left: 41px;
+        font-size: 12px;
+    }
+    .info-login{
+        background-size: 36px;
+        height: 40px;
+    }
+    .info-login span {
+        margin-left: 41px;
+        font-size: 12px;
+    }
+    .userNameError, .userPwdError {
+        height: 30px;
+        line-height: 30px;
+    }
+    .login_info .iconfont{
+        font-size:18px;
+    }
+    .loginBox_right h2 {
+        font-size: 20px;
+        margin: 15px auto;
+    }
+    body{
+        background: url(imags/login/1366bg.png) no-repeat;
+    }
+
+    .loginBox{
+        margin-top:80px;
+    }
+    .loginLogo{
+        margin:0 auto;
+    }
+}
+
+
+
+
+
+
+
+
+

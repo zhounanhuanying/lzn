@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>系统配置页面</title>
+    <link rel="stylesheet" th:href="@{/Content/Css/bootstrap.min.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Fonts/Masterfont/css/font-awesome.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/master/shop.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/skin/dpsim/skin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/master/Sellerber.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/master/bkg_ui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/config.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/bootstrap.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery.nicescroll.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery.SuperSlide.2.1.1.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery.cookie.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layer/layer.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/laydate/laydate.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/systemConfiguration/systemConfiguration.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+</head>
+<style>
+    .loading{
+        display: none;
+        position: fixed;
+        z-index: 99;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+    }
+</style>
+<body style="background:#eee;">
+
+<div class="loading">
+    <div style="margin-top: 20%">
+        <img src="/Content/Images/logo/load.gif">
+        <p class="loading_context">配置重新加载中，请稍候。。。</p>
+
+    </div>
+</div>
+<form class="layui-form" id="configurationWizardForm">
+    <div class="layui-tab layui-tab-brief config_box" id="System_Setup" lay-filter="docDemoTabBrief">
+        <div class="config_left  hd">
+            <h2>系统配置</h2>
+            <ul class="layui-tab-title" id="ulli">
+                <li id="Sys_BasicConfig" class="layui-this">初始化配置</li>
+                <li id="Sys_FilePathConfig1">公众号配置</li>
+                <li id="Sys_FilePathConfig2">图片回显配置</li>
+                <li id="Sys_FilePathConfig3">订阅配置</li>
+                <li id="Sys_FilePathConfig4">excel导出条数配置</li>
+                <li id="Sys_FilePathConfig5">图片存储路径配置</li>
+            </ul>
+        </div>
+
+        <div class="layui-tab-content config_right">
+            <!--初始化配置-->
+            <div class="layui-tab-item layui-show">
+                <!--<div class="add_style">-->
+                <!--<div class="config_con">-->
+                <!--<div class="layui-collapse " lay-filter="test">-->
+                <!--<div class="layui-colla-item">-->
+                <!--<h2 class="layui-colla-title">-->
+                <!--<blockquote class="layui-elem-quote layui-text">-->
+                <!--数据库设置-->
+                <!--<a href="javascript:;" data-toggle="tooltip" data-placement="right"-->
+                <!--title="数据库设置">-->
+                <!--<span class="config-help"></span>-->
+                <!--</a>-->
+                <!--</blockquote>-->
+                <!--</h2>-->
+                <!--<div class="layui-colla-content layui-show">-->
+                <!--<div class="layui-form-item">-->
+                <!--<div class="layui-inline">-->
+                <!--<label class="layui-form-label">URL：</label>-->
+                <!--<div class="layui-input-inline">-->
+                <!--<input type="text" name="jdbcURL" id="jdbcURL" class="layui-input"/>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="layui-form-item">-->
+                <!--<div class="layui-inline">-->
+                <!--<label class="layui-form-label">用户名：</label>-->
+                <!--<div class="layui-input-inline">-->
+                <!--<input type="text" name="jdbcUsername" id="jdbcUsername"-->
+                <!--class="layui-input">-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="layui-form-item">-->
+                <!--<div class="layui-inline">-->
+                <!--<label class="layui-form-label">密码：</label>-->
+                <!--<div class="layui-input-inline">-->
+                <!--<input type="text" name="jdbcPassword" id="jdbcPassword"-->
+                <!--class="layui-input">-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <div class="layui-colla-item">
+                    <h2 class="layui-colla-title">
+                        <blockquote class="layui-elem-quote layui-text">
+                            人员信息配置
+                            <a href="javascript:;" data-toggle="tooltip" data-placement="right" title="人员信息配置">
+                                <span class="config-help"></span>
+                            </a>
+                        </blockquote>
+                    </h2>
+                    <div class="layui-form-item">
+                        <div class="layui-inline ">
+                            <label class="layui-form-label">H5采集保存配置：</label>
+                            <div class="layui-input-inline" id="isOpenCallTimeId">
+                                <input type="checkbox" name="isOpenCallTime" id="inputId" lay-skin="switch"
+                                       lay-filter="switchTest1" lay-text="开启|关闭" checked="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline ">
+                            <label class="layui-form-label">电话有效性验证：</label>
+                            <div class="layui-input-inline">
+                                <input type="checkbox" name="isOpenCallTime" lay-skin="switch"
+                                       lay-filter="switchTest1" lay-text="开启|关闭">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline ">
+                            <label class="layui-form-label">微信公众号授权txt文件</label>
+                            <div class="layui-input-inline">
+                                <a class="layui-btn" id="uploadTxt">上传</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="config_btn" id="ShowLabel">
+                    <button class="btn button_btn bg-deep-blue" id="saveConfigurationBtn" type="button">保存提交</button>
+                </div>
+            </div>
+            <!--公众号配置-->
+            <div class="layui-tab-item">
+                <div class="add_style">
+                    <div class="config_con">
+                        <div class="layui-collapse" lay-filter="test">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">
+                                    <blockquote class="layui-elem-quote layui-text">
+                                        公众号配置
+                                        <a href="javascript:;" data-toggle="tooltip" data-placement="right"
+                                           title="公众号配置">
+                                            <span class="config-help"></span>
+                                        </a>
+                                    </blockquote>
+                                </h2>
+                                <form class="layui-form search-form"  id="personManager" >
+                                    <div class="layui-card">
+                                        <div class="layui-card-body">
+                                            <div class="layui-row load-group">
+                                                <div class="layui-col-md2">
+                                                    <label class="layui-form-label">鼎立公众号二维码：</label>
+                                                    <div class="layui-input-block upload-imgbox">
+                                                        <div id="cardEditImage1" class="upLoadBox" style="margin-left: -5px">
+                                                            <button type="button" class="upload" id="time1"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-col-md2">
+                                                    <label class="layui-form-label">公众号--采集入口：</label>
+                                                    <div class="layui-input-block upload-imgbox">
+                                                        <div id="cardEditImage2" class="upLoadBox" style="margin-left: -5px">
+                                                            <button type="button" class="upload" id="time2"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-col-md2">
+                                                    <label class="layui-form-label">人脸采集页面：</label>
+                                                    <div class="layui-input-block upload-imgbox">
+                                                        <div id="cardEditImage3" class="upLoadBox" style="margin-left: -5px">
+                                                            <button type="button" class="upload" id="time3"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--图片回显配置-->
+            <div class="layui-tab-item">
+                <div class="add_style">
+                    <div class="config_con">
+                        <div class="layui-collapse" lay-filter="test">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">
+                                    <blockquote class="layui-elem-quote layui-text">
+                                        图片回显配置
+                                        <a href="javascript:;" data-toggle="tooltip" data-placement="right"
+                                           title="图片回显配置">
+                                            <span class="config-help"></span>
+                                        </a>
+                                    </blockquote>
+                                </h2>
+                                <div class="layui-card">
+                                    <div class="layui-card-body">
+                                        <div style="height: 20px"></div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline ">
+                                                <label class="layui-form-label">图片回显配置：</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="text" name="photoUrl" id="photoUrl" >
+                                                </div>
+                                            </div>
+                                            <div class="layui-inline " style="margin-left: -80px">
+                                                <button class="btn button_btn bg-deep-blue" id="photoUrlConfig" type="button">保存</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--订阅配置-->
+            <div class="layui-tab-item">
+                <div class="add_style">
+                    <div class="config_con">
+                        <div class="layui-collapse" lay-filter="test">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">
+                                    <blockquote class="layui-elem-quote layui-text">
+                                        订阅配置
+                                        <a href="javascript:;" data-toggle="tooltip" data-placement="right"
+                                           title="订阅配置">
+                                            <span class="config-help"></span>
+                                        </a>
+                                    </blockquote>
+                                </h2>
+                                <form class="layui-form search-form"  id="DingYueConfig" >
+                                    <div class="layui-card">
+                                        <div class="layui-card-body">
+                                            <div class="layui-form-item">
+                                                <div class="layui-inline ">
+                                                    <label style="display: inline">订阅时传入的ip地址：</label>
+                                                    <div style="display: inline">
+                                                        <input type="text" name="equipmentIp" id="equipmentIp" >
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <div class="layui-inline ">
+                                                    <label style="display: inline">订阅时传入的端口号：</label>
+                                                    <div style="display: inline">
+                                                        <input type="text" name="port" id="port" >
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div>
+                                    <button class="btn button_btn bg-deep-blue" style="margin-left: 120px" id="DYconfig" type="button">保存</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!--excel配置-->
+            <div class="layui-tab-item">
+                <div class="add_style">
+                    <div class="config_con">
+                        <div class="layui-collapse" lay-filter="test">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">
+                                    <blockquote class="layui-elem-quote layui-text">
+                                        excel导出条数配置
+                                        <a href="javascript:;" data-toggle="tooltip" data-placement="right"
+                                           title="excel导出条数配置">
+                                            <span class="config-help"></span>
+                                        </a>
+                                    </blockquote>
+                                </h2>
+                                <div class="layui-card">
+                                    <div class="layui-card-body">
+                                        <div style="height: 20px"></div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline ">
+                                                <label class="layui-form-label">excel导出条数：</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="text" name="excelNUmber" id="excelNUmber" >
+                                                </div>
+                                            </div>
+                                            <div class="layui-inline " style="margin-left: -80px">
+                                                <button class="btn button_btn bg-deep-blue" id="setExcelNUmber" type="button">保存</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--图片存储路径配置-->
+            <div class="layui-tab-item">
+                <div class="add_style">
+                    <div class="config_con">
+                        <div class="layui-collapse" lay-filter="test">
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">
+                                    <blockquote class="layui-elem-quote layui-text">
+                                        图片存储路径配置
+                                        <a href="javascript:;" data-toggle="tooltip" data-placement="right"
+                                           title="图片存储路径配置">
+                                            <span class="config-help"></span>
+                                        </a>
+                                    </blockquote>
+                                </h2>
+                                <div class="layui-card">
+                                    <div class="layui-card-body">
+                                        <div style="height: 20px"></div>
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline ">
+                                                <label class="layui-form-label">图片存储路径：</label>
+                                                <div class="layui-input-inline">
+                                                    <input style="width: 150px" type="text" name="filePath" id="filePath" >
+                                                </div>
+                                            </div>
+                                            <div class="layui-inline " style="margin-left: -80px">
+                                                <button class="btn button_btn bg-deep-blue" id="setImgUrl" type="button">保存</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="config_btn">
+            <button class="btn button_btn bg-deep-blue" id="SaveLessonCallConfig" type="button">保存提交
+            </button>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+</form>
+<script type="text/javascript" th:inline="javascript">
+    $(function () {
+        //屏幕的宽高
+        winHeight = $(window).height();
+        winWidth = $(window).width();
+
+        var config_lefth = (winHeight - 10);
+        var config_righth = (winHeight - 10);
+        $('.config_left').css({height: config_lefth})
+        $('.add_style').css({height: config_righth})
+        var config_conh = (config_righth - 70);
+        $('.config_con').css({height: config_conh})
+
+        /*******滚动条*******/
+        $(".config_con").niceScroll({
+            cursorcolor: "#888888",
+            cursoropacitymax: 1,
+            touchbehavior: false,
+            cursorwidth: "5px",
+            cursorborder: "0",
+            cursorborderradius: "5px"
+        });
+
+
+        $("[data-toggle='tooltip']").tooltip();
+    })
+    layui.use(['element', 'form'], function () {
+        var $ = layui.jquery
+            , element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+
+    });
+
+
+</script>
+<script>
+    jQuery(".config_box").slide({trigger: "click", easing: "easeOutElastic"});
+
+    /*****************/
+    function preview_img() {
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            area: '120px',
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: $('#Picture_Preview')
+        });
+    }
+
+</script>
+
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+
+
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    });
+
+    $(function () {
+        initConfigurationWhether();
+        initwechatPublic();
+    });
+
+    $("#Sys_BasicConfig").click(function () {
+        $("#SaveLessonCallConfig").show();
+    });
+    $("#Sys_FilePathConfig1").click(function () {
+        $("#SaveLessonCallConfig").show();
+    });
+    $("#Sys_FilePathConfig3").click(function () {
+        $("#SaveLessonCallConfig").hide();
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/selectDingYueConfig",
+            success:function (data) {
+                if(data.code==1){
+                    $("#equipmentIp").val(data.equipmentIp)
+                    $("#port").val(data.port)
+                }
+            }
+        })
+    });
+    $("#Sys_FilePathConfig4").click(function () {
+        $("#SaveLessonCallConfig").hide();
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/selectExcelNUmber",
+            success:function (data) {
+                if(data.code==1){
+                    $("#excelNUmber").val(data.excelNUmber)
+                }
+            }
+        })
+    });
+
+    $("#setExcelNUmber").click(function () {
+        var excelNUmber = $("#excelNUmber").val();
+        if (excelNUmber == null || "" == (excelNUmber)) {
+            layer.msg("条数不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/setExcelNUmber?excelNUmber="+excelNUmber,
+            success:function (data) {
+                if(data.code==1){
+                    layer.msg("配置成功！", {time: 1000, icon: 6}, function () {});
+                }
+            }
+        })
+    });
+
+
+    $("#Sys_FilePathConfig5").click(function () {
+        $("#SaveLessonCallConfig").hide();
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/selectImgUrl",
+            success:function (data) {
+                if(data.code==1){
+                    $("#filePath").val(data.filePath)
+                }
+            }
+        })
+    });
+
+    $("#setImgUrl").click(function () {
+        var filePath = $("#filePath").val();
+        if (filePath == null || "" == (filePath)) {
+            layer.msg("路径不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        layui.use(['table', 'layer', 'jquery'], function () {
+            var table = layui.table
+                , layer = layui.layer;
+            layer.confirm('确定修改图片存储路径吗?如若修改，系统会重新加载配置且需要等待1-2分钟！', {icon: 3, title: '提示'}, function (index) {
+                $.ajax({
+                    type: "get",
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    url: basePath + "/configuration/setImgUrl?filePath="+filePath,
+                    success:function (data) {
+                        // if(data.code==1){
+                        //     layer.msg("配置成功！", {time: 1000, icon: 6}, function () {});
+                        // }
+                    },
+                    error:function () {
+                        layer.close(index);
+                        $(".loading").css("display","block");
+                        $("#configurationWizardForm").css('filter', 'blur(10px)');
+                        setInterval(function () {
+                            layer.msg("配置成功！请重新登录", {time: 2000, icon: 6}, function () {});
+                            window.parent.location.reload();
+                            return;
+                        },90000)
+                    }
+                })
+            })
+        })
+
+    });
+
+    $("#photoUrlConfig").click(function () {
+        var photoUrl = $("#photoUrl").val();
+        if (photoUrl == null || "" == (photoUrl)) {
+            layer.msg("IP不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/setPhotoUrlIp?ip="+photoUrl,
+            success:function (data) {
+                if(data.code==1){
+                    layer.msg("配置成功！", {time: 1000, icon: 6}, function () {});
+                }else {
+                    layer.msg("请检查IP地址是否正确！", {time: 1000, icon: 5}, function () {});
+                }
+            }
+        })
+    });
+
+    $("#DYconfig").click(function () {
+        var equipmentIp = $("#equipmentIp").val();
+        if (equipmentIp == null || "" == (equipmentIp)) {
+            layer.msg("IP不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var port = $("#port").val();
+        if (port == null || "" == (port)) {
+            layer.msg("端口号不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        // TODO   添加系统重启
+        $.ajax({
+            type: "put",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/setDYconfig",
+            data: $("#DingYueConfig").serialize(),
+            success:function (data) {
+                if(data.code==1){
+                    layer.msg("配置成功！", {time: 1000, icon: 6}, function () {});
+                }else {
+                    layer.msg("请检查IP地址是否正确！", {time: 1000, icon: 5}, function () {});
+                }
+            },
+            error:function () {
+                layer.close(index);
+                $(".loading").css("display","block");
+                $("#configurationWizardForm").css('filter', 'blur(10px)');
+                setInterval(function () {
+                    layer.msg("配置成功！请重新登录", {time: 2000, icon: 6}, function () {});
+                    window.parent.location.reload();
+                    return;
+                },90000)
+            }
+        })
+    });
+
+    $("#Sys_FilePathConfig2").click(function () {
+        $("#SaveLessonCallConfig").hide();
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/selectPhotoUrlConfig",
+            success:function (data) {
+                if(data.code==1){
+                    $("#photoUrl").val(data.ip)
+                }
+            }
+        })
+    });
+    var initwechatPublic = function () {
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/wechatPublic/selectwechatPublic",
+            success: function (data) {
+                if (data!=null &&  data!=""){
+                    $('#time1').hide();
+                    $('#cardEditImage1').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%;height: 100%" src="/imageEcho/' + data.qrCodePath + '"class="layui-upload-img">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#cardEditImage1").append('<input type="hidden"  name="qrCodePath" value="' + data.qrCodePath + '"/><input type="hidden"  name="biaoshi"/>');
+
+                    $('#time2').hide();
+                    $('#cardEditImage2').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%;height: 100%" src="/imageEcho/' + data.collectionEntryPath + '"class="layui-upload-img">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#cardEditImage2").append('<input type="hidden"  name="collectionEntryPath" value="' + data.collectionEntryPath + '"/><input type="hidden"  name="biaoshi"/>');
+
+                    $('#time3').hide();
+                    $('#cardEditImage3').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%;height: 100%" src="/imageEcho/' + data.faceCollectionPagePath + '"class="layui-upload-img">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#cardEditImage3").append('<input type="hidden"  name="faceCollectionPagePath" value="' + data.faceCollectionPagePath + '"/><input type="hidden"  name="biaoshi"/>');
+                }
+
+            }
+        })
+    }
+    var initConfigurationWhether = function () {
+        $.ajax({
+            type: "get",
+            async: false,
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/configuration/initConfigurationBtn",
+            success: function (result) {
+                var data2 = result.data;
+                if ("" != data2 && null != data2) {
+                    var jdbcURL = data2.jdbcURL;
+                    var jdbcUsername = data2.jdbcUsername;
+                    var jdbcPassword = data2.jdbcPassword;
+//                    var saveImage = data2.saveImage;
+//                    var alarmEquipmentIP = data2.alarmEquipmentIP;
+                    $("#jdbcURL").attr("value", jdbcURL);
+                    $("#jdbcUsername").attr("value", jdbcUsername);
+                    $("#jdbcPassword").attr("value", jdbcPassword);
+//                    $("#alarmEquipmentIP").attr("value", alarmEquipmentIP);
+//                    if ("false" == saveImage) {
+//                        $("#saveImageFalse").attr("checked", "");
+//                    } else if ("true" == saveImage) {
+//                        $("#saveImageTrue").attr("checked", "");
+//                    }
+                }
+            }
+        });
+    }
+
+    //设置默认选中
+    function simpleCheck(time) {
+        if (time == 1) {
+            $(".everyCallTime[value='1']").prop("checked", true)
+        }
+        if (time == 2) {
+            $(".everyCallTime[value='2']").prop("checked", true)
+        }
+        if (time == 3) {
+            $(".everyCallTime[value='3']").prop("checked", true)
+        }
+        if (time == 4) {
+            $(".everyCallTime[value='4']").prop("checked", true)
+        }
+        if (time == 5) {
+            $(".everyCallTime[value='5']").prop("checked", true)
+        }
+    }
+
+    //     $("#saveConfigurationBtn").click(function () {
+    //         var emptyValidationResult = emptyValidationConfiguration();
+    //         if (!emptyValidationResult) {
+    //             return false;
+    //         }
+    //         $.ajax({
+    //             type: "POST",
+    //             headers: {
+    //                 "access_token": access_token//此处放置请求到的用户token
+    //             },
+    //             url: basePath + "/configuration/initConfiguration",
+    //             data: $("#configurationWizardForm").serialize(),
+    //            success: function (result) {
+    //                 if (result.code == 0) {
+    // //                                layer.msg("配置成功，服务器重启，请刷新页面......"+"</br>"+
+    // //                                    '<span style="color:red">注：如不是root用户，请执行restart方法手动重启服务器</span>', {time:-1,icon:6}, function(){
+    // //                                })
+    //                     layer.msg("配置成功，服务器重启，请刷新页面......", {time: -1, icon: 6}, function () {
+    //                     })
+    //                 } else if (result.code == -2) {
+    //                     layer.msg("请选择是否保存图片！", {time: 2000, icon: 5, shift: 6}, function () {
+    //                     })
+    //                 } else {
+    //                     layer.msg("配置失败！", {time: 2000, icon: 5, shift: 6}, function () {
+    //                     })
+    //                 }
+    //             }
+    //         });
+    //     })
+
+    function emptyValidationConfiguration() {
+        var jdbcURL = $("#jdbcURL").val();
+        if (jdbcURL == null || "" == (jdbcURL)) {
+            layer.msg("URL不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var jdbcUsername = $("#jdbcUsername").val();
+        if (jdbcUsername == null || "" == (jdbcUsername)) {
+            layer.msg("用户名不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var jdbcPassword = $("#jdbcPassword").val();
+        if (jdbcPassword == null || "" == (jdbcPassword)) {
+            layer.msg("密码为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+//        var alarmEquipmentIP = $("#alarmEquipmentIP").val();
+//        if (alarmEquipmentIP == null || "" == (alarmEquipmentIP)) {
+//            layer.msg("数据接收IP为空！", {time: 1000, icon: 2, shift: 6}, function () {
+//            });
+//            return false;
+//        }
+        return true;
+    }
+    //点击叉号删除图片
+    var deleteImg = new Array();
+
+    function deleteImg3(obj){
+        var imgurl = $(obj).parent("div").next().val();
+        deleteImg.push(imgurl)
+        $(obj).parent("div").parent("div").find('button').show();
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").remove();
+    }
+    /*    /!**
+         * 读取文件
+         * @param {file or Blob} file 上传文件
+         * @param {object} config 压缩配置 可配置压缩长宽、质量等
+         * @param {function} callback
+         *!/*/
+    function canvasDataURL(path, config, callback) {
+        var img = new Image();
+        img.src = path;
+
+        img.onload = function () {
+            var that = this, quality = 0.7;
+            var w = that.width, h = that.height, scale = w / h;
+            w = config.width || w;
+            h = config.height || (w / scale);
+
+            //生成canvas
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var anw = document.createAttribute("width");
+            anw.nodeValue = w;
+            var anh = document.createAttribute("height");
+            anh.nodeValue = h;
+            canvas.setAttributeNode(anw);
+            canvas.setAttributeNode(anh);
+            ctx.drawImage(that, 0, 0, w, h);
+
+            if (config.quality && config.quality <= 1 && config.quality > 0) {
+                quality = config.quality;
+            }
+            callback(canvas.toDataURL('image/jpeg', quality));
+        }
+    }
+    /**
+     * 将图片 base64 转为 File 对象或者 Blob
+     * @param {*} urlData 图片 base64
+     * @param {*} filename 图片名 没有图片名将转为 Blob
+     */
+    function convertBase64UrlTo(urlData, filename) {
+        var base64Arr = urlData.split(','), mime = base64Arr[0].match(/:(.*?);/)[1],
+            bstr = atob(base64Arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+
+        return filename ? new File([u8arr], filename, {type: mime}) : new Blob([u8arr], {type: mime});
+    }
+    // 微信公众号配置提交
+
+    $("#SaveLessonCallConfig").click(function () {
+        let datas = {}
+        let wechatPublic ={};
+        wechatPublic.qrCodePath=$('input[name="qrCodePath"]').val();
+        wechatPublic.collectionEntryPath=$('input[name="collectionEntryPath"]').val();
+        wechatPublic.faceCollectionPagePath=$('input[name="faceCollectionPagePath"]').val();
+        if (wechatPublic.qrCodePath == null || wechatPublic.qrCodePath == ''){
+            layer.msg('请上传鼎立公众号二维码！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        if (wechatPublic.collectionEntryPath == null || wechatPublic.collectionEntryPath == ''){
+            layer.msg('请上传公众号采集页面入口！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        if (wechatPublic.faceCollectionPagePath == null || wechatPublic.faceCollectionPagePath == ''){
+            layer.msg('请上传人脸采集页面！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        datas = {
+            wechatPublic: wechatPublic,
+            imgs: deleteImg
+        }
+        // var formData = new FormData();
+        // formData.append("datas", JSON.stringify(wechatPublic));
+        $.ajax({
+            type: 'POST',
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath+"/wechatPublic/insertwechatPublic",
+            data: JSON.stringify(datas),
+            contentType: "application/json;charset=UTF-8",
+            success: function (data) {
+                // alert(data);
+                if (data.code == 1){
+                    layer.msg('保存成功！！', {time: 3000, icon: 6, offset: '250px'},function () {
+                        location.reload();
+                    });//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                }else {
+                    layer.msg('保存失败！！', {time: 3000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                }
+                console.log(data.code)
+                deleteImg = []
+
+            },
+            error: function (returndata) {
+                alert("error" + returndata);
+            }
+        })
+        console.log($("#personManager").serialize())
+
+
+    })
+    layui.use(['upload', 'element'], function () {
+        var upload = layui.upload
+            , element = layui.element;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#uploadTxt' //绑定元素
+            , url: basePath + '/poi/uploadTxt' //上传接口
+            , multiple: true
+            , async: true
+            , auto: true
+            , accept: 'file'
+            , done: function (res) {
+                if (res.code == 0) {
+                    layer.msg("上传成功！", {time: 3000, icon: 6,}, function () {
+                    })
+                } else {
+                    layer.msg("上传失败！", {time: 3000, icon: 5,}, function () {
+                    })
+                }
+            }
+            , error: function () {
+                //请求异常回调
+            }
+        });
+
+    });
+
+
+    layui.use(['form', 'upload', 'element', 'layer'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        upload.render({
+            elem: '#time1'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    //预读本地文件示例，不支持ie8
+                    $('#time1').hide();
+                    $('#cardEditImage1').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%;height: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#cardEditImage1").append('<input type="hidden"  name="qrCodePath" value="' + result + '"/><input type="hidden"  name="biaoshi"/>');
+
+                });
+
+            }
+            // , done: function (res) {
+            // if (res.code == 0) {
+            //     /*photo.push(res.msg);*/
+            //     layer.msg('鼎立公众号二维码提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            // } else {
+            //     layer.msg('鼎立公众号二维码提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            //
+            // }
+            // }
+        });
+
+        var $ = layui.jquery;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        upload.render({
+            elem: '#time2'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    //预读本地文件示例，不支持ie8
+                    $('#time2').hide();
+                    $('#cardEditImage2').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%;height: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#cardEditImage2").append('<input type="hidden"  name="collectionEntryPath" value="' + result + '"/><input type="hidden"  name="biaoshi"/>');
+
+                });
+
+            }
+            // , done: function (res) {
+            // if (res.code == 0) {
+            //     /*photo.push(res.msg);*/
+            //     layer.msg('公众号--采集入口提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            // } else {
+            //     layer.msg('公众号--采集入口提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            //
+            // }
+            // }
+        });
+
+        var $ = layui.jquery;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        upload.render({
+            elem: '#time3'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    //预读本地文件示例，不支持ie8
+                    $('#time3').hide();
+                    $('#cardEditImage3').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%;height: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#cardEditImage3").append('<input type="hidden"  name="faceCollectionPagePath" value="' + result + '"/><input type="hidden"  name="biaoshi"/>');
+
+                });
+
+            }
+            // , done: function (res) {
+            // if (res.code == 0) {
+            //     /*photo.push(res.msg);*/
+            //     layer.msg('人脸采集界面提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            // } else {
+            //     layer.msg('人脸采集界面提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            //
+            // }
+            // }
+        });
+
+        //点击select进行切换隐藏学历
+        form.on('select(projectfilter)', function (data) {
+            var show = data.value;
+            switch (show) {
+                case '0':
+                    $(".others").hide();
+                    break;
+                case '1':
+                    $(".others").hide();
+                    break;
+                case '2':
+                    $(".others").show();
+                    break;
+                case '3':
+                    $(".others").show();
+                    break;
+                case '4':
+                    $(".others").hide();
+                    break;
+                case '5':
+                    $(".others").hide();
+                    break;
+                case '6':
+                    $(".others").hide();
+                    break;
+                default:
+                    $(".others").hide();
+                    break;
+            }
+        });
+        //重新加载
+        layui.form.render("select");
+
+    });
+</script>
+</body>
+</html>

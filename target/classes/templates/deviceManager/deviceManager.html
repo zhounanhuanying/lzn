@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>设备管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script  th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <style>
+        /*修正复选框位置*/
+        .layui-table-cell .layui-form-checkbox[lay-skin=primary] {
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="serverManager" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline">
+            <label class="layui-form-label">选择服务器：</label>
+            <div class="layui-input-inline">
+                <select name="dicType" id="dicTypeSerach" lay-verify="required" lay-search=""
+                        class="border-style layui-input">
+                    <option value="">请选择服务器名</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="searchById()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary" onclick="chongzhi()">重置</button>
+    </div>
+</form>
+<div class="layui-fluid list-box">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <script type="text/html" id="barGreenAndRed">
+                        {{#  if(d.roomCode != null){ }}
+                        <div><img src="../../Content/style/images/greep.png">
+                        </div>
+                        {{#  } else{ }}
+                        <div><img src="../../Content/style/images/red.png">
+                        </div>
+                        {{# } }}
+                    </script>
+                    <table id="grid" lay-filter="grid" class="layui-hide "></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var serverId = "";
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    });
+    $(function () {
+        data();
+    });
+
+    function data() {
+        layui.use(['table', 'layer', 'element', 'jquery', 'form'], function () {
+            var table = layui.table,
+                layer = layui.layer,
+                element = layui.element,
+                jquery = layui.jquery,
+                form = layui.form,
+                $ = layui.$;
+            // 监听修改update到表格中
+            form.on('select(testSelect)', function (data) {
+                var elem = $(data.elem);
+                var trElem = elem.parents('tr');
+                var tableData = table.cache['grid'];
+                // 更新到表格的缓存数据中，才能在获得选中行等等其他的方法中得到更新之后的值
+                tableData[trElem.data('index')][elem.attr('name')] = data.value;
+                // 其他的操作看需求 TODO
+            });
+            //拼接option
+            //var dictNameOptions = "<option value=''>请选择</option>\n";
+            var dictNameOptions
+            var selectedroom;
+            var selectedroom2;
+            $.ajax({
+                async: false,
+                url: basePath + '$/sysDevice/getClassRoomCodeBinded',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                type: 'post',
+               success: function (sel) {
+                    selectedroom = sel.roomcode;
+                    selectedroom2 = sel.roomcode;
+                }
+            });
+            //一个房间绑定多台设备
+            $.ajax({
+                async: false,
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url: basePath + '$/sysDevice/getClassRoom',
+                type: 'get',
+               success: function (result) {
+                    //所有房间号
+                    for (var x in result) {
+                        dictNameOptions += '<option value = "' + x + '">' + x + '</option>\n';
+                    }
+                    ;
+                }
+            });
+            table.render({
+                elem: '#grid',
+                height: 'full-83',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                }
+                , url:
+                basePath + '/sysDevice/getSysDeviceList?&&ieRandom=' + new Date().getTime(),
+                page: true,
+                limits: [15, 30],
+                limit: 15,
+                done:
+                    function (res, curr, count) {
+                        count || this.elem.next('.layui-table-view').find('.layui-table-header').css('overflow', 'auto');
+                        layui.each($('select[name="city"]'), function (index, item) {
+                            var elem = $(item);
+                            elem.val(elem.data('value')).parents('div.layui-table-cell').css('overflow', 'visible');
+                        });
+                        form.render();
+                    } ,
+                cols: [[ //表头
+//                {type: 'checkbox', fixed: true}
+                    {field: 'deviceId', title: '设备id', minwidth: 40}
+                    , {field: 'deviceName', title: '设备名', minwidth: 40}
+                    , {field: 'deviceCode', title: '设备码', minWidth: 40}
+                    , {field: 'deviceIP', title: '设备IP', minWidth: 40}
+                    , {field: 'deviceUsername', title: '设备账号', minwidth: 40}
+                    , {field: 'devicePwd', title: '设备密码', minwidth: 40, hide: true}
+                    , {field: 'serverId', title: '服务器id', minwidth: 40, hide: true}
+                    , {field: 'serverName', title: '服务器名字', minwidth: 40}
+                    , {
+                        field: 'barGreenAndRed',
+                        minWidth: 100,
+                        title: '绑定状态',
+                        align: 'center',
+                        toolbar: '#barGreenAndRed'
+                    }
+                    , {
+                        field: 'roomCode',
+                        title: '绑定房间',
+                        align: 'center',
+                        width: 250,
+                        templet: function (d) {
+                            // 模板的实现方式也是多种多样，这里简单返回固定的
+                            var select;
+                            var bind;
+                            var cancelbind
+                            var room;
+                            var cancelselect;
+                            select = '<div class="layui-inline inline-margin-right list-select" style="margin-top:-1px;width: 120px">' +
+                                '<select name="city" lay-filter="testSelect" lay-verify="required" data-value="' + d.roomCode + '" >\n' +
+                                dictNameOptions +
+                                '</select>' +
+                                '</div>';
+                            cancelselect = '<div class="layui-inline inline-margin-right list-select" style="margin-top:-1px;width: 120px">' +
+                                '<select name="city" disabled="disabled" lay-filter="testSelect" lay-verify="required" data-value="' + d.roomCode + '" >\n' +
+                                dictNameOptions +
+                                '</select>' +
+                                '</div>';
+
+                            bind = '<div class="layui-inline" style="margin-left: 30px;margin-right: 26px">' +
+                                '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="bind" style="margin-top:-3px">绑定</a>' +
+                                '</div>';
+
+                            cancelbind = '<div class="layui-inline" style="margin-left: 30px">' +
+                                '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="cancelBind" style="margin-top:-3px">取消绑定</a>' +
+                                '</div>';
+                            if (d.roomCode == null) {
+                                //alert("绑定")
+                                room = select + bind;
+                            } else {
+                                //alert("取消绑定")
+                                room = cancelselect + cancelbind;
+                            }
+                            ;
+                            return room;
+                        }
+                    },
+                ]],
+                where:
+                    {
+                        serverId: serverId
+                    }
+            })
+            ;
+
+
+        });
+    }
+
+    function searchById() {
+        serverId = $("#dicTypeSerach").val();
+        data();
+    }
+
+    function chongzhi() {
+        data();
+    }
+
+</script>
+<script>
+    // 实例化表单,让表单上面的数据显示
+    layui.use(['table', 'element', 'layer'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer        //弹层
+            , table = layui.table      //表格
+        table.render();
+        //监听工具条
+        table.on('tool(grid)', function (obj) {
+            //注：tool是工具条事件名，test-table-operate是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'bind') {
+                //alert(data.city)
+                if (data.city == undefined || data.city == "") {
+                    layer.msg("请选择绑定的房间", {time: 1000, icon: 2, shift: 6}, function () {
+                    });
+                } else {
+                    $.ajax({
+                        type: 'POST',
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        url:basePath + '/sysDevice/bindDeviceAndClassRoom',
+                        data: {
+//                            "deviceRoomId":data.deviceId,
+                            "roomCode": data.city,
+                            "deviceId": data.deviceId
+                        },
+                       success: function (result) {
+                            layer.msg("绑定成功", {time: 800, icon: 6}, function () {
+                                location.reload(true);
+                            })
+                        }
+                        , error: function (msg) {
+                            layer.msg("绑定失败", {time: 1000, icon: 5, shift: 6}, function () {
+                            });
+                        }
+                    });
+                }
+            } else if (layEvent === 'cancelBind') {
+                $.ajax({
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    type: 'POST',
+                    url:basePath+ '/sysDevice/deleteBindDeviceAndClassRoom',
+                    data: {
+                        "roomCode": data.roomCode,
+                        "deviceId": data.deviceId
+                    },
+                   success: function (result) {
+                        layer.msg("取消成功", {time: 800, icon: 6}, function () {
+                            location.reload(true);
+                        })
+                    }
+                    , error: function (msg) {
+                        layer.msg("取消失败", {time: 1000, icon: 5, shift: 6}, function () {
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

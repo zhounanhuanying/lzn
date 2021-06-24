@@ -1,0 +1,300 @@
+body {
+    font-family: "微软雅黑" !important;
+}
+
+pre {
+    font-family: "微软雅黑" !important;
+}
+
+.layui-text,.layui-colla-title {
+    font-size: 16px !important;
+}
+
+.layui-elem-field legend {
+    margin-left: 20px;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.layui-slider-bar {
+    background: #11abee !important;
+}
+
+.layui-form-label {
+    width: 160px !important;
+    font-size: 14px;
+}
+
+.configurat_title {
+    font-size: 18px;
+    color: #438EB9;
+}
+
+.configurat_title span {
+    vertical-align: top;
+    width: 20px;
+}
+
+.layui_add {
+    color: green;
+    font-size: 20px;
+    cursor: pointer;
+    width: 50px !important;
+    text-align: center;
+}
+
+.layui_close {
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+    width: 50px !important;
+    text-align: center;
+}
+
+.demo-slider {
+    margin: 25px 30px;
+    width: 40%;
+}
+
+.layui-form-item .layui-input-inline, .layui-input, .layui-textarea {
+    width: 310px !important;
+}
+
+.layui-form-onswitch {
+    border-color: #1E9FFF !important;
+    background-color: #1E9FFF !important;
+}
+
+.layui-slider-wrap-btn {
+    border: 2px solid #18a0c5 !important;
+}
+
+.button_btn {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 20px !important;
+}
+
+.layui-elem-quote {
+    border: 0 !important;
+}
+
+.slide-label {
+    float: left;
+    display: inline-block;
+    margin-left: 45%;
+    margin-top: -40px;
+    font-size: 16px;
+    color: #11abee !important;
+}
+
+
+
+/*基础配置*/
+.config_box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    margin: 0;
+}
+
+.config_left {
+    width: 150px;
+    background: #fff;
+    margin: 10px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+}
+
+.config_right {
+    flex: 1 1 auto;
+    width: 85%;
+    height: 100%;
+    background: #fff;
+    margin: 10px 10px 10px 0;
+}
+
+.config_left h2 {
+    font-size: 16px;
+    padding: 0 10px;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.config_menu p {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 20px;
+    cursor: pointer;
+}
+
+
+.config_right .config_title {
+    height: 42px;
+    line-height: 42px;
+    padding: 0 15px 0 10px;
+    color: #666;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    font-size: 16px!important;
+    overflow: hidden;
+}
+
+.config_content {
+    padding: 0 10px;
+}
+
+.add_style .label_name {
+    text-align: left;
+    width: 110px;
+}
+
+
+.config-help {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    position: relative;
+    top: 6px;
+    background-size: 100%;
+}
+
+.Add_content {
+    width: 90%;
+}
+
+.config_content .form-control {
+    min-width: 300px;
+}
+
+.add_style .label_name {
+    font-weight: normal;
+}
+
+.add_style {
+    position: relative;
+}
+
+.config_btn {
+    /* margin: 10px; */
+    position: absolute;
+    bottom: 20px;
+    /*left: 30px;*/
+    left: 45%;
+}
+
+
+
+.layui-tab-title li {
+    float: left;
+    width: 100%;
+}
+
+.layui-tab-title {
+    border: 0 !important;
+}
+
+.layui-tab-title .layui-this:after {
+    border: 0 !important;
+}
+
+.layui-tab-content {
+    padding: 0;
+}
+
+.layui-text {
+    padding: 3px;
+}
+
+.layui-colla-content {
+    padding: 0;
+}
+
+.layui-field-title {
+    margin: 20px;
+}
+
+/*.layui-form-item {*/
+/*margin-top: 20px;*/
+/*}*/
+.calculation_box_h2{
+    text-align:center;
+    margin: 20px auto;
+}
+.calculation_content{
+    width:98%;
+    margin:0 auto;
+    border-top:1px solid #ddd;
+}
+.calculation_content .layui-elem-quote{
+    padding:0;
+    height:40px;
+    line-height:40px;
+}
+.calculation_content p{
+    padding:0 20px;
+    font-size:16px;
+    height: 30px;
+    line-height:30px;
+}
+
+/*.layui-elem-field legend{
+    border-top:1px solid #ddd;
+    line-height:0;
+}*/
+.layui-colla-title pre{
+    font-size:16px;
+    height: 42px;
+    line-height:42px;
+    padding:0!important
+}
+.layui-colla-content pre{
+    padding:0 20px;
+    font-size:16px;
+    height: auto;
+    color:#666;
+}
+legend{
+    width:auto!important
+}
+
+@media screen and (max-width:1480px){
+    .layui-form-item .layui-input-inline, .layui-input, .layui-textarea {
+        width: 250px !important;
+    }
+}
+
+
+.split_screen{
+    display:flex;
+}
+.split_screen_box{
+    margin-right:10px;
+    cursor:pointer
+}
+.split_screen_img{
+    background:#eee;
+    width:160px;
+    height:90px;
+    display:inline-block
+}
+
+.split_screen button{
+    width:160px;
+    border:0!important
+}
+.layui-form-checkbox i{
+    height:30px!important
+}
+.layui-form-checkbox{
+    width:160px;
+}
+.layui-form-checkbox span{
+    width:100%;
+    text-align:center
+}
+.layui-form-item .layui-form-checkbox {
+    margin-top: 0;
+}

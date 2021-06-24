@@ -1,0 +1,16 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "3922107",
+      "name": "意向楼宇",
+      "font_class": "yidongduanicon-",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    }
+  ]
+}

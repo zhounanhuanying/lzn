@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.LogBookMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.LogBook">
+        <id column="log_num" jdbcType="INTEGER" property="logNum"/>
+        <result column="log_content" jdbcType="VARCHAR" property="logContent"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="user_operation" jdbcType="VARCHAR" property="userOperation"/>
+        <result column="log_type" jdbcType="VARCHAR" property="logType"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        log_num, log_content, create_time, user_operation, log_type
+    </sql>
+    <!--根据级别查询日志信息-->
+    <select id="logSearch" resultType="com.bfdb.entity.LogBook">
+        SELECT * FROM log_book
+        <where>
+            <if test="_parameter != null">
+                <if test="createTime != null">
+                    create_time LIKE CONCAT('%',#{createTime,jdbcType=TIMESTAMP},'%')
+                </if>
+                <if test="logType != null">
+                    AND log_type like CONCAT('%',#{logType,jdbcType=VARCHAR},'%')
+
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time DESC limit #{page},#{limit};
+    </select>
+    <!--根据时间查询日志信息-->
+    <select id="logSearchByCreatTime" resultType="com.bfdb.entity.LogBook">
+        SELECT * FROM log_book WHERE create_time LIKE CONCAT('%',#{createTime},'%')  ORDER BY  create_time DESC limit #{page},#{limit};
+    </select>
+
+    <!--查询全部日志信息-->
+    <select id="dataAll" resultType="com.bfdb.entity.LogBook">
+        SELECT * FROM log_book ORDER BY  create_time DESC   limit #{page},#{limit};
+    </select>
+    <!--根据级别查询日志条数-->
+    <select id="dataCount" resultType="int">
+        SELECT COUNT(*)FROM log_book
+        <where>
+            <if test="_parameter != null">
+                <if test="createTime != null">
+                    create_time LIKE CONCAT('%',#{createTime,jdbcType=TIMESTAMP},'%')
+                </if>
+                <if test="logType != null">
+                    AND log_type like CONCAT('%',#{logType,jdbcType=VARCHAR},'%')
+
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--根据时间查询日志条数-->
+    <select id="dataCountByCreatTime" resultType="int">
+        SELECT COUNT(*)FROM log_book  WHERE create_time LIKE CONCAT('%',#{createTime},'%')
+    </select>
+
+    <!--查询全部日志条数-->
+    <select id="dataCount2" resultType="int">
+        SELECT COUNT(*)FROM log_book
+    </select>
+
+
+    <insert id="insertLogBook" parameterType="com.bfdb.entity.LogBook">
+        INSERT INTO log_book (log_content,log_type,create_time,user_operation)
+        VALUES (#{logContent},#{logType},#{createTime},#{userOperation})
+    </insert>
+
+</mapper>

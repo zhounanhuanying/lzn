@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    window.open("/dataKanban","_blank");
+    perHref=window.parent.$("#min_title_list .active").children("span").attr("data-href")
+    if(perHref){
+        window.location.href = perHref;
+    }else{
+        window.location.href = "/welcomePage";
+    }
+</script>
+</body>
+</html>

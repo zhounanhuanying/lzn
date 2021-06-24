@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户管理</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <!--解决数据表格复选框位置不对-->
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            top: 35%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid list-box no-screen">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <!--顶部工具条添加用户按钮-->
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container list-btn-group">
+                            <button class="layui-btn icon-add" lay-event="getCheckData" onclick="addUser()">添加用户
+                            </button>
+                            <button class="layui-btn test icon-revise" lay-event="getCheckData" onclick="editService()">
+                                编辑
+                            </button>
+                            <button class="layui-btn test icon-delete" lay-event="getCheckData"
+                                    onclick="deleteService()">删除
+                            </button>
+                        </div>
+                    </script>
+                    <!--右侧工具条上的查看，编辑和删除-->
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                        &nbsp;
+                        <!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+                        <!--&nbsp;-->
+                        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+                    </script>
+                    <!--表格位置-->
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--添加用户弹窗-->
+<div class="layui-row layui-popup" id="tab-list" style="display: none;">
+    <form class="" lay-filter="formTestFilter" id="add" style="padding:10px;">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <span class="asterisk">*</span>
+                <label class="layui-form-label">用户名:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="userName" class="layui-input" style="display: none;">
+                    <input type="text" name="userName" id="nameId" class="layui-input" placeholder="用户名为必填项">
+                </div>
+            </div>
+            <!--角色roleid-->
+            <div class="layui-input-inline">
+                <input type="hidden" id="roleId" name="ids" class="layui-input">
+            </div>
+
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline inline-margin-right">
+                <span class="asterisk">*</span>
+                <label class="layui-form-label">密码:</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" class="layui-input" style="display: none;">
+                    <input type="password" name="password" maxlength="31" id="add-password" class="layui-input"
+                           placeholder="密码为必填项">
+                </div>
+            </div>
+        </div>
+    </form>
+    <div style="background:#e6e6e6;padding:10px">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                分配角色
+            </div>
+            <div class="layui-card-body" style="margin-top: 10px;height: 310px">
+                <ul id="planTree" class="ztree"></ul>
+            </div>
+        </div>
+    </div>
+    <!--<div>-->
+    <!--<div class="layui-inline" style="margin-top: 15px">-->
+    <!--<label style="margin-left: 49px">分配角色</label>-->
+    <!--</div>-->
+    <!--<div class="ztree-box" style="margin-top: 11px;height: 246px">-->
+    <!--<ul id="planTree" class="ztree"></ul>-->
+    <!--</div>-->
+    <!--</div>-->
+</div>
+
+<!--查看用户弹窗-->
+<div class="layui-row layui-popup" id="tab-chakan" style="display: none;">
+    <form class="" lay-filter="formTestFilter" id="chakan" style="padding:10px;">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <span class="asterisk">*</span>
+                <label class="layui-form-label">用户名:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="userName" id="chakan-nameId" readonly="true" class="layui-input">
+                </div>
+            </div>
+            <!--角色roleid-->
+            <div class="layui-input-inline">
+                <input type="hidden" id="chakan-roleId" name="ids" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <span class="asterisk">*</span>
+                <label class="layui-form-label">密码:</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" maxlength="31" id="chakan-passwordId"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+    </form>
+    <div style="background:#e6e6e6;padding:10px">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                分配角色
+            </div>
+            <div class="layui-card-body" style="margin-top: 10px;height: 310px">
+                <ul id="chakanTree" class="ztree"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--编辑用户弹窗-->
+<div class="layui-row layui-popup" id="tab-edit" style="display: none;">
+    <form class="" lay-filter="formTestFilter" id="editUser" style="padding:10px;">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="hidden" id="edit-userId" name="userId" class="layui-input">
+            </div>
+
+            <div class="layui-inline inline-margin-right">
+                <span class="asterisk">*</span>
+                <label class="layui-form-label">用户名:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="userName" id="edit-nameId" class="layui-input">
+                </div>
+            </div>
+            <!--角色roleid-->
+            <div class="layui-input-inline">
+                <input type="hidden" id="edit-roleId" name="ids" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline inline-margin-right">
+                <span class="asterisk">*</span>
+                <label class="layui-form-label">密码:</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" maxlength="31" id="edit-passwordId" class="layui-input">
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--<div>-->
+        <!--<div class="layui-inline" style="margin-top: 15px">-->
+            <!--<label style="margin-left: 49px">分配角色</label>-->
+        <!--</div>-->
+        <!--<div class="ztree-box" style="margin-top: 11px;height: 246px">-->
+            <!--<ul id="editTree" class="ztree"></ul>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div style="background:#e6e6e6;padding:10px">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                分配角色
+            </div>
+            <div class="layui-card-body" style="margin-top: 10px;height: 310px">
+                <ul id="editTree" class="ztree"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--表格数据的初始化和添加用户js-->
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'form', 'laydate', 'table', 'layer', 'jquery'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , element = layui.element
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form
+            , table = layui.table;
+
+        form.render(null, 'component-form-group');
+
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+        });
+        table.render({
+            elem: '#test-table-operate',
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + '/user/selectAllUser?&&ieRandom=' + new Date().getTime()
+            , id: 'tableId'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , height: 'full-15'
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'userId', title: '用户id', minwidth: 100, hide: true}
+                    , {field: 'userName', title: '用户名', minwidth: 100}
+                    , {field: 'password', title: '密码', minWidth: 100, hide: true}
+//                    , {field: 'mobilephone', title: '手机号', minWidth: 100}
+//                    , {field: 'userAccount', title: '账号', minwidth: 100}
+//                    , {field: 'sex', title: '性别', minwidth: 100}
+//                    , {field: 'date', title: '生日', minwidth: 100}
+//                    , {field: 'email', title: 'Email', minwidth: 100}
+//                    , {field: 'organization', title: '所属机构', minwidth: 100}
+                    , {field: 'barDemo', minwidth: 100, align: 'center', title: '常用操作', toolbar: '#barDemo'}
+                ]
+            ],
+            page: true,
+            limits: [20, 40],
+            limit: 20
+        });
+    });
+
+    //  添加用户
+    function addUser() {
+        layer.open({
+            title: '添加用户信息'
+            , type: 1
+            , content: $("#tab-list")
+            , btn: ['确定', '取消']
+            , btnAlign: 'c'
+            , shade: 0.3
+            , yes: function (index) {
+                var addResult = addVerify();
+                if (!addResult) {
+                    return false;
+                }
+                // 获取选中的节点数据
+                var treeObj = $.fn.zTree.getZTreeObj("planTree");
+                var nodes = treeObj.getCheckedNodes(true);
+                var v; //已选择的复选框roleid
+                if (nodes.length == 0) {
+                    layer.msg("请选择需要分配的权限节点", {time: 2000, icon: 7, shift: 6}, function () {
+                    });
+                } else {
+                    v = "";
+                    for (var i = 0; i < nodes.length; i++) {
+                        v += nodes[i].roleId + ",";
+                        //alert(nodes[i].roleId); //获取选中节点的值
+                    }
+                    //去掉最后一个逗号
+                    v = (v.substring(v.length - 1) == ',') ? v.substring(0, v.length - 1) : v;
+                    //给input的value赋值
+                    $("#roleId").val(v);
+                    $.ajax({
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        type: "POST",
+                        url: basePath + "/user/insertUser",
+                       data: {
+                            userName: $("#nameId").val(),
+                           password: $("#add-password").val(),
+                           ids:  $("#roleId").val()
+                       },
+                        success: function (result) {
+                            layer.msg("添加用户成功", {time: 800, icon: 1}, function () {
+                                location.reload(true);
+                            });
+                        }
+                        , error: function (msg) {
+                            layer.msg("请输入用户名和密码", {time: 1000, icon: 2, shift: 6}, function () {
+                            });
+                        }
+
+                    });
+                    layer.close(index);
+                }
+            }
+            , area: ["400px", "600px"]
+        });
+    }
+
+    //ZTREE
+    $(function () {
+        init();
+    });
+
+    function init() {
+        builePlanTree();
+    }
+
+    function builePlanTree() {
+        var setting = {
+            view: {
+                showIcon: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                },
+                key: {
+                    name: "roleName"  //  发现问题在这里， name属性为节点要显示名字
+                },
+            },
+            check: {
+                enable: true,//开启复选框
+                chkStyle: "checkbox",//样式
+                chkboxType: {"Y": "ps", "N": "ps"},// 勾选操作，影响父和子级节点；取消勾选操作，影响父和子级节点
+            },
+            callback: {}
+        }
+
+        // 初始化树，数据是动态的，执行ajax程序对tree的数据进行获取，完成树初始化
+        $.ajax({
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/role/selectAllRolesTree",//这里可以改为服务器端action
+            type: 'POST',//提交方式
+            dataType: 'text',//数据类型
+            success: function (data) {  //回调函数
+                var zNodes = eval("(" + data + ")"); // eval 可以将返回 json字符串 转换 js 对象
+                $.fn.zTree.init($("#planTree"), setting, zNodes); //初始化树
+            },
+            error: function (msg) {
+                layer.alert('树加载异常!');
+            }
+        });
+    }
+</script>
+
+<!--表格重载js-->
+<script>
+    layui.use(['table', 'layer'], function () {
+        var table = layui.table
+            , layer = layui.layer;
+        var $ = layui.$, active = {
+            reload: function () {
+                //执行重载
+                table.reload('tableId', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+//                        , where: {
+//                            id: $('#demoLoad').val()
+//                        }
+                });
+            },
+        };
+    });
+
+    function addVerify() {
+        var userName = $("#nameId").val();
+        if (userName == null || "" == (userName)) {
+            layer.msg("请输入用户名！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var password = $("#add-password").val();
+        if (password == null || "" == (password)) {
+            layer.msg("请输入密码", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        return true;
+    }
+
+
+</script>
+
+<!--行查看，编辑和删除js实现-->
+<script>
+    // 实例化表单,让表单上面的数据显示
+    layui.use(['table', 'element', 'layer', 'form'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer        //弹层
+            , table = layui.table//表格
+            , form = layui.form
+        table.render();
+        //监听工具条
+        table.on('tool(test-table-operate)', function (obj) {
+            //注：tool是工具条事件名，test-table-operate是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+
+            if (layEvent === 'detail') {
+                layer.open({
+                    type: 1
+                    , title: '查看用户信息'
+                    , area: ["400px", "600px"]
+//                        ,closeBtn:false
+                    , btn: '确定'
+                    , btnAlign: 'c'
+                    , content: $("#tab-chakan")
+                });
+                $("#chakan-nameId").val(data.userName);
+                $("#chakan-passwordId").val(data.password);
+                if (data.status == 0) {
+                    $("#chakanStatus1").prop("checked", true);
+                } else {
+                    $("#chakanStatus2").prop("checked", true);
+                }
+                form.render();
+                //layer.alert(data.userId);
+                // 根据用户id查询角色渲染树
+                //ZTREE
+                $(function () {
+                    init();
+                });
+
+                function init() {
+                    builePlanTree();
+                }
+
+                function builePlanTree() {
+                    var setting = {
+                        view: {
+                            showIcon: true
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true
+                            },
+                            key: {
+                                name: "roleName"  //  发现问题在这里， name属性为节点要显示名字
+                            },
+                        },
+                        check: {
+                            enable: true,//开启复选框
+                            chkStyle: "checkbox",//样式
+                            chkboxType: {"Y": "ps", "N": "ps"},// 勾选操作，影响父和子级节点；取消勾选操作，影响父和子级节点
+                        },
+                        callback: {}
+                    }
+
+                    // 初始化树，数据是动态的，执行ajax程序对tree的数据进行获取，完成树初始化
+                    $.ajax({
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        url: basePath + '/role/selectAllRolesTreeByuserId',//这里可以改为服务器端action
+                        type: 'POST',//提交方式
+                        dataType: 'text',//数据类型
+                        data: {
+                            "userId": data.userId
+                        },
+                        success: function (treedata) {  //回调函数
+                            //alert("树成功函数");
+                            var zNodes = eval("(" + treedata + ")"); // eval 可以将返回 json字符串 转换 js 对象
+                            $.fn.zTree.init($("#chakanTree"), setting, zNodes); //初始化树
+                        },
+                        error: function (msg) {
+                            layer.alert('树加载异常!');
+                        }
+                    });
+                }
+
+            } else if (layEvent === 'edit') {
+                layer.open({
+                    type: 1
+                    , title: '编辑用户数据'
+                    , area: ["400px", "600px"]
+//                        ,closeBtn:false
+                    , btn: ['确认更改', '取消']
+                    , btnAlign: 'c'
+                    , content: $("#tab-edit")
+                    , yes: function (index) {
+                        // 获取选中的节点数据
+                        var treeObj = $.fn.zTree.getZTreeObj("editTree");
+                        var nodes = treeObj.getCheckedNodes(true);
+                        var v; //已选择的复选框roleid
+                        if (nodes.length == 0) {
+                            layer.msg("请选择需要分配的权限节点", {time: 2000, icon: 7, shift: 6}, function () {
+                            });
+                        } else {
+                            v = "";
+                            for (var i = 0; i < nodes.length; i++) {
+                                v += nodes[i].roleId + ",";
+                                //alert(nodes[i].roleId); //获取选中节点的值
+                            }
+                            //去掉最后一个逗号
+                            v = (v.substring(v.length - 1) == ',') ? v.substring(0, v.length - 1) : v;
+                            //给input的value赋值
+                            $("#edit-roleId").val(v);
+                            $("#edit-userId").val(data.userId);
+                            //alert($("#editUser").serialize());
+                            $.ajax({
+                                headers: {
+                                    "access_token": access_token//此处放置请求到的用户token
+                                },
+                                type: 'POST',
+                                url: basePath + '/user/updateByPrimaryKeySelective',
+                                data: $("#editUser").serialize(),
+                                success: function (result) {
+                                    layer.msg("编辑成功", {time: 800, icon: 6}, function () {
+                                        location.reload(true);
+                                    })
+                                }
+                                , error: function (msg) {
+                                    layer.msg("编辑失败", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                }
+                            });
+                            layer.close(index);
+                        }
+
+                    }
+                });
+                console.log(data.userName);
+                console.log(data.password);
+                $("#edit-nameId").val(data.userName);
+                $("#edit-passwordId").val(data.password);
+                //layer.alert(data.userId);
+                // 根据用户id查询角色渲染树
+                //ZTREE
+                $(function () {
+                    init();
+                });
+
+                function init() {
+                    builePlanTree();
+                }
+
+                function builePlanTree() {
+                    var setting = {
+                        view: {
+                            showIcon: true
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true
+                            },
+                            key: {
+                                name: "roleName"  //  发现问题在这里， name属性为节点要显示名字
+                            },
+                        },
+                        check: {
+                            enable: true,//开启复选框
+                            chkStyle: "checkbox",//样式
+                            chkboxType: {"Y": "ps", "N": "ps"},// 勾选操作，影响父和子级节点；取消勾选操作，影响父和子级节点
+                        },
+                        callback: {}
+                    }
+
+                    // 初始化树，数据是动态的，执行ajax程序对tree的数据进行获取，完成树初始化
+                    $.ajax({
+                        url: basePath + '/role/selectAllRolesTreeByuserId',//这里可以改为服务器端action
+                        type: 'POST',//提交方式
+                        dataType: 'text',//数据类型
+                        data: {
+                            "userId": data.userId
+                        },
+                        success: function (treedata) {  //回调函数
+                            //alert("树成功函数");
+                            var zNodes = eval("(" + treedata + ")"); // eval 可以将返回 json字符串 转换 js 对象
+                            $.fn.zTree.init($("#editTree"), setting, zNodes); //初始化树
+                        },
+                        error: function (msg) {
+                            layer.alert('树加载异常!');
+                        }
+                    });
+                }
+            } else if (layEvent === 'del') {
+                alert(data.userId)
+                layer.alert('将要删除该行数据,确定吗?', {
+                    closeBtn: 0    // 是否显示关闭按钮
+                    , anim: 6
+                    , btn: ['确定', '取消'] //按钮
+                    , yes: function (index) {
+                        // obj.del();
+                        // layer.close(index);
+                        var getData = new Object();
+                        getData.userId = data.userId;
+                        $.ajax({
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            url: basePath + '/user/deleteByPrimaryKey',
+                            type: 'post',
+                            data: getData,
+                            dataType: 'json',
+                            success: function (treedata) {
+                                layer.msg("删除用户成功", {time: 800, icon: 1}, function () {
+                                    location.reload(true);
+                                });
+                            },
+                            error: function () {
+                                layer.msg("删除用户失败", {time: 1000, icon: 2, shift: 6}, function () {
+                                });
+                            }
+                        });
+                        layer.close(index);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<!--顶部编辑和删除js实现-->
+<script>
+    //修改用户
+    function editService() {
+        layui.use(['table', 'layer', 'jquery', 'form'], function () {
+            var table = layui.table
+                , layer = layui.layer
+                , $ = layui.$
+                , form = layui.form;
+            //alert("asdfa");
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+            if (data.length > 0) {
+                if (data.length > 1) {
+                    layer.alert("只能选择一条要编辑的数据!")
+                } else {
+                    var str = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        str[i] = data[i]
+                    }
+                    ;
+                    layer.open({
+                        type: 1
+                        , title: '编辑用户数据'
+                        , area: ["400px", "600px"]
+//                        ,closeBtn:false
+                        , btn: ['确认更改', '取消']
+                        , btnAlign: 'c'
+                        , content: $("#tab-edit")
+                        , yes: function (index) {
+                            // 获取选中的节点数据
+                            var treeObj = $.fn.zTree.getZTreeObj("editTree");
+                            var nodes = treeObj.getCheckedNodes(true);
+                            var v; //已选择的复选框roleid
+                            if (nodes.length == 0) {
+                                layer.msg("请选择需要分配的权限节点", {time: 2000, icon: 7, shift: 6}, function () {
+                                });
+                            } else {
+                                v = "";
+                                for (var i = 0; i < nodes.length; i++) {
+                                    v += nodes[i].roleId + ",";
+                                    //alert(nodes[i].roleId); //获取选中节点的值
+                                }
+                                //去掉最后一个逗号
+                                v = (v.substring(v.length - 1) == ',') ? v.substring(0, v.length - 1) : v;
+                                //给input的value赋值
+                                $("#edit-roleId").val(v);
+                                $("#edit-userId").val(str[0].userId);
+                                //alert($("#editUser").serialize());
+                                $.ajax({
+                                    headers: {
+                                        "access_token": access_token//此处放置请求到的用户token
+                                    },
+                                    type: 'POST',
+                                    url: basePath + '/user/updateByPrimaryKeySelective',
+                                    data: $("#editUser").serialize(),
+                                    success: function (result) {
+                                        layer.msg("编辑成功", {time: 800, icon: 6}, function () {
+                                            location.reload(true);
+                                        })
+                                    }
+                                    , error: function (msg) {
+                                        layer.msg("编辑失败", {time: 1000, icon: 5, shift: 6}, function () {
+                                        });
+                                    }
+                                });
+                                layer.close(index);
+                            }
+
+                        }
+                    });
+                    $("#edit-nameId").val(str[0].userName);
+                    $("#edit-passwordId").val(str[0].password);
+                    if (str[0].status == 0) {
+                        $("#editStatus1").prop("checked", true);
+                    } else {
+                        $("#editStatus2").prop("checked", true);
+                    }
+                    form.render();
+                    //layer.alert(data.userId);
+                    // 根据用户id查询角色渲染树
+                    //ZTREE
+                    $(function () {
+                        init();
+                    });
+
+                    function init() {
+                        builePlanTree();
+                    }
+
+                    function builePlanTree() {
+                        var setting = {
+                            view: {
+                                showIcon: true
+                            },
+                            data: {
+                                simpleData: {
+                                    enable: true
+                                },
+                                key: {
+                                    name: "roleName"  //  发现问题在这里， name属性为节点要显示名字
+                                },
+                            },
+                            check: {
+                                enable: true,//开启复选框
+                                chkStyle: "checkbox",//样式
+                                chkboxType: {"Y": "ps", "N": "ps"},// 勾选操作，影响父和子级节点；取消勾选操作，影响父和子级节点
+                            },
+                            callback: {}
+                        }
+
+                        // 初始化树，数据是动态的，执行ajax程序对tree的数据进行获取，完成树初始化
+                        $.ajax({
+                            url: basePath + '/role/selectAllRolesTreeByuserId',//这里可以改为服务器端action
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            type: 'POST',//提交方式
+                            dataType: 'text',//数据类型
+                            data: {
+                                "userId": str[0].userId
+                            },
+                            success: function (treedata) {  //回调函数
+                                //alert("树成功函数");
+                                var zNodes = eval("(" + treedata + ")"); // eval 可以将返回 json字符串 转换 js 对象
+                                $.fn.zTree.init($("#editTree"), setting, zNodes); //初始化树
+                            },
+                            error: function (msg) {
+                                layer.alert('树加载异常!');
+                            }
+                        });
+                    }
+                }
+            } else {
+                layer.alert("请选择一条要编辑的数据!")
+            }
+            ;
+        });
+    };
+
+    //批量删除用户
+    function deleteService() {
+        layui.use(['table', 'layer', 'jquery'], function () {
+            var table = layui.table
+                , layer = layui.layer;
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+//            alert(JSON.stringify(data));
+            var ids = new Array();
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    ids[i] = data[i].userId;
+                }
+                ;
+                //
+                layer.confirm('确定删除所选数据吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        traditional: true,
+                        url: basePath + '/user/deleteByPrimaryKey',
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        type: 'post',
+                        data: {
+                            "userId": ids
+                        },
+                        success: function (treedata) {
+                            layer.msg("删除用户成功", {time: 800, icon: 1}, function () {
+                                location.reload(true);
+                            });
+                        },
+                        error: function () {
+                            layer.msg("删除用户失败", {time: 1000, icon: 2, shift: 6}, function () {
+                            });
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else {
+                layer.alert("请选择要删除的数据!")
+            }
+        });
+    };
+</script>
+
+</body>
+</html>

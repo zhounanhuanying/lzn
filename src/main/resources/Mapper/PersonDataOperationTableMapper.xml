@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.PersonDataOperationTableMapper">
+  <resultMap id="BaseResultMap" type="com.bfdb.entity.PersonDataOperationTable">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="personCode" jdbcType="VARCHAR" property="personcode" />
+    <result column="operationAction" jdbcType="VARCHAR" property="operationaction" />
+    <result column="operationTime" jdbcType="TIMESTAMP" property="operationtime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, personCode, operationAction, operationTime
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from person_data_operation_table
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <!--查询人员数据更新日志表-->
+    <select id="queryPersonDataOperationTableList"  parameterType="map"   resultMap="BaseResultMap">
+      select  <include refid="Base_Column_List" />
+        from person_data_operation_table
+      <where>
+        <if test="_parameter != null">
+          <if test="id!=null and id!=''">
+            and  id &gt; #{id,jdbcType=INTEGER}
+          </if>
+          <if test="personCode!=null and personCode!=''">
+            and personCode =#{personCode,jdbcType=VARCHAR}
+          </if>
+          <if test="dateTimeStart != null and dateTimeEnd !=null ">
+            and  operationTime between #{dateTimeStart,jdbcType=TIMESTAMP} and #{dateTimeEnd,jdbcType=TIMESTAMP}
+          </if>
+        </if>
+      </where>
+      LIMIT #{page},#{limit}
+    </select>
+  <!--查询人员数据总条数-->
+    <select id="dataCount" resultType="int"  parameterType="map"  >
+      select count(id) from person_data_operation_table
+      <where>
+        <if test="_parameter != null">
+          <if test="id!=null and id!=''">
+            and  id &gt; #{id,jdbcType=INTEGER}
+          </if>
+          <if test="personCode!=null and personCode!=''">
+            AND personCode =#{personCode,jdbcType=VARCHAR}
+          </if>
+          <if test="dateTimeStart != null and dateTimeEnd !=null ">
+            and  operationTime between #{dateTimeStart,jdbcType=TIMESTAMP} and #{dateTimeEnd,jdbcType=TIMESTAMP}
+          </if>
+          <!--<if test="operationtime!=null">-->
+          <!--AND operationTime LIKE CONCAT(#{operationtime,jdbcType=TIMESTAMP},'%')-->
+          <!--</if>-->
+        </if>
+      </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from person_data_operation_table
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.PersonDataOperationTable" useGeneratedKeys="true">
+    insert into person_data_operation_table (personCode, operationAction, operationTime
+      )
+    values (#{personcode,jdbcType=VARCHAR}, #{operationaction,jdbcType=VARCHAR}, #{operationtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.PersonDataOperationTable" useGeneratedKeys="true">
+    insert into person_data_operation_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="personcode != null">
+        personCode,
+      </if>
+      <if test="operationaction != null">
+        operationAction,
+      </if>
+      <if test="operationtime != null">
+        operationTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="personcode != null">
+        #{personcode,jdbcType=VARCHAR},
+      </if>
+      <if test="operationaction != null">
+        #{operationaction,jdbcType=VARCHAR},
+      </if>
+      <if test="operationtime != null">
+        #{operationtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.PersonDataOperationTable">
+    update person_data_operation_table
+    <set>
+      <if test="personcode != null">
+        personCode = #{personcode,jdbcType=VARCHAR},
+      </if>
+      <if test="operationaction != null">
+        operationAction = #{operationaction,jdbcType=VARCHAR},
+      </if>
+      <if test="operationtime != null">
+        operationTime = #{operationtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.PersonDataOperationTable">
+    update person_data_operation_table
+    set personCode = #{personcode,jdbcType=VARCHAR},
+      operationAction = #{operationaction,jdbcType=VARCHAR},
+      operationTime = #{operationtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

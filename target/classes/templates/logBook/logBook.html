@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>日志页面</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script  th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="logBook" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline">
+            <label class="layui-form-label">时间：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="creatTime" id="LAY-component-form-group-date" lay-verify="date"
+                       placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">级别：</label>
+            <div class="layui-input-inline">
+                <select name="logType" lay-verify="required" lay-search="">
+                    <option value="">请选择级别</option>
+                    <option value="正常">正常</option>
+                    <option value="错误">错误</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="logSearch()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary" onclick="refreshService()">重置</button>
+    </div>
+</form>
+<div class="layui-fluid list-box">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var time = "";
+    var logType = "";
+    $(function () {
+        data();
+    });
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    })
+
+    function data() {
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , layer = layui.layer
+                , laydate = layui.laydate
+                , form = layui.form
+                , table = layui.table;
+            form.render(null, 'component-form-group');
+            laydate.render({
+                elem: '#LAY-component-form-group-date'
+            });
+            table.render({
+                elem: '#test-table-operate',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url:basePath + '/logBook/dataAll?&&ieRandom=' + new Date().getTime()
+                , height: 'full-85'
+                , cols: [
+                    [
+                        {field: 'logNum', title: '序号', width: 80}
+                        , {field: 'userOperation', title: '操作人', minwidth: 100}
+                        , {field: 'logType', title: '级别', minWidth: 100}
+                        , {field: 'createTime', title: '操作时间', minWidth: 100}
+                        , {field: 'logContent', title: '操作内容', minwidth: 100}
+                    ]
+                ],
+                where: {createTime: time, logType: logType},
+                page: true,
+                limits: [20, 40],
+                limit: 20
+            });
+        });
+    }
+
+
+    function logSearch() {
+        time = $("#LAY-component-form-group-date").val();
+        logType = $("select[name='logType']").val();
+        data();
+    }
+
+    function refreshService() {
+        //location.reload(true);
+        time = "";
+        logType = "";
+        data();
+    }
+</script>
+</body>
+</html>

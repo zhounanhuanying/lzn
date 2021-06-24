@@ -1,0 +1,150 @@
+body{
+	overflow:hidden;
+}
+.main{
+	background: url(../images/bigdate-bg.png) no-repeat;
+}
+.large-data-top{
+	overflow: hidden;
+	padding: 0 20px;
+}
+.sign{
+	display: block;
+	float: left;
+	width: 5px;
+	height: 20px;
+	background: #1FEEDC;
+}
+.large-data-header{
+	width: 100%;
+    height: 80px;
+    background: url(../images/bigdate-top-bg.png) no-repeat;
+    text-align: center;
+	background-size: contain;
+}
+.large-data h3,.large-data-top>ul>li>a{
+	color:#fff;
+	padding:0 10px;
+}
+.large-data-top li{
+	width:24%;
+	height:300px;
+	float: left;
+	text-align: center;
+}
+
+.large-data-bottom{
+	padding:0 20px;
+}
+.chart1,.chart2,.chart3,.chart4{
+	width: 400px;
+    height: 250px;
+	margin: 0 auto;
+}
+.large-data-bottom>ul>li{
+	float: left;
+	width: 33%;
+	height: 420px;
+}
+.chart5,.chart6{
+	width: 580px;
+    height: 390px;
+}
+.large-data-headerimg{
+	width:445px;
+	margin:0 auto;
+}
+
+.difference-class{
+	float: right;
+	margin-right: 65px;
+}
+.difference-class li{
+	float: left;
+	margin-left: 20px;
+}
+.difference-class li span{
+	display: block;
+	float: left;
+	width: 10px;
+	height: 10px;
+	margin-top: 4px;
+	background: #0E5B8C;
+}
+.difference-class li a{
+	color: #fff;
+	font-size: 12px;
+	margin-left: 5px;
+}
+.difference-class .active{
+	background: #00AFF0;
+}
+
+/*课堂点名异常人员*/
+.unusual-person{
+	width: 580px;
+	height: 80px;
+	padding: 10px 0;
+	margin: 10px auto;
+	box-shadow:1px 1px 40px rgba(98, 189, 253, 0.5490196078431373) inset;
+}
+.head-sculpture{
+	width:80px;
+	height:80px;
+	float: left;
+	margin-left: 15px;
+}
+.imgtag{
+	width: 100%;
+	height: 0;
+	padding-bottom: 100%;
+	overflow: hidden;
+	background-position: center center;
+	background-repeat: no-repeat;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	background-size: cover;
+}
+.info-detail{
+	float: left;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+.info-detail a{
+	color: #fff;
+	display: block;
+	font-size: 18px;
+}
+.info-detail label {
+	color: #fff;
+	display: block;
+}
+.attendance{
+	float: right;
+	font-size: 18px;
+	margin-right: 110px;
+	margin-top: 25px;
+}
+.attendance label{
+	color:#fff;
+}
+.unusual-list{
+	width: 580px;
+	height: 240px;
+	margin: 10px auto;
+}
+.unusual-list .layui-table{
+	background-color: transparent;
+	color: #fff;
+	border-color: #196889;
+}
+.unusual-list .layui-table thead tr{
+	background-color: #0A2A75;
+}
+.unusual-list .layui-table th{
+	border-bottom: 0;
+}
+.unusual-list .layui-table[lay-skin=line] td{
+	border-color: #1C3EAD;
+}
+

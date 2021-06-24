@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.InterfaceAuthorizationMapper">
+  <resultMap id="BaseResultMap" type="com.bfdb.entity.InterfaceAuthorization">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="interface_name" jdbcType="VARCHAR" property="interfaceName" />
+    <result column="interface_address" jdbcType="VARCHAR" property="interfaceAddress" />
+    <result column="interface_type" jdbcType="VARCHAR" property="interfaceType" />
+    <result column="interface_expiration_date" jdbcType="TIMESTAMP" property="interfaceExpirationDate" />
+    <result column="call_time" jdbcType="TIMESTAMP" property="callTime" />
+    <result column="call_number" jdbcType="INTEGER" property="callNumber" />
+    <result column="call_status" jdbcType="INTEGER" property="callStatus" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="request_parameters" jdbcType="VARCHAR" property="requestParameters" />
+    <result column="exception_information" jdbcType="VARCHAR" property="exceptionInformation" />
+  </resultMap>
+
+  <resultMap id="BaseResultMap2" type="com.bfdb.entity.vo.DataKanDateVo">
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="callNumber" jdbcType="INTEGER" property="callNumber" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, interface_name, interface_address, interface_type, interface_expiration_date, 
+    call_time, call_number, call_status, user_id,request_parameters, exception_information
+
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from interface_authorization
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from interface_authorization
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.InterfaceAuthorization" useGeneratedKeys="true">
+    insert into interface_authorization (interface_name, interface_address,
+      interface_type, interface_expiration_date,
+      call_time, call_number, call_status,
+      user_id, request_parameters, exception_information
+      )
+    values (#{interfaceName,jdbcType=VARCHAR}, #{interfaceAddress,jdbcType=VARCHAR},
+      #{interfaceType,jdbcType=VARCHAR}, #{interfaceExpirationDate,jdbcType=TIMESTAMP},
+      #{callTime,jdbcType=TIMESTAMP}, #{callNumber,jdbcType=INTEGER}, #{callStatus,jdbcType=INTEGER},
+      #{userId,jdbcType=INTEGER}, #{requestParameters,jdbcType=LONGVARCHAR}, #{exceptionInformation,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.InterfaceAuthorization" useGeneratedKeys="true">
+    insert into interface_authorization
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="interfaceName != null">
+        interface_name,
+      </if>
+      <if test="interfaceAddress != null">
+        interface_address,
+      </if>
+      <if test="interfaceType != null">
+        interface_type,
+      </if>
+      <if test="interfaceExpirationDate != null">
+        interface_expiration_date,
+      </if>
+      <if test="callTime != null">
+        call_time,
+      </if>
+      <if test="callNumber != null">
+        call_number,
+      </if>
+      <if test="callStatus != null">
+        call_status,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="requestParameters != null">
+        request_parameters,
+      </if>
+      <if test="exceptionInformation != null">
+        exception_information,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="interfaceName != null">
+        #{interfaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceAddress != null">
+        #{interfaceAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceType != null">
+        #{interfaceType,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceExpirationDate != null">
+        #{interfaceExpirationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callTime != null">
+        #{callTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callNumber != null">
+        #{callNumber,jdbcType=INTEGER},
+      </if>
+      <if test="callStatus != null">
+        #{callStatus,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="requestParameters != null">
+        #{requestParameters,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="exceptionInformation != null">
+        #{exceptionInformation,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.InterfaceAuthorization">
+    update interface_authorization
+    <set>
+      <if test="interfaceName != null">
+        interface_name = #{interfaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceAddress != null">
+        interface_address = #{interfaceAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceType != null">
+        interface_type = #{interfaceType,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceExpirationDate != null">
+        interface_expiration_date = #{interfaceExpirationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callTime != null">
+        call_time = #{callTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callNumber != null">
+        call_number = #{callNumber,jdbcType=INTEGER},
+      </if>
+      <if test="callStatus != null">
+        call_status = #{callStatus,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="requestParameters != null">
+        request_parameters = #{requestParameters,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptionInformation != null">
+        exception_information = #{exceptionInformation,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.InterfaceAuthorization">
+     update interface_authorization
+    set interface_name = #{interfaceName,jdbcType=VARCHAR},
+      interface_address = #{interfaceAddress,jdbcType=VARCHAR},
+      interface_type = #{interfaceType,jdbcType=VARCHAR},
+      interface_expiration_date = #{interfaceExpirationDate,jdbcType=TIMESTAMP},
+      call_time = #{callTime,jdbcType=TIMESTAMP},
+      call_number = #{callNumber,jdbcType=INTEGER},
+      call_status = #{callStatus,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      request_parameters = #{requestParameters,jdbcType=VARCHAR},
+      exception_information = #{exceptionInformation,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--根据授权时间查询接口授权信息-->
+  <select id="queryInterfaceAuthorizationList" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+      from interface_authorization
+      where interface_expiration_date  LIKE CONCAT(#{interfaceExpirationDate,jdbcType=TIMESTAMP},'%')
+  </select>
+
+
+  <select id="getInterfaceAuthorizationList" parameterType="map" resultMap="BaseResultMap">
+    SELECT * FROM interface_authorization
+    <where>
+      <if test="_parameter != null">
+        <if test="callTime!=null and callTime!=''">
+          AND call_time LIKE CONCAT('%',#{callTime,jdbcType=TIMESTAMP},'%')
+        </if>
+        <if test="callStatus!=null and callStatus!=''">
+          AND call_status =#{callStatus,jdbcType=INTEGER}
+        </if>
+        <if test="interfaceName!=null and interfaceName!=''">
+          AND interface_name LIKE CONCAT('%',#{interfaceName,jdbcType=VARCHAR},'%')
+        </if>
+      </if>
+    </where>
+    ORDER BY call_time desc LIMIT #{page},#{limit}
+  </select>
+
+  <select id="getInterfaceAuthorizationListTotal" parameterType="map" resultType="int">
+    SELECT count(*) FROM interface_authorization
+    <where>
+      <if test="_parameter != null">
+        <if test="callTime!=null and callTime!=''">
+          AND call_time LIKE CONCAT('%',#{callTime,jdbcType=TIMESTAMP},'%')
+        </if>
+        <if test="callStatus!=null and callStatus!=''">
+          AND call_status =#{callStatus,jdbcType=INTEGER}
+        </if>
+        <if test="interfaceName!=null and interfaceName!=''">
+          AND interface_name = #{interfaceName,jdbcType=VARCHAR}
+        </if>
+      </if>
+    </where>
+  </select>
+
+  <!--根据调用日期查询前一周的调用次数-->
+  <!--<select id="getCallNumberByCallTime" parameterType="java.lang.String" resultType="int">
+    SELECT SUM(call_number) FROM interface_authorization WHERE call_time BETWEEN DATE_SUB(DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY),INTERVAL 1 WEEK) AND DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY)
+  </select>-->
+  <select id="getCallNumberByCallTime" parameterType="java.lang.String" resultMap="BaseResultMap2">
+        SELECT
+         t1.`day` as date,
+         COUNT(t2.call_number) as callNumber
+        FROM
+         (SELECT
+         @cdate := DATE_ADD(@cdate, INTERVAL - 1 DAY) DAY
+         FROM
+         (SELECT
+          @cdate := DATE_ADD(#{callTime,jdbcType=TIMESTAMP}, INTERVAL + 1 DAY)
+         FROM
+          interface_authorization) t0
+         LIMIT 7) t1
+         LEFT JOIN
+         (SELECT
+          DATE(a.`call_time`) DAY,
+          a.call_number
+         FROM
+          interface_authorization a
+         WHERE a.`call_time` BETWEEN DATE_SUB(DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY),INTERVAL 1 WEEK) AND DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY)
+          ) t2
+         ON t2.day = t1.day
+        GROUP BY t1.`day`;
+  </select>
+
+  <!--根据调用日期和接口调用状态查询前一周的调用次数-->
+  <select id="getCallNumberByCallTimeAndCallStatus" parameterType="map" resultType="int">
+        SELECT SUM(call_number) FROM interface_authorization WHERE call_status=#{callStatus,jdbcType=INTEGER} and call_time BETWEEN DATE_SUB(DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY),INTERVAL 1 WEEK) AND DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY)
+  </select>
+
+  <!--根据调用日期和用户id查询该用户前一周的调用次数-->
+  <select id="getCallNumberByCallTimeAndUserId" parameterType="map" resultType="int">
+        SELECT SUM(call_number) FROM interface_authorization WHERE user_id=#{userId,jdbcType=INTEGER} and call_time BETWEEN DATE_SUB(DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY),INTERVAL 1 WEEK) AND DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY)
+  </select>
+  <!--根据调用日期该用户前一周的调用次数 并根据用户分组排序-->
+  <select id="getCallNumberAndUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT user_id,SUM(call_number) as call_number FROM interface_authorization WHERE call_time BETWEEN DATE_SUB(DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY),INTERVAL 1 WEEK) AND DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY) group by user_id ORDER BY SUM(call_number) DESC
+  </select>
+
+  <!--根据调用日期查询调用次数 并根据调用状态分组排序-->
+  <select id="getCallNumberAndCallStatus" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT call_status,SUM(call_number) as call_number FROM interface_authorization WHERE call_time BETWEEN DATE_SUB(DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY),INTERVAL 1 WEEK) AND DATE_ADD(#{callTime,jdbcType=TIMESTAMP},INTERVAL 1 DAY) group by call_status ORDER BY SUM(call_number) DESC
+  </select>
+  <!--调用接口总次数-->
+  <select id="getAllCallNumber" resultType="int">
+    select sum(call_number) from interface_authorization
+  </select>
+  <!--增删改查调用接口总次数-->
+  <select id="getCRUDAllCallNumber" parameterType="java.lang.String" resultType="int">
+      SELECT SUM(call_number) FROM interface_authorization WHERE interface_name like CONCAT('%',#{interfaceName,jdbcType=VARCHAR},'%')
+  </select>
+  <!--人脸采集总人数-->
+  <select id="getAllPersonTableTotal" resultType="int">
+    select count(*) from persontable
+  </select>
+
+  <!--人员采集分类-->
+  <select id="getAllPersonByDataSource" resultType="int" parameterType="java.lang.String">
+    SELECT COUNT(*) FROM (SELECT * FROM person_face_infomation_table WHERE data_source=#{dataSource} GROUP BY person_id ) pfi
+  </select>
+  <!--人员采集分类-->
+  <select id="getAllPersonByDataSourceLike" resultType="int" parameterType="java.lang.String">
+    SELECT COUNT(*) FROM (SELECT * FROM person_face_infomation_table WHERE data_source LIKE CONCAT('%',#{dataSource,jdbcType=VARCHAR},'%') GROUP BY person_id ) pfi
+  </select>
+</mapper>

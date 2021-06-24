@@ -1,0 +1,265 @@
+.search-pictures{
+    height: calc(100vh);
+    padding: 10px;
+    background-color: #f2f2f2;
+    box-sizing: border-box;
+}
+.search-pictures-operation{
+    height: 112px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+.search-pictures-list{
+    height: calc(100vh - 162px);
+    background-color: #fff;
+}
+.search-pictures-list .layui-card-header>span{
+    padding-left: 25px;
+    display: block;
+    position: relative;
+} 
+.search-pictures-list .layui-card-header>span::before{
+    content: "";
+    width:22px;
+    height: 20px;
+    background:url(../../style/images/pic_import.png) no-repeat;
+    position: absolute;
+    top: 9px;
+    left: 0;
+
+}
+.search-pictures-left{
+    width: 95%;
+    float: left;
+    overflow: hidden;
+}
+.pictures-upload{
+    width: 30%;
+    float: left;
+    overflow: hidden;
+    
+}
+.pic-div{
+    width: 91px;
+    height: 112px;
+    background-color: #eee;
+    margin-right:10px;
+    float: left;
+}
+.pic-div img{
+    width:100%;
+    height:100%;
+}
+.pic-show{
+    position: relative;
+}
+.pic-show img:first-child{
+    width:10px;
+    height:10px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.add-pics{
+    line-height: 112px;
+    text-align: center;
+    position: relative;
+}
+.add-pics img{
+    width:20px;
+    height:21px;
+}
+.add-pics input[type=file]{
+    width:100%;
+    height:100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.batch-upload ,.sure-btn{
+    width: 10%;
+    float: left;
+    margin-top: 40px;
+}
+.batch-upload .layui-btn-sm,.sure-btn .layui-btn-sm{
+    height: 35px;
+    line-height: 35px;
+    padding: 0 15px;
+    font-size: 14px;
+}
+.sure-btn{
+    width: 5%;
+}
+.matching-degree{
+    width: 35%;
+    float: right;
+    margin:40px 50px 0 0;
+    position: relative;
+}
+.matching-degree span:nth-child(2){
+    float: right;
+}
+.layui-progress-bar{
+    background-color: #1e9fff;
+}
+.matching-degree .slide{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #1e9fff;
+    border: 3px solid #fff;
+    box-shadow: 0 0 5px #000;
+    position: absolute;
+    top: 11px;
+    left: 110px;
+    text-align: center;
+    line-height: 25px;
+    color: #fff;
+    cursor: pointer;
+}
+.search-pictures-list .layui-card-body{
+    padding:0;
+}
+.matching-info{
+    height: calc(100vh - 255px);
+    overflow: hidden;
+    overflow-y: auto;
+}
+.matching-info-block{
+    height: 185px;
+    padding: 0 15px;
+    border-bottom: 10px solid #f2f2f2;
+}
+.matching-info-block:last-child{
+    border-bottom: none;
+}
+.master-drawing{
+    width: 117px;
+    height: 154px;
+    margin-top: 15px;
+    float: left;
+    position: relative;
+}
+.master-drawing img{
+    width: 100%;
+    height: 100%;
+}
+.master-drawing label{
+    width:100%;
+    text-align:center;
+    color:#555;
+    background-color:rgba(0, 0, 0, 0.20);
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.matching-info-show{
+    width: calc(100vw - 207px);
+    height: 175px;
+    float: right;
+}
+.matching-info-show .layui-carousel{
+    background-color: transparent;
+}
+.matching-info-show .layui-carousel>[carousel-item]>*{
+    background-color: transparent;
+}
+.matching-info-show .layui-carousel>[carousel-item]:before{
+    content: "";
+}
+.matching-info-list li{
+    float: left;
+    width: 25%;
+}
+.matching-info-list li>div{
+    width: 90%;
+    height: 154px;
+    margin: 15px auto 0;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+}
+.matching-info-list li>div>img{
+    width: 105px;
+    height: 135px;
+    margin: 10px;
+    flex: 0;
+}
+.matching-info-list .personnel-info{
+    margin: 10px 0;
+    flex: 1;
+}
+.matching-info-list .personnel-info span{
+    font-size: 20px;
+    color: #555;
+    line-height: 40px;
+}
+.matching-info-list .personnel-info label{
+    font-size: 16px;
+    color: #555;
+    line-height: 30px;
+    padding-left: 25px;
+    display: block;
+    position: relative;
+}
+.matching-info-list .personnel-info .id::before{
+    content: "";
+    width:22px;
+    height: 16px;
+    background:url(../../style/images/personnel_id.png) no-repeat;
+    position: absolute;
+    top: 6px;
+    left: 0;
+}
+.matching-info-list .personnel-info .card::before{
+    content: "";
+    width:21px;
+    height: 17px;
+    background:url(../../style/images/personnel_card.png) no-repeat;
+    position: absolute;
+    top: 6px;
+    left: 0;
+}
+.matching-info-list .personnel-info .type::before{
+    content: "";
+    width:21px;
+    height: 21px;
+    background:url(../../style/images/personnel_type.png) no-repeat;
+    position: absolute;
+    top: 6px;
+    left: 0;
+}
+.list-page{
+    float: right;
+}
+.list-page .layui-laypage{
+    margin: 10px 10px 0 0;
+}
+.layui-carousel[lay-arrow=always] .layui-carousel-arrow[lay-type=sub]{
+    opacity: 0;
+    display: none;
+}
+.layui-carousel[lay-arrow=always] .layui-carousel-arrow[lay-type=add]{
+    width: 25px;
+    right: -16px;
+    background: #fff;
+    border-radius: 0;
+}
+.layui-carousel-arrow::before{
+    content: "";
+    width:7px;
+    height: 30px;
+    background:url(../../style/images/pic-more.png) no-repeat;
+    position: absolute;
+    top: 14%;
+    right: 14px;
+}
+.layui-laypage .layui-laypage-curr .layui-laypage-em{
+    background-color: #1E9FFF;
+}
+.no-pic{
+    text-align: center;
+    margin-top: 60px;
+}

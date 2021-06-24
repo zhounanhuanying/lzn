@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Facelnfo DB欢迎页面</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/bootstrap.min.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/bootstrap.min.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"]{
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<div class="layui-card">
+    <div class="layui-card-header"  style="font-size: 28px;text-align:center">Facelnfo DB人脸基础管理系统</div>
+<div class="layui-collapse">
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">Facelnfo DB<i class="layui-icon"style="font-size: 20px; color: #1E9FFF;"></i></h2>
+        <div class="layui-colla-content  layui-show">
+            <div> 欢迎！！！</div>
+            <!--<div> ① 在【排课管理】下载排课表模板，根据模板要求整理排课信息并且上传</div>-->
+            <!--<div> ② 在【人员管理】下载人员信息模板，根据模板要求上传</div>-->
+            <!--<div> ③ 在【人员管理】点击同步人员信息到设备（数据量大请稍等）</div>-->
+            <!--<div> ④ 在【系统管理】可以对服务器，点名摄像机等设备进行配置</div>-->
+            <!--<div> ⑤ 在【考勤管理】可以查看班级和个人的考勤情况，超级管理员可以对异常考勤学生进行补打卡</div>-->
+
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    layui.use('element', function(){
+        var element = layui.element;
+    });
+</script>
+</body>
+</html>

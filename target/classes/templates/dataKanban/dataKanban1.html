@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据采集</title>
+    <link rel="stylesheet" href="/Content/style/css/dataGather.css" media="all"/>
+    <link rel="stylesheet" href="/Content/style/fonts/menuFont/iconfont.css">
+    <script src="/Content/Scripts/Master/jquery-3.2.1.min.js"></script>
+    <script src="/Content/Scripts/Master/echarts/echarts.js"></script>
+    <script src="/Content/Scripts/Master/echarts/echarts-liquidfill.js"></script>
+    <script src="/Content/Scripts/Master/echarts/macarons.js"></script>
+</head>
+<body>
+    <!--头部-->
+    <div class="header">
+        <div class="header-left">
+            <a>
+                <i class=""><img src="/Content/style/images/bigData/dataGather/guanlipingtai.png" width="20"></i>
+                <span>管理平台</span>
+            </a>
+        </div>
+        <div class="header-logo">
+            <img src="/Content/style/images/bigData/dataGather/logo.png">
+        </div>
+        <div class="header-right">
+            <i class=""><img src="/Content/style/images/bigData/dataGather/shijian.png" width="25"></i>
+            <span id="dateTime" style="font-size: 24px"></span>
+        </div>
+    </div>
+
+    <!--内容部分-->
+    <div class="content">
+        <div class="content-top">
+            <div class="person-gather">
+<!--                <h3>数据更新时间：<span class="time"></span></h3>-->
+                <div class="content-num">
+                    <div class="left">
+                        <span><img src="/Content/style/images/bigData/dataGather/icon1.png"></span>
+                        <p>人员采集总人数</p>
+                    </div>
+                    <div class="right" id="allPerson">
+                     <!--   <span>1</span>
+                        <span>2</span>
+                        <span>5</span>
+                        <span>5</span>
+                        <span>5</span>-->
+                    </div>
+                </div>
+            </div>
+            <div class="liaison-call">
+<!--                <h3>数据更新时间：<span class="time"></span></h3>-->
+                <div class="content-num">
+                    <div class="left">
+                        <span><img src="/Content/style/images/bigData/dataGather/icon2.png"></span>
+                        <p>接口调用总次数</p>
+                    </div>
+                    <div class="right" id="allCallNumber">
+                      <!--  <span>5</span>
+                        <span>5</span>
+                        <span>5</span>
+                        <span>5</span>
+                        <span>5</span>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-center">
+            <div class="left-area">
+                <div class="title-area">数据来源分类</div>
+                <div class="main-area" id="DYCSTJ_echart"> </div>
+            </div>
+            <div class="center-area">
+                <div class="title-area">账号接口调用次数排名</div>
+                <div class="main-area" id="ZHJKDYCSPM_echart"> </div>
+            </div>
+            <div class="left-area">
+                <div class="title-area">增删改查总调用次数</div>
+                <div class="main-area" id="ZSGCZDYCS_echart">
+                </div>
+            </div>
+
+        </div>
+        <div class="content-bottom">
+            <div class="title-area">调用次数统计</div>
+            <div class="main-area"  id="DYCSTJ2_echart"></div>
+        </div>
+    </div>
+
+    <script>
+
+        Date.prototype.format = function (fmt) {
+            var o = {
+                "y+": this.getFullYear(), //获取完整的年份(4位,1970-???)
+                "M+": this.getMonth()+1, //获取当前月份(0-11,0代表1月)
+                "d+": this.getDate(), //获取当前日(1-31)
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds() //秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        setInterval("document.getElementById('dateTime').innerHTML = (new Date()).format('yyyy-MM-dd hh:mm:ss');", 1000);
+    </script>
+
+    <script>
+        $(function () {
+            DYCSTJ_echart();
+            ZHJKDYCSPM_echart();
+            ZSGCZDYCS_echart();
+            DYCSTJ2_echart();
+            allPerson();
+            allCallNumber();
+        })
+
+        setInterval(function () {
+            DYCSTJ_echart();
+            ZHJKDYCSPM_echart();
+            ZSGCZDYCS_echart();
+            DYCSTJ2_echart();
+            allPerson();
+            allCallNumber();
+        },3000)
+
+        function allPerson() {
+            $('#allPerson').empty();
+            $.ajax({
+                type: "GET",
+                url: '/InterfaceAuthorization/getAllPersonTableTotal',
+                success: function (res) {
+                    for(var i in res.allPerson){
+                        $('#allPerson').append("<span>"+res.allPerson[i]+"</span>");
+                    }
+                    // $('.time').html(res.time);
+                }
+            })
+        }
+        function allCallNumber() {
+            $('#allCallNumber').empty();
+            $.ajax({
+                type: "GET",
+                url: '/InterfaceAuthorization/getAllCallNumber',
+                success: function (res) {
+                    for(var i in res.callNumber){
+                        $('#allCallNumber').append("<span>"+res.callNumber[i]+"</span>");
+                    }
+                }
+            })
+        }
+
+        function parse1(str) {
+            return JSON.stringify(JSON.parse(str), null, "\t");
+        }
+
+        //调用次数统计
+      /*  function DYCSTJ_echart() {
+
+            $.ajax({
+                type: "GET",
+                url:'/InterfaceAuthorization/getAllPersonByDataSource',
+                success: function (result) {
+                    let echartData = [];
+                    var data=result.list;
+                    for(var i in data){
+                            echartData.push({name:data[i].name,value:""+data[i].value+""})
+                    }
+
+            var chart = echarts.init(document.getElementById("DYCSTJ_echart"), 'macarons');
+
+            let title = '总量';
+            let color = ['#0E7CE2', '#FF8352', '#E271DE', '#F8456B', '#00FFFF', '#4AEAB0'];
+            let formatNumber = function(num) {
+                let reg = /(?=(\B)(\d{3})+$)/g;
+                return num.toString().replace(reg, ',');
+            }
+            let total = echartData.reduce((a, b) => {
+                return a + b.value * 1
+            }, 0);
+
+            option = {
+                color: color,
+                // tooltip: {
+                //     trigger: 'item'
+                // },
+                title: [{
+                    text: '{name|' + title + '}\n{val|' + formatNumber(total) + '}',
+                    top: 'center',
+                    left: 'center',
+                    textStyle: {
+                        rich: {
+                            name: {
+                                fontSize: 14,
+                                fontWeight: 'normal',
+                                color: '#fff',
+                                padding: [10, 0]
+                            },
+                            val: {
+                                fontSize: 32,
+                                fontWeight: 'bold',
+                                color: '#fff',
+                            }
+                        }
+                    }
+                }],
+                legend: {
+                    icon: 'rect',
+                    x: 'center',
+                    y: 'bottom',
+                    itemWidth: 12,
+                    itemHeight: 12,
+                    textStyle: {
+                        color:'#fff',
+                        rich: {
+                            name: {
+                                fontSize: 12,
+                            },
+                            value: {
+                                fontSize: 16,
+                                padding: [0, 5, 0, 15],
+                            },
+                            unit: {
+                                fontSize: 12
+                            }
+                        }
+                    },
+
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['35%', '45%'],
+                    center: ['50%', '50%'],
+                    data: echartData,
+                    hoverAnimation: false,
+                    itemStyle: {
+                        normal: {
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            length: 20,
+                            length2: 120,
+                            lineStyle: {
+                                color: '#fff'
+                            }
+                        }
+                    },
+                    label: {
+                        normal: {
+                            formatter: params => {
+                                return (
+                                    '{icon|●}{name|' + params.name + '}{value|' +
+                                    formatNumber(params.value) + '}'
+                                );
+                            },
+                            padding: [0 , -100, 25, -100],
+                            rich: {
+                                icon: {
+                                    fontSize: 16
+                                },
+                                name: {
+                                    fontSize: 14,
+                                    padding: [0, 10, 0, 4],
+                                    color: '#fff'
+                                },
+                                value: {
+                                    fontSize: 18,
+                                    fontWeight: 'bold',
+                                    color: '#fff'
+                                }
+                            }
+                        }
+                    },
+                }]
+            };
+            chart.setOption(option);
+                }
+            })
+        }*/
+       function DYCSTJ_echart() {
+           $.ajax({
+               type: "GET",
+               url:'/InterfaceAuthorization/getAllPersonByDataSource',
+               success: function (result) {
+                   let echartData = [];
+                   let echartDataName = [];
+                   var data=result.list;
+                   for(var i in data){
+                       echartData.push({value:data[i].value,name:data[i].name})
+                       echartDataName.push(data[i].name)
+                   }
+                   let title = '总量';
+                   var chart = echarts.init(document.getElementById("DYCSTJ_echart"), 'macarons');
+                   let formatNumber = function(num) {
+                       let reg = /(?=(\B)(\d{3})+$)/g;
+                       return num.toString().replace(reg, ',');
+                   }
+                   option = {
+                       title: [{
+                       text: '{name|' + title + '}\n{val|' + result.allPerson + '}',
+                       top: 'center',
+                       left: 'center',
+                       textStyle: {
+                        rich: {
+                            name: {
+                                fontSize: 14,
+                                fontWeight: 'normal',
+                                color: '#fff',
+                                padding: [10, 0]
+                            },
+                            val: {
+                                fontSize: 20,
+                                fontWeight: 'bold',
+                                color: '#fff',
+                            }
+                         }
+                        }
+                         }],
+                       /*tooltip: {
+                           trigger: 'item',
+                           formatter: '{a} <br/>{b} : {c} ({d}%)'
+                       },*/
+                       legend: {
+                           orient: 'vertical',
+                           bottom: 'bottom',
+                           data: echartDataName,
+                           textStyle: {
+                               color:'#fff',
+                               rich: {
+                                   name: {
+                                       fontSize: 12,
+                                   },
+                                   value: {
+                                       fontSize: 16,
+                                   },
+                                   unit: {
+                                       fontSize: 12
+                                   }
+                               }
+                           },
+                       },
+                       series: [
+                           {
+                               hoverAnimation: false,
+                               name:'数据来源',
+                               type: 'pie',
+                               radius: ['58%','71%'],
+                               center: ['50%', '50%'],
+                               data:echartData,
+                               emphasis: {
+                                   itemStyle: {
+                                       shadowBlur: 10,
+                                       shadowOffsetX: 0,
+                                       shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                   }
+                               },
+                               labelLine: {
+                                   normal: {
+                                       lineStyle: {
+                                           color: '#fff'
+                                       },
+                                   }
+                               },
+                               label: {
+                                   normal: {
+                                       formatter: params => {
+                                           return (
+                                               '{name|' + params.name + '}{icon|●}{value|' + formatNumber(params.value) + '}'
+                                           );
+                                       },
+
+                                       rich: {
+                                           icon:{
+                                               fontSize: 12,
+                                           },
+                                           name: {
+                                               fontSize: 14,
+                                               color: '#fff'
+                                           },
+                                           value: {
+                                               fontSize: 14,
+                                               fontWeight: 'bold',
+                                               color: '#fff'
+                                           }
+                                       }
+                                   }
+                               },
+                           }
+                       ]
+                   };
+                   chart.setOption(option);
+               }
+           })
+       }
+
+        //账号接口调用次数排名
+        function ZHJKDYCSPM_echart() {
+            $.ajax({
+                type: "GET",
+                url:'/InterfaceAuthorization/getCallNumberAndUserName',
+                success: function (res) {
+                    var dataLine = new Array();
+                    var baifenbi = new Array();
+                    var dataName = new Array();
+                    var waikuang = new Array();
+                    var baikuang = new Array();
+                    var yonghuNum=[];
+                    var allCallNumber=res.allNumber;
+                    var positionLeft = 10,
+                        max = 100 + positionLeft;
+
+                    var data=res.list;
+                    for(var i in data){
+                        dataLine.push(data[i].callNumber);
+                        baifenbi.push(data[i].callNumber/allCallNumber*100)
+                        dataName.push(data[i].userName);
+                        waikuang.push(110);
+                        baikuang.push(109.9);
+                        yonghuNum.push(positionLeft);
+                    }
+
+
+            var chart = echarts.init(document.getElementById("ZHJKDYCSPM_echart"), 'macarons');
+            var myColor = ['#81E7ED'];
+            //var dataLine = [40, 56, 23, 15, 15];
+            var g_cellBar0_y = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAoCAYAAAAhf6DEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAA6SURBVEhLY2x8/vY/A4mg3zwcTDOBSTLBqGYSwahmEsGoZhLBqGYSwahmEsGoZhLBqGYSwZDUzMAAAJldBMF2UASmAAAAAElFTkSuQmCC';
+            var g_cellBarImg0_y = new Image();
+            g_cellBarImg0_y.src = g_cellBar0_y;
+
+            var option = {
+                grid: [{
+                    left: '2%',
+                    top: '2%',
+                    right: '2%',
+                    bottom: '2%',
+                    containLabel: true
+                },
+                    {
+                        left: '5%',
+                        top: '5%',
+                        right: '5%',
+                        bottom: '5%',
+                        containLabel: true
+                    }
+                ],
+                xAxis: [{
+                    //   max:max,
+                    show: false
+                }],
+                yAxis: [{
+                    axisTick: 'none',
+                    axisLine: 'none',
+                    inverse: true,
+                    axisLabel: {
+                        inside: true,
+                        align: 'left',
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: '16'
+                        }
+                    },
+                    z: 10,
+                    data: dataName
+                }, {
+                    axisTick: 'none',
+                    axisLine: 'none',
+                    inverse: true,
+                    show: true,
+                    axisLabel: {
+                        inside: true,
+                        align: 'right',
+                        textStyle: {
+                            color: '#ffffff',
+                            fontSize: '12'
+                        }
+                    },
+                    z: 10,
+                    data: dataLine
+                }, {
+
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(0,0,0,0)'
+                        }
+                    },
+                    data: []
+                }],
+                series: [
+
+                    { //间距
+                        type: 'bar',
+                        barWidth: 20,
+                        stack: 'b',
+                        legendHoverLink: false,
+                        itemStyle: {
+                            normal: {
+                                color: 'rgba(0,0,0,0)'
+                            }
+                        },
+                        z: 3,
+                        data: yonghuNum
+                    }, {
+                        name: '条',
+                        type: 'bar',
+                        stack: 'b',
+                        yAxisIndex: 0,
+                        data: baifenbi,
+                        label: {
+                            normal: {
+                                show: false,
+                                position: 'right',
+                                distance: 10,
+                                formatter: function(param) {
+                                    return param.value + '%'
+                                },
+                                textStyle: {
+                                    color: '#ffffff',
+                                    fontSize: '16'
+                                }
+                            }
+                        },
+                        barWidth: 30,
+                        itemStyle: {
+                            color: {
+                                image: g_cellBarImg0_y,
+                                repeat: 'repeat'
+                            }/*,
+                            normal: {
+                                color: function(params) {
+                                    var num = myColor.length
+                                    return myColor[params.dataIndex % num]
+                                }
+                            }*/
+                        },
+                        z: 2
+                    }, {
+                        name: '白框',
+                        type: 'bar',
+                        yAxisIndex: 1,
+                        barGap: '-100%',
+                        data: baikuang,
+                        barWidth:27,
+                        itemStyle: {
+                            normal: {
+                                color: '#0A1A62',
+                            }
+                        },
+                        z: 1
+                    },
+                    {
+                        name: '外框',
+                        type: 'bar',
+                        yAxisIndex: 2,
+                        barGap: '-100%',
+                        data: waikuang,
+                        barWidth: 29,
+                        label: {
+                            normal: {
+                                show: false,
+                                position: 'right',
+                                distance: 10,
+                                formatter: function(data) {
+                                    return dataLine[data.dataIndex] + "%";
+                                },
+                                textStyle: {
+                                    color: '#ffffff',
+                                    fontSize: '16'
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: function(params) {
+                                    var num = myColor.length
+                                    return myColor[params.dataIndex % num]
+                                },
+                            }
+                        },
+                        z: 0
+                    },
+                ]
+            }
+            chart.setOption(option);
+                }
+            })
+        }
+
+        //增删改查调用次数排名
+        function ZSGCZDYCS_echart() {
+          $.ajax({
+            type: "GET",
+            url:'/InterfaceAuthorization/getCRUDAllCallNumber',
+            success: function (res) {
+            /*    add=res.insertCallNumber;
+                del=res.deleteCallNumber;
+                edit=res.updateCallNumber;
+                query=res.selectCallNumber;*/
+            var chart = echarts.init(document.getElementById("ZSGCZDYCS_echart"), 'macarons');
+            var placeHolderStyle = {
+                normal: {
+                    label: {
+                        show: false
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    color: "rgba(0,0,0,0)",
+                    borderWidth: 0
+                },
+                emphasis: {
+                    color: "rgba(0,0,0,0)",
+                    borderWidth: 0
+                }
+            };
+            var dataStyle = {
+                normal: {
+                    // formatter: '{d}%', 百分比
+                    // formatter: '{c}', 次数
+                    formatter: function(data){
+                        // return data.percent.toFixed(0)+"%" //取精度
+                        return data.value+"次"
+                    },
+                    position: 'center',
+                    show: true,
+                    textStyle: {
+                        fontSize: '17',
+                        fontWeight: 'normal',
+                        color: '#fff'
+                    }
+                }
+            };
+
+
+            option = {
+                title: [
+                    {
+                        text: '',
+                        x: '20',
+                        y: '20',
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: 20
+                        }
+                    },{
+                        text: '增加',
+                        left: '29.8%',
+                        top: '35%',
+                        textAlign: 'center',
+                        textStyle: {
+                            fontWeight: 'normal',
+                            fontSize: '16',
+                            color: '#fff',
+                            textAlign: 'center',
+                        },
+                    }, {
+                        text: '查询',
+                        left: '70%',
+                        top: '35%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#fff',
+                            fontWeight: 'normal',
+                            fontSize: '16',
+                            textAlign: 'center',
+                        },
+                    },
+                    {
+                        text: '修改',
+                        left: '29.8%',
+                        top: '85%',
+                        textAlign: 'center',
+                        textStyle: {
+                            fontWeight: 'normal',
+                            fontSize: '16',
+                            color: '#fff',
+                            textAlign: 'center',
+                        },
+                    }, {
+                        text: '删除',
+                        left: '70%',
+                        top: '85%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#fff',
+                            fontWeight: 'normal',
+                            fontSize: '16',
+                            textAlign: 'center',
+                        },
+                    }],
+                series: [{
+                    type: 'pie',
+                    hoverAnimation: false, //鼠标经过的特效
+                    radius: ['25%', '31%'],
+                    center: ['30%', '25%'],
+                    startAngle: 225,
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    label: {
+                        normal: {
+                            position: 'center'
+                        }
+                    },
+                    data: [{
+                        value: res.insertCallNumber,
+                        itemStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: '#99da69'
+                                }, {
+                                    offset: 1,
+                                    color: '#01babc'
+                                }]),
+                            }
+                        },
+                        label: dataStyle,
+                    }, {
+                        value: (res.callNumber-res.insertCallNumber),
+                        itemStyle: placeHolderStyle,
+                    },
+
+                    ]
+                },
+                    {
+                        type: 'pie',
+                        hoverAnimation: false,
+                        radius: ['25%', '31%'],
+                        center: ['70%', '25%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: res.selectCallNumber,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#9f3edd'
+                                    }, {
+                                        offset: 1,
+                                        color: '#4897f6'
+                                    }]),
+                                }
+                            },
+                            label: dataStyle,
+                        }, {
+                            value: (res.callNumber-res.selectCallNumber),
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                    {
+                        type: 'pie',
+                        hoverAnimation: false, //鼠标经过的特效
+                        radius: ['25%', '31%'],
+                        center: ['30%', '75%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: res.updateCallNumber,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#FD657C'
+                                    }, {
+                                        offset: 1,
+                                        color: '#D3F500'
+                                    }]),
+                                }
+                            },
+                            label: dataStyle,
+                        }, {
+                            value: (res.callNumber-res.updateCallNumber),
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                    {
+                        type: 'pie',
+                        hoverAnimation: false,
+                        radius: ['25%', '31%'],
+                        center: ['70%', '75%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: res.deleteCallNumber,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#F26529'
+                                    }, {
+                                        offset: 1,
+                                        color: '#F37641'
+                                    }]),
+                                }
+                            },
+                            label: dataStyle,
+                        }, {
+                            value: (res.callNumber-res.deleteCallNumber),
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                    //外圈的边框
+                    {
+                        // name: '总人数',
+                        type: 'pie',
+                        hoverAnimation: false, //鼠标经过的特效
+                        radius: ['31%', '32%'],
+                        center: ['30%', '25%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: 75,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#01babc'
+                                    }, {
+                                        offset: 1,
+                                        color: '#99da69'
+                                    }]),
+                                }
+                            },
+                        }, {
+                            value: 25,
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                    {
+                        type: 'pie',
+                        hoverAnimation: false,
+                        radius: ['31%', '32%'],
+                        center: ['70%', '25%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: 75,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#4897f6'
+                                    }, {
+                                        offset: 1,
+                                        color: '#9f3edd'
+                                    }]),
+                                }
+                            },
+                        }, {
+                            value: 25,
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                    {
+                        // name: '总人数',
+                        type: 'pie',
+                        hoverAnimation: false, //鼠标经过的特效
+                        radius: ['31%', '32%'],
+                        center: ['30%', '75%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: 75,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#D3F500'
+                                    }, {
+                                        offset: 1,
+                                        color: '#FD657C'
+                                    }]),
+                                }
+                            },
+                        }, {
+                            value: 25,
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                    {
+                        type: 'pie',
+                        hoverAnimation: false,
+                        radius: ['31%', '32%'],
+                        center: ['70%', '75%'],
+                        startAngle: 225,
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        label: {
+                            normal: {
+                                position: 'center'
+                            }
+                        },
+                        data: [{
+                            value: 75,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#F37641'
+                                    }, {
+                                        offset: 1,
+                                        color: '#F26529'
+                                    }]),
+                                }
+                            },
+                        }, {
+                            value: 25,
+                            itemStyle: placeHolderStyle,
+                        },
+
+                        ]
+                    },
+                ]
+            };
+            chart.setOption(option);
+                }
+            })
+        }
+
+        //账号接口调用次数排名
+        function DYCSTJ2_echart() {
+            $.ajax({
+                type: "GET",
+                url:'/InterfaceAuthorization/getCallNumberByCallTime',
+                success: function (res) {
+                    var date=[];
+                    var callNumber=[];
+                    for(var i in res.list){
+                        date.push(res.list[i].date);
+                        callNumber.push(res.list[i].callNumber);
+                    }
+                    var chart = echarts.init(document.getElementById("DYCSTJ2_echart"), 'macarons');
+                    option = {
+                        grid: {
+                            top: "5%",
+                            bottom: "10%",//也可设置left和right设置距离来控制图表的大小
+                            left: "3%",
+                            right: "3%"
+                        },
+                        tooltip: {
+                            trigger: "axis",
+                        },
+                        xAxis: {
+                            data: date,
+                            "axisLine": {
+                                "show": true,
+                            },
+                            "splitLine": {
+                                "show": false
+                            },
+                            "axisTick": {
+                                "show": false
+                            },
+                            "splitArea": {
+                                "show": false
+                            },
+
+                            axisLabel: {
+                                show: true,
+                                textStyle: {
+                                    color: "#fff" //X轴文字颜色
+                                },
+                                lineHeight: 16,
+                               /* formatter: function (params) {//文字换行
+                                    var newParamsName = ''
+                                    var paramsNameNumber = params.length
+                                    var provideNumber = 2
+                                    var rowNumber = Math.ceil(paramsNameNumber / provideNumber)
+                                    for (let row = 0; row < rowNumber; row++) {
+                                        newParamsName += params.substring(row * provideNumber, (row + 1) * provideNumber) + '\n'
+                                    }
+                                    return newParamsName
+                                }*/
+                            },
+
+                        },
+                        yAxis: [{
+                            type: "value",
+                            name: "%",
+                            nameTextStyle: {
+                                color: "#fff",
+                                padding: [0, 20, 0, 0]
+                            },
+                            "axisLine": {
+                                "show": true,
+                            },
+                            "splitLine": {
+                                "show": false
+                            },
+                            "axisTick": {
+                                "show": false
+                            },
+                            "splitArea": {
+                                "show": false
+                            },
+                            "axisLabel": {
+                                "interval": 0,
+                                color: '#fff',
+                            },
+
+                        },
+                            {
+                                type: "value",
+                                name: "",
+                                nameTextStyle: {
+                                    color: "#fff",
+                                    padding: [0, 0, 0, 20]
+                                },
+                                position: "right",
+                                "axisLine": {
+                                    "show": true,
+                                },
+                                "splitLine": {
+                                    "show": false
+                                },
+                                "axisTick": {
+                                    "show": false
+                                },
+                                "splitArea": {
+                                    "show": false
+                                },
+                                "axisLabel": {
+                                    /*"interval": 0,
+                                    color: '#fff',*/
+                                    "show": false
+                                },
+                            },
+                           /* {
+                                type: "value",
+                                gridIndex: 0,
+                                min: 50,
+                                max: 100,
+                                splitNumber: 8,
+
+                                "axisLine": {
+                                    "show": true,
+                                },
+                                "splitLine": {
+                                    "show": false
+                                },
+                                "axisTick": {
+                                    "show": false
+                                },
+                                "splitArea": {
+                                    "show": false
+                                },
+                                "axisLabel": {
+                                    "interval": 0,
+                                    color: '#fff',
+                                },
+                            }*/
+                        ],
+                        series: [
+                            {
+                                name: "接口调用次数",
+                                type: "bar",
+                                barWidth: 15,
+                                itemStyle: {
+                                    normal: {
+                                        barBorderRadius: [7, 7, 7, 7],
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                            offset: 0,
+                                            color: "#5BAEEE"
+                                        },
+                                            {
+                                                offset: 1,
+                                                color: "#4B8ED8"
+                                            }
+                                        ])
+                                    }
+                                },
+                                data: callNumber
+                            },
+                            {
+                                name: "接口调用次数",
+                                type: "line",
+                                yAxisIndex: 1, //根据右侧的y轴
+                                smooth: true, //平滑曲线
+                                showAllSymbol: true, //显示所有图形。
+                                symbol: "circle", //实心圆
+                                symbolSize: 2, //标记的大小
+                                itemStyle: {
+                                    //折线拐点标志的样式
+                                    color: "FF7800",
+                                    borderColor: '#fff'
+                                },
+                                lineStyle: {
+                                    color: "#FF7800"
+                                },
+                                data: callNumber
+                            }
+                        ]
+                    };
+                    chart.setOption(option);
+                }
+            })
+        }
+    </script>
+</body>
+</html>

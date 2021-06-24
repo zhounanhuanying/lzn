@@ -1,0 +1,102 @@
+.img_toFindImg {
+    position: relative;
+    width: 140px;
+    height: 150px;
+    margin: 0 10px;
+    display: inline
+}
+
+.upload-imgbox {
+    padding: 0 5px;
+    margin-left: 0;
+    cursor: pointer;
+    clear: both;
+}
+
+.upLoadBox {
+    /* height: 110px; */
+    /* margin-bottom: 53px; */
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.upload {
+    height: 130px;
+    width: 13%;
+    background: #eee url(../Images/add.png) no-repeat center center;
+    background-size: 30px;
+    border: none;
+    cursor: pointer;
+    margin: 0 1%;
+}
+
+.upload1 {
+    height: 130px;
+    width: 13%;
+    background-size: 30px;
+    border: none;
+    cursor: pointer;
+    margin: 0 1%;
+}
+
+.person_img {
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+}
+
+.person_img > label {
+    width: 120px;
+}
+
+.person_img > div {
+    width: 78%;
+}
+
+.layuiUploadImg {
+    width: 140px;
+    height: 125px;
+}
+
+.layui-icon-close {
+    font-size: 16px;
+    position: absolute;
+    top: 0;
+    right: -15px;
+    color: red;
+}
+
+.conterh1 {
+    margin: 35px;
+}
+
+.layui-form-label {
+    width: 134px;
+}
+
+.tijiao {
+    margin-left: 345px;
+    margin-top: 30px;
+}
+
+.success-icon {
+    text-align: center;
+    position: fixed;
+    top: 20%;
+    left: 36%;
+    z-index: 9;
+}
+
+.success-icon > i {
+    font-size: 100px;
+    color: #009688;
+}
+
+.asterisk {
+    width: 5px;
+    height: 20px;
+    margin-top: 6px;
+    margin-right: 5px;
+    color: red;
+}

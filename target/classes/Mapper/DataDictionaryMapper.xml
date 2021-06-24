@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.DataDictionaryMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.DataDictionary">
+        <id column="dic_id" jdbcType="INTEGER" property="dicId" />
+        <result column="dic_name" jdbcType="VARCHAR" property="dicName" />
+        <result column="dic_code" jdbcType="VARCHAR" property="dicCode" />
+        <result column="dic_type" jdbcType="VARCHAR" property="dicType" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    dic_id, dic_name, dic_code, dic_type, sort
+  </sql>
+
+    <select id="dataCount" resultType="int">
+        SELECT count(*) FROM datadictionary
+        <where>
+            <if test="dicType != null and dicType != ''"> dic_type=#{dicType}</if>
+        </where>
+    </select>
+    <select id="getDataDictionaryList" resultType="com.bfdb.entity.DataDictionary">
+        SELECT dic_id,dic_name, dic_code, dic_type,sort
+        FROM datadictionary
+        <where>
+            <if test="id != null and id != ''">dic_id=#{dicId}</if>
+            <if test="dicName != null and dicName != ''">and dic_name=#{dicName}</if>
+            <if test="dicCode != null and dicCode != ''">and dic_code=#{dicCode}</if>
+            <if test="dicType != null and dicType != ''">and dic_type=#{dicType}</if>
+            <if test="sort != null and sort != ''">and sort=#{sort}</if>
+        </where>
+        limit #{page},#{limit}
+    </select>
+    <!--根据字典类型，查询字典信息-->
+    <select id="setlectDataDictionaryList" parameterType="String" resultMap="BaseResultMap">
+        SELECT dic_id,dic_name, dic_code, dic_type,sort
+        FROM datadictionary
+        where   <if test="_parameter != null"> dic_type=#{dicType}</if>
+    </select>
+    <!--根据字典名称，查询字典编码-->
+    <select id="queryDataDictionaryByName" parameterType="java.lang.String" resultType="String">
+        SELECT dic_code
+        FROM datadictionary
+        where   <if test="name != null || name != ''"> dic_name=#{name}</if>
+    </select>
+
+    <!--根据字典编码，查询字典名称-->
+    <select id="queryDataDictionaryByCode" parameterType="java.lang.String" resultType="String">
+        SELECT dic_name
+        FROM datadictionary
+        where   <if test="dicCode != null || dicCode != ''"> dic_code=#{dicCode}</if>
+    </select>
+
+    <!--根据字典类型，查询字典信息-->
+    <select id="setlectDataDictionaryListTest" parameterType="String" resultMap="BaseResultMap">
+        SELECT dic_id,dic_name, dic_code, dic_type,sort
+        FROM datadictionary
+        where dic_type='department' HAVING dic_code BETWEEN 57 AND 62
+    </select>
+
+    <update id="updateDataDictionary">
+        UPDATE datadictionary
+        <set>
+            <if test="dicName != null and dicName != ''">dic_name=#{dicName},</if>
+            <if test="dicCode != null and dicCode != ''">and dic_code=#{dicCode},</if>
+            <if test="dicType != null and dicType != ''">and dic_type=#{dicType},</if>
+            <if test="sort != null and sort != ''">and sort=#{sort}</if>
+        </set>
+        WHERE dic_id=#{dicId}
+    </update>
+    <!--查询未知的字典信息-->
+    <select id="setlectDataDictionaryByweizhi" parameterType="String" resultMap="BaseResultMap" >
+        SELECT dic_id,dic_name, dic_code, dic_type,sort  FROM datadictionary where dic_code='weizhi' and  dic_type=#{dicType,jdbcType=VARCHAR}
+    </select>
+    <!--查询未知的字典信息-->
+    <select id="selectDataDictionaryBadname" parameterType="String" resultMap="BaseResultMap" >
+        SELECT dic_id,dic_name, dic_code, dic_type,sort  FROM datadictionary where dic_Code=#{dicCode,jdbcType=VARCHAR} and  dic_type=#{dicType,jdbcType=VARCHAR}
+    </select>
+    <!--根据id查询字典类型s-->
+    <select id="setlectByUnknown"  parameterType="Integer" resultMap="BaseResultMap">
+        SELECT dic_id,dic_name, dic_code, dic_type,sort  FROM datadictionary where dic_id=#{dicId} and   dic_code='weizhi'
+    </select>
+    <insert id="insertDataDictionary" parameterType="com.bfdb.entity.DataDictionary">
+        INSERT INTO datadictionary (dic_name, dic_code, dic_type,sort)
+        VALUES(#{dicName},#{dicCode},#{dicType},#{sort})
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="dicId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        <!--<selectKey resultType="int" keyProperty="dic_id" >-->
+        <!--SELECT LAST_INSERT_ID() AS dic_id-->
+        <!--</selectKey>-->
+        --         SELECT LAST_INSERT_ID()
+    </insert>
+    <delete id="deleteDataDictionaryById">
+        DELETE FROM datadictionary WHERE dic_id=#{dicId}
+    </delete>
+    <!--根据全部类型查询code-->
+    <select id="getAllDicCode"  parameterType="java.lang.String" resultType="String">
+        SELECT dic_code FROM datadictionary  where  dic_type=#{dicType}
+    </select>
+    <!--查询是否有重复的名称-->
+    <select id="getAllDicName"  parameterType="java.lang.String" resultType="String">
+        SELECT dic_name FROM datadictionary  where  dic_name=#{dicName}
+    </select>
+    <select id="getAllDicType" resultMap="BaseResultMap">
+        SELECT  dic_name, dic_code FROM datadictionary WHERE dic_type='基础类型'
+    </select>
+
+    <delete id="deleteDictionaryList">
+       DELETE FROM datadictionary where dic_id
+       in
+       <foreach item="ids" collection="array" open="(" close=")" separator=",">
+            #{ids}
+       </foreach>
+    </delete>
+     <!--查询字典类型-->
+    <select id="getDicListByDicName" resultType="com.bfdb.entity.DataDictionary">
+        SELECT dic_id,dic_name, dic_code, dic_type,sort FROM datadictionary  where dic_name=#{dicName,jdbcType=VARCHAR} and  dic_type=#{dicType,jdbcType=VARCHAR}
+    </select>
+    <!--查询字典类型-->
+    <select id="getDataDictionaryByDicCodeList" resultType="com.bfdb.entity.DataDictionary">
+          SELECT dic_id,dic_name, dic_code, dic_type,sort      FROM datadictionary    where  dic_type='基础类型';
+    </select>
+
+    <!--判断此部门是否存在-->
+    <select id="selectDataDictionaryByDicTypeAndDicName" parameterType="com.bfdb.entity.DataDictionary" resultType="com.bfdb.entity.DataDictionary">
+        select * from datadictionary
+        <where>
+            <if test="dicCode != null">
+                and dic_code = #{dicCode}
+            </if>
+            <if test="dicType != null">
+                and dic_type = #{dicType}
+            </if>
+            <if test="dicName != null">
+                and dic_name = #{dicName}
+            </if>
+        </where>
+    </select>
+<!--    修改字典基础类型-->
+    <update id="updataDataDictionaryType" parameterType="com.bfdb.entity.DataDictionary">
+        update datadictionary set dic_code = #{dicCode},dic_type = #{dicType},dic_name = #{dicName} where dic_id = #{dicId}
+    </update>
+</mapper>

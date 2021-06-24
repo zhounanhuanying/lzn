@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bfdb.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="user_token" jdbcType="VARCHAR" property="userToken"/>
+        <result column="token_time" jdbcType="VARCHAR" property="tokenTime"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+       user_id, user_name, `password`, user_token, token_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.bfdb.entity.User">
+    insert into user (user_id, user_name, `password`,
+      user_token, token_time)
+    values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{userToken,jdbcType=VARCHAR}, #{tokenTime,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.bfdb.entity.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="password != null">
+                `password`,
+            </if>
+            <if test="userToken != null">
+                user_token,
+            </if>
+            <if test="tokenTime != null">
+                token_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="userToken != null">
+                #{userToken,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenTime != null">
+                #{tokenTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--修改用户信息-->
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.User">
+        update user
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                `password` = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="userToken != null">
+                user_token = #{userToken,jdbcType=VARCHAR},
+            </if>
+            <if test="tokenTime != null">
+                token_time = #{tokenTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.User">
+    update user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      `password` = #{password,jdbcType=VARCHAR},
+      user_token = #{userToken,jdbcType=VARCHAR},
+      token_time = #{tokenTime,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+    <select id="userByUserId" parameterType="java.lang.Integer" resultType="com.bfdb.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user WHERE user_id=#{userId}
+    </select>
+    <select id="selectAllUser" resultType="com.bfdb.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
+        limit #{page},#{limit}
+    </select>
+    <select id="dataCount" resultType="int" parameterType="java.lang.Integer">
+        SELECT COUNT(*)FROM user
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM user WHERE user_name =#{userName}
+    </select>
+
+    <!--根据用户名称，查询用户信息-->
+    <select id="selectByName" resultType="com.bfdb.entity.User">
+        select
+        <include refid="Base_Column_List"/>
+        from user where user_name=#{user.userName,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

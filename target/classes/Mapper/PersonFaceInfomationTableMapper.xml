@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.PersonFaceInfomationTableMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.PersonFaceInfomationTable">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="person_id" jdbcType="INTEGER" property="personId"/>
+        <result column="face_address" jdbcType="VARCHAR" property="faceAddress"/>
+        <result column="campus_card_address" jdbcType="VARCHAR" property="campusCardAddress"/>
+        <result column="idcardImage" jdbcType="VARCHAR" property="idcardImage"/>
+        <result column="faceImage" jdbcType="VARCHAR" property="faceImage"/>
+        <result column="data_source" jdbcType="VARCHAR" property="dataSource"/>
+        <result column="photo_level" jdbcType="INTEGER" property="photoLevel"/>
+        <result column="identification" jdbcType="VARCHAR" property="identification" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, person_id, face_address, campus_card_address,idcardImage,faceImage, data_source, photo_level,identification
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from person_face_infomation_table
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from person_face_infomation_table
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.bfdb.entity.PersonFaceInfomationTable"
+            useGeneratedKeys="true">
+    insert into person_face_infomation_table (person_id, face_address, campus_card_address,
+      data_source, photo_level, idcardImage,
+      faceImage, identification)
+    values (#{personId,jdbcType=INTEGER}, #{faceAddress,jdbcType=VARCHAR}, #{campusCardAddress,jdbcType=VARCHAR},
+      #{dataSource,jdbcType=VARCHAR}, #{photoLevel,jdbcType=INTEGER}, #{idcardImage,jdbcType=VARCHAR},
+      #{faceImage,jdbcType=VARCHAR}, #{identification,jdbcType=VARCHAR})
+  </insert>
+    <!-- 插入人员照片地址-->
+    <insert id="insertPersonNewFaceInfomationTable" parameterType="java.util.List" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        insert into person_face_infomation_table (person_id, face_address, campus_card_address,idcardImage,faceImage,
+        data_source, photo_level,identification)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.personId},
+            #{item.faceAddress},
+            #{item.campusCardAddress},
+            #{item.idcardImage},
+            #{item.faceImage},
+            #{item.dataSource},
+            #{item.photoLevel},
+            #{item.identification})
+        </foreach>
+    </insert>
+    <!--查询数据来源-->
+    <select id="selectDataSource" resultType="com.bfdb.entity.PersonFaceInfomationTable">
+       SELECT	tt.* FROM	person_face_infomation_table tt
+      LEFT JOIN persontable  pr on pr.person_id=tt.person_id
+     where  pr.is_deleted=1 and tt.data_source=#{dataSource,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.bfdb.entity.PersonFaceInfomationTable" useGeneratedKeys="true">
+        insert into person_face_infomation_table
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="personId != null">
+                person_id,
+            </if>
+            <if test="faceAddress != null">
+                face_address,
+            </if>
+            <if test="campusCardAddress != null">
+                campus_card_address,
+            </if>
+            <if test="dataSource != null">
+                data_source,
+            </if>
+            <if test="photoLevel != null">
+                photo_level,
+            </if>
+            <if test="idcardImage != null">
+                idcardImage,
+            </if>
+            <if test="faceImage != null">
+                faceImage,
+            </if>
+            <if test="identification != null">
+                identification,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="personId != null">
+                #{personId,jdbcType=INTEGER},
+            </if>
+            <if test="faceAddress != null">
+                #{faceAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="campusCardAddress != null">
+                #{campusCardAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="dataSource != null">
+                #{dataSource,jdbcType=VARCHAR},
+            </if>
+            <if test="photoLevel != null">
+                #{photoLevel,jdbcType=INTEGER},
+            </if>
+            <if test="idcardImage != null">
+                 #{idcardImage,jdbcType=VARCHAR},
+            </if>
+            <if test="faceImage != null">
+                #{faceImage,jdbcType=VARCHAR},
+            </if>
+            <if test="identification != null">
+                #{identification,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.PersonFaceInfomationTable">
+        update person_face_infomation_table
+        <set>
+            <if test="personId != null">
+                person_id = #{personId,jdbcType=INTEGER},
+            </if>
+            <if test="faceAddress != null">
+                face_address = #{faceAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="campusCardAddress != null">
+                campus_card_address = #{campusCardAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="idcardImage != null">
+                idcardImage = #{idcardImage,jdbcType=VARCHAR},
+            </if>
+            <if test="faceImage != null">
+                faceImage = #{faceImage,jdbcType=VARCHAR},
+            </if>
+            <if test="dataSource != null">
+                data_source = #{dataSource,jdbcType=VARCHAR},
+            </if>
+            <if test="photoLevel != null">
+                photo_level = #{photoLevel,jdbcType=INTEGER},
+            </if>
+            <if test="identification != null">
+                identification = #{identification,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.PersonFaceInfomationTable">
+    update person_face_infomation_table
+    set person_id = #{personId,jdbcType=INTEGER},
+      face_address = #{faceAddress,jdbcType=VARCHAR},
+      campus_card_address = #{campusCardAddress,jdbcType=VARCHAR},
+      faceImage = #{faceImage,jdbcType=VARCHAR},
+      data_source = #{dataSource,jdbcType=VARCHAR},
+      photo_level = #{photoLevel,jdbcType=INTEGER},
+       identification = #{identification,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <!--查询人员信息中是否有身份证人脸图-->
+    <select id="faceAdddres" parameterType="Integer"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from person_face_infomation_table
+        where person_id = #{personId,jdbcType=INTEGER}  and  identification='1'
+    </select>
+    <!--查询人脸照片为多少张-->
+    <select id="faceAddresscount" parameterType="Integer" resultType="int">
+     select
+          count(pfi.face_address)
+        from person_face_infomation_table  pfi where  pfi.person_id=#{personId,jdbcType=INTEGER}
+    </select>
+
+    <!--查询人证核验的照片有多少张-->
+    <select id="faceInfoImageCount" parameterType="Integer" resultType="int">
+     select
+          count(pfi.faceImage)
+        from person_face_infomation_table  pfi where  pfi.person_id=#{personId,jdbcType=INTEGER}
+    </select>
+
+    <!--循环删除人员照片信息-->
+    <delete id="deletePersonTableByUserId" parameterType="int">
+        delete from person_face_infomation_table where person_id in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!--编辑删除人员照片信息-->
+    <delete id="deletePersontableByPersonId" parameterType="int">
+        delete from person_face_infomation_table where person_id =#{personId}
+    </delete>
+    <!--根据人员信息删除人员照片信息-->
+    <delete id="deletePersonTableByImagePersonId" parameterType="int">
+        delete from person_face_infomation_table where  person_id = #{personId,jdbcType=INTEGER}
+    </delete>
+    <!--根据人员personId查询相关图片路径-->
+    <select id="selectPersonTableByImagePersonId" parameterType="int" resultType="com.bfdb.entity.PersonFaceInfomationTable">
+        select face_address,campus_card_address,idcardImage,faceImage from person_face_infomation_table where person_id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectImageList" parameterType="int" resultMap="BaseResultMap">
+        select * from person_face_infomation_table where person_id=#{personId};
+    </select>
+</mapper>

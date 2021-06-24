@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人脸信息采集</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <style>
+        body{
+            margin:0;
+            padding:0;
+        }
+        .info-collect-body{
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .info-collect-head{
+            background-color: #4568fa;
+        }
+        .info-collect-head>h3{
+            font-size: 1.5rem;
+            padding: 10px 0;
+            text-align: center;
+            color: #fff;
+            margin: 0;
+            font-weight: normal;
+        }
+        .btn-block{
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15vh 0 0;
+            cursor: pointer;
+        }
+        .btn-block-img{
+            max-width: 500px;
+            height: 200px;
+            
+            margin-bottom: 30px;
+            background: url('/Content/Images/block_bg.png') no-repeat 0 0;
+            background-size: 100% 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .btn-block-img>img{
+            
+            width: 110px;
+            margin: 0 70px;
+        }
+        .btn-block-img>span{
+            
+            font-size: 2.5rem;
+            color: #fff;
+        }
+        .img-margin img{
+            margin-right:95px;
+        }
+        .info-collect-content{
+            position: relative;
+        }
+        .info-collect-content::after{
+            display: block;
+            content: "";
+            width:100%;
+            height:400px;
+            position: absolute;
+            bottom:0;
+            background: url(/Content/Images/index_bg.png) no-repeat 0 0;
+            background-size: 100% 100%;
+        }
+        @media screen and (min-width:769px) and (max-width:1024px){
+            .info-collect-head>h3{
+                font-size:3rem;
+                padding: 20px 0;
+            }
+            .btn-block{
+                max-width:700px;
+            }
+            .btn-block-img{
+                max-width:700px;
+                height:255px;
+            }
+            .btn-block-img>img{
+                width: 150px;
+            }
+            .btn-block-img>span{
+                font-size: 4rem;
+            }
+
+        }
+        @media screen and (max-width: 768px){
+            .btn-block {
+                max-width: 450px;
+            }
+            .btn-block-img{
+                max-width: 450px;
+            }
+            .btn-block-img>img {
+                width: 115px;
+                margin: 0 45px;
+            }
+            .btn-block-img>span {
+                font-size: 3rem;
+            }
+            .info-collect-head>h3{
+                font-size: 2rem;
+                padding: 15px 0;
+            }
+        }
+        @media screen and (min-width: 320px) and (max-width:700px){
+            .info-collect-head>h3{
+                font-size: 1.5rem;
+                padding: 10px 0;
+            }
+            .btn-block {
+                max-width: 320px;
+            }
+            .btn-block-img{
+                max-width: 320px;
+                height:160px;
+            }
+            .btn-block-img>img {
+                width: 85px;
+                margin: 0 30px;
+            }
+            .img-margin img{
+                margin-right: 60px;
+            }
+            .btn-block-img>span {
+                font-size: 2rem;
+            }
+            .info-collect-content::after{
+                height:158px;
+            }
+        }
+        @media screen and (max-width: 320px){
+            .btn-block{
+                max-width: 280px;
+            }
+            .btn-block-img{
+                max-width: 280px;
+                height: 130px;
+            }
+            .btn-block-img>img{
+                width: 70px;
+                margin: 0 25px;
+            }
+            .info-collect-content::after {
+                height: 120px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="info-collect-body">
+        <input id="openId" type="hidden" th:value="${openid}">
+        <div class="info-collect-head">
+            <h3>首页</h3>
+        </div>
+        <div class="info-collect-content">
+            <div class="btn-block">
+                <div class="btn-block-img" id="demo1">
+                    <img src="/Content/Images/load_icon.png" alt="">
+                    <span>信息录入</span>
+                </div>
+               <!-- <div class="btn-block-img img-margin" id="demo2">
+                    <img src="/Content/Images/info_icon.png" alt="">
+                    <span>登录</span>
+                </div>-->
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            var winHeight=$(window).height();
+            var headH=$(".info-collect-head").height();
+            var contentH=(winHeight-headH);
+            $(".info-collect-content").css({height:contentH});
+        })
+        // 跳转到人脸采集页面
+        $(document).on('click','#demo1',function(){
+            location.href="/personCollection?openid="+$("#openId").val();
+        })
+       /* //跳转到登陆页面
+        $(document).on('click','#demo2',function(){
+            location.href="/H5login";
+        });*/
+       /* function urlResolve () {
+            var url = location.search; //获取url中"?"符后的字符串
+            var theRequest = new Object();    //声明一个对象
+            if(url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for(var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }*/
+    </script>
+</body>
+</html>

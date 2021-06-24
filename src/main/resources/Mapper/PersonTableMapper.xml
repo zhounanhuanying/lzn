@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.PersonTableMapper">
+    <resultMap id="BaseResultMap1" type="com.bfdb.entity.PersonTable">
+        <id column="person_id" jdbcType="INTEGER" property="personId"/>
+        <result column="person_name" jdbcType="VARCHAR" property="personName"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="identityNo" jdbcType="VARCHAR" property="identityNo"/>
+        <result column="birthday" jdbcType="VARCHAR" property="birthday"/>
+        <result column="residentialAddress" jdbcType="VARCHAR" property="residentialAddress"/>
+        <result column="ethnicity" jdbcType="VARCHAR" property="ethnicity"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="identication_info" jdbcType="VARCHAR" property="identicationInfo"/>
+        <result column="student_level" jdbcType="VARCHAR" property="studentLevel"/>
+        <result column="student_levels" jdbcType="VARCHAR" property="studentLevels"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="grades" jdbcType="VARCHAR" property="grades"/>
+        <result column="departments" jdbcType="VARCHAR" property="departments"/>
+        <result column="departmentss" jdbcType="VARCHAR" property="departmentss"/>
+        <result column="identity_type_code" jdbcType="VARCHAR" property="identityTypeCode"/>
+        <result column="out_person_infomation" jdbcType="VARCHAR" property="outPersonInfomation"/>
+        <result column="person_code" jdbcType="VARCHAR" property="personCode"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="is_deleted" jdbcType="INTEGER" property="isDeleted"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="genders" jdbcType="VARCHAR" property="genders"/>
+        <result column="parkid" jdbcType="VARCHAR" property="parkId"/>
+        <result column="organizitionid" jdbcType="VARCHAR" property="organizitionId"/>
+        <result column="schoolclass" jdbcType="VARCHAR" property="schoolClass"/>
+        <result column="personnel_unique_code" jdbcType="VARCHAR" property="personnelUniqueCode"/>
+        <collection  property="personFaceInfomationTable" ofType="com.bfdb.entity.PersonFaceInfomationTable">
+            <id column="id" property="id"></id>
+            <result column="person_id" property="personId"></result>
+            <result column="face_address" property="faceAddress"></result>
+            <result column="campus_card_address" property="campusCardAddress"></result>
+            <result column="idcardImage" property="idcardImage"></result>
+            <result column="faceImage" property="faceImage"></result>
+            <result column="data_source" property="dataSource"></result>
+            <result column="photo_level" property="photoLevel"></result>
+            <result column="identification" jdbcType="VARCHAR" property="identification" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.bfdb.entity.PersonFaceInfomationTable">
+        <id column="id" property="id"></id>
+        <result column="person_id" property="personId"></result>
+        <result column="face_address" property="faceAddress"></result>
+        <result column="campus_card_address" property="campusCardAddress"></result>
+        <result column="idcardImage" property="idcardImage"></result>
+        <result column="faceImage" property="faceImage"></result>
+        <result column="data_source" property="dataSource"></result>
+        <result column="data_sources" property="dataSources"></result>
+        <result column="photo_level" property="photoLevel"></result>
+        <result column="identification" jdbcType="VARCHAR" property="identification" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.PersonTable">
+        <id column="person_id" jdbcType="INTEGER" property="personId"/>
+        <result column="person_name" jdbcType="VARCHAR" property="personName"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="identityNo" jdbcType="VARCHAR" property="identityNo"/>
+        <result column="birthday" jdbcType="VARCHAR" property="birthday"/>
+        <result column="residentialAddress" jdbcType="VARCHAR" property="residentialAddress"/>
+        <result column="ethnicity" jdbcType="VARCHAR" property="ethnicity"/>
+        <result column="ethnicitys" jdbcType="VARCHAR" property="ethnicitys"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="identication_info" jdbcType="VARCHAR" property="identicationInfo"/>
+        <result column="identication_infos" jdbcType="VARCHAR" property="identicationInfos"/>
+        <result column="student_level" jdbcType="VARCHAR" property="studentLevel"/>
+        <result column="student_levels" jdbcType="VARCHAR" property="studentLevels"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="grades" jdbcType="VARCHAR" property="grades"/>
+        <result column="departments" jdbcType="VARCHAR" property="departments"/>
+        <result column="departmentss" jdbcType="VARCHAR" property="departmentss"/>
+        <result column="identity_type_code" jdbcType="VARCHAR" property="identityTypeCode"/>
+        <result column="out_person_infomation" jdbcType="VARCHAR" property="outPersonInfomation"/>
+        <result column="person_code" jdbcType="VARCHAR" property="personCode"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="is_deleted" jdbcType="INTEGER" property="isDeleted"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="genders" jdbcType="VARCHAR" property="genders"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="parkid" jdbcType="VARCHAR" property="parkId"/>
+        <result column="personnel_unique_code" jdbcType="VARCHAR" property="personnelUniqueCode"/>
+        <result column="organizitionid" jdbcType="VARCHAR" property="organizitionId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    person_id, person_name, gender,identityNo,birthday,residentialAddress,ethnicity, telephone,identication_info, student_level, grade,
+    departments, identity_type_code, out_person_infomation, person_code, create_time, 
+    modify_time,is_deleted, description,open_id,parkid,organizitionid
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from persontable
+        where person_id = #{personId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from persontable
+    where person_id = #{personId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.bfdb.entity.PersonTable" keyColumn="person_id" keyProperty="personId"
+            useGeneratedKeys="true">
+    insert into persontable (person_name, gender,identityNo,birthday,residentialAddress,ethnicity,
+      telephone, identication_info, student_level, 
+      grade, departments, identity_type_code, 
+      out_person_infomation, person_code, create_time, 
+      modify_time, is_deleted,description,open_id,parkid,organizitionid)
+    values (#{personName,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER},#{identityNo,jdbcType=VARCHAR},#{birthday,jdbcType=VARCHAR},#{residentialAddress,jdbcType=VARCHAR},#{ethnicity,jdbcType=VARCHAR},
+      #{telephone,jdbcType=VARCHAR}, #{identicationInfo,jdbcType=VARCHAR}, #{studentLevel,jdbcType=VARCHAR}, 
+      #{grade,jdbcType=VARCHAR}, #{departments,jdbcType=VARCHAR}, #{identityTypeCode,jdbcType=VARCHAR}, 
+      #{outPersonInfomation,jdbcType=VARCHAR}, #{personCode,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modifyTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=INTEGER},#{description,jdbcType=VARCHAR},
+      #{open_id,jdbcType=VARCHAR},#{parkid,jdbcType=VARCHAR},,#{organizitionId,jdbcType=VARCHAR})
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.bfdb.entity.PersonTable" keyColumn="person_id"
+            keyProperty="personId" useGeneratedKeys="true">
+        insert into persontable
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="personName != null">
+                person_name,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="identityNo != null">
+                identityNo,
+            </if>
+            <if test="birthday != null">
+                birthday,
+            </if>
+            <if test="residentialAddress != null">
+                residentialAddress,
+            </if>
+            <if test="ethnicity != null">
+                ethnicity,
+            </if>
+            <if test="telephone != null">
+                telephone,
+            </if>
+            <if test="identicationInfo != null">
+                identication_info,
+            </if>
+            <if test="studentLevel != null">
+                student_level,
+            </if>
+            <if test="grade != null">
+                grade,
+            </if>
+            <if test="departments != null">
+                departments,
+            </if>
+            <if test="identityTypeCode != null">
+                identity_type_code,
+            </if>
+            <if test="outPersonInfomation != null">
+                out_person_infomation,
+            </if>
+            <if test="personCode != null">
+                person_code,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifyTime != null">
+                modify_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="parkId != null">
+                parkid,
+            </if>
+            <if test="organizitionId != null">
+                organizitionid,
+            </if>
+            <if test="schoolClass != null">
+                schoolclass,
+            </if>
+            <if test="personnelUniqueCode != null">
+                personnel_unique_code
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="personName != null">
+                #{personName,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=INTEGER},
+            </if>
+            <if test="identityNo != null">
+                #{identityNo,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="residentialAddress != null">
+                #{residentialAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="ethnicity != null">
+                #{ethnicity,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="identicationInfo != null">
+                #{identicationInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="studentLevel != null">
+                #{studentLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="departments != null">
+                #{departments,jdbcType=VARCHAR},
+            </if>
+            <if test="identityTypeCode != null">
+                #{identityTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="outPersonInfomation != null">
+                #{outPersonInfomation,jdbcType=VARCHAR},
+            </if>
+            <if test="personCode != null">
+                #{personCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifyTime != null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="openId != null">
+                #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="parkId != null">
+                #{parkId,jdbcType=VARCHAR},
+            </if>
+            <if test="organizitionId != null">
+                #{organizitionId,jdbcType=VARCHAR},
+            </if>
+            <if test="schoolClass != null">
+                #{schoolClass,jdbcType=VARCHAR},
+            </if>
+            <if test="personnelUniqueCode != null">
+                #{personnelUniqueCode,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.PersonTable">
+        update persontable
+        <set>
+            <if test="personName != null">
+                person_name = #{personName,jdbcType=VARCHAR},
+            </if>
+            <if test="personnelUniqueCode != null">
+                personnel_unique_code = #{personnelUniqueCode,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=INTEGER},
+            </if>
+            <if test="identityNo != null">
+                identityNo = #{identityNo,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="residentialAddress != null">
+                residentialAddress = #{residentialAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="ethnicity != null">
+                ethnicity = #{ethnicity,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="identicationInfo != null">
+                identication_info = #{identicationInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="studentLevel != null">
+                student_level = #{studentLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                grade=#{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="departments != null">
+                departments = #{departments,jdbcType=VARCHAR},
+            </if>
+            <if test="identityTypeCode != null">
+                identity_type_code = #{identityTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="outPersonInfomation != null">
+                out_person_infomation = #{outPersonInfomation,jdbcType=VARCHAR},
+            </if>
+            <if test="personCode != null">
+                person_code = #{personCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="openId != null">
+                open_id = #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="parkId != null">
+                parkid = #{parkId,jdbcType=VARCHAR},
+            </if>
+            <if test="organizitionId != null">
+                organizitionid = #{organizitionId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where person_id = #{personId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.PersonTable">
+    update persontable
+    set person_name = #{personName,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      identityNo = #{identityNo,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=VARCHAR},
+      residentialAddress = #{residentialAddress,jdbcType=VARCHAR},
+      ethnicity = #{ethnicity,jdbcType=VARCHAR},
+      telephone = #{telephone,jdbcType=VARCHAR},
+      identication_info = #{identicationInfo,jdbcType=VARCHAR},
+      student_level = #{studentLevel,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=VARCHAR},
+      departments = #{departments,jdbcType=VARCHAR},
+      identity_type_code = #{identityTypeCode,jdbcType=VARCHAR},
+      out_person_infomation = #{outPersonInfomation,jdbcType=VARCHAR},
+      person_code = #{personCode,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      open_id = #{openId,jdbcType=VARCHAR},
+      parkid = #{parkId,jdbcType=VARCHAR}
+      organizitionid = #{organizitionId,jdbcType=VARCHAR}
+    where person_id = #{personId,jdbcType=INTEGER}
+  </update>
+
+    <select id="queryPersonTableListByIdentification" parameterType="map" resultMap="BaseResultMap1">
+        SELECT *
+        FROM (
+        SELECT person_id, person_name,
+        gender,
+        gender  AS genders,identityNo,birthday,residentialAddress,ethnicity AS ethnicitys,ethnicity,
+        telephone, identication_info AS identication_infos, identication_info,student_level AS  student_levels,student_level, grade AS  grades,grade,
+        departments as departmentss, departments,identity_type_code, out_person_infomation,
+        person_code, create_time, modify_time,is_deleted, description,open_id,parkid,organizitionid
+        FROM persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identityTypeCode!=null and identityTypeCode!=''">
+                    AND ( identity_type_code LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') or identityNo LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') )
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments!=null and departments!=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="isDeleted!=null and isDeleted!=''">
+                    AND is_deleted = #{isDeleted,jdbcType=INTEGER}
+                </if>
+                <if test="parkId!=null and parkId!=''">
+                    AND parkid = #{parkId,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time desc LIMIT #{page},#{limit}
+        ) AS u
+        LEFT JOIN person_face_infomation_table up ON up.person_id = u.person_id
+        <where>
+            <if test="_parameter != null">
+                <if test="identification!=null and identification!=''">
+                    AND identification = #{identification,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+        ORDER BY u.create_time desc
+    </select>
+    <!--查询人员信息-->
+    <select id="queryPersonTableList" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+        person_id, person_name,
+        gender,
+        gender  AS genders,identityNo,birthday,residentialAddress,ethnicity AS ethnicitys,ethnicity,
+        telephone, identication_info AS identication_infos, identication_info,student_level AS  student_levels,student_level, grade AS  grades,grade,
+        departments as departmentss, departments,identity_type_code, out_person_infomation,
+        person_code, create_time, modify_time,is_deleted, description,open_id,parkid,organizitionid
+        FROM
+        persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identityTypeCode!=null and identityTypeCode!=''">
+                    AND ( identity_type_code LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') or identityNo LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') )
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments!=null and departments!=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="isDeleted!=null and isDeleted!=''">
+                    AND is_deleted = #{isDeleted,jdbcType=INTEGER}
+                </if>
+                <if test="parkId!=null and parkId!=''">
+                    AND parkid = #{parkId,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time desc LIMIT #{page},#{limit}
+    </select>
+    <!--根据人员身份证号查询人员信息-->
+    <select id="selectPersonTableByIdentityNo" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        person_id, person_name,gender, gender  AS genders,identityNo,birthday,residentialAddress,ethnicity AS ethnicitys,ethnicity,
+        telephone, identication_info AS identication_infos, identication_info,student_level AS  student_levels,student_level, grade AS  grades,grade,
+        departments as departmentss, departments,identity_type_code, out_person_infomation,
+        person_code, create_time, modify_time,is_deleted, description,open_id,parkid,organizitionid
+        FROM    persontable   where  identityNo =#{identityNo,jdbcType=VARCHAR} and is_deleted='1'
+    </select>
+
+    <!--查询人员条数-->
+    <select id="dataCount" parameterType="com.bfdb.entity.PersonTable" resultType="int">
+        SELECT COUNT(person_id) FROM persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identityTypeCode!=null and identityTypeCode!=''">
+                    AND ( identity_type_code LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') or identityNo LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') )
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments!=null and departments!=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="isDeleted!=null and isDeleted!=''">
+                    AND is_deleted = #{isDeleted,jdbcType=INTEGER}
+                </if>
+                <if test="parkId!=null and parkId!=''">
+                    AND parkid = #{parkId,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="getPersonByParkId" parameterType="com.bfdb.entity.PersonTable" resultMap="BaseResultMap">
+        SELECT * FROM persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="organizitionId!=null and organizitionId!=''">
+                    AND organizitionid = #{organizitionId,jdbcType=VARCHAR}
+                </if>
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="dataCountByIdentification" parameterType="map" resultType="int">
+        SELECT count(DISTINCT u.person_id)
+        FROM (
+        SELECT *
+        FROM persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identityTypeCode!=null and identityTypeCode!=''">
+                    AND ( identity_type_code LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') or identityNo LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') )
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments!=null and departments!=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="isDeleted!=null and isDeleted!=''">
+                    AND is_deleted = #{isDeleted,jdbcType=INTEGER}
+                </if>
+                <if test="parkId!=null and parkId!=''">
+                    AND parkid = #{parkId,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+        ) AS u
+        LEFT JOIN person_face_infomation_table up ON up.person_id = u.person_id
+        <where>
+            <if test="_parameter != null">
+                <if test="identification!=null and identification!=''">
+                    AND identification = #{identification,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--循环删除人员信息-->
+    <update id="deletePersonTableByUserId" parameterType="int">
+        update persontable set is_deleted=2 where person_id in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--导出数据到execl表格-->
+    <select id="getData" resultMap="BaseResultMap" parameterType="map">
+        select   <include refid="Base_Column_List"/>  from persontable
+        <where>
+            and is_deleted=1
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identityTypeCode!=null and identityTypeCode!=''">
+                    AND ( identity_type_code LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') or identityNo LIKE CONCAT('%',#{identityTypeCode,jdbcType=VARCHAR},'%') )
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments!=null and departments!=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="personId != null">
+                    and person_id in
+                    <foreach item="item" index="index" collection="personId" open="("  close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time desc LIMIT #{page},#{limit}
+    </select>
+    <!--根据personid查询人脸图片信息-->
+    <select id="queryPersonFaceInfomationTableByPersonId" resultMap="BaseResultMap2" parameterType="int">
+        select id,person_id,face_address,campus_card_address,data_source AS data_sources,data_source,photo_level,identification,idcardImage,faceImage from person_face_infomation_table where person_id=#{id}
+    </select>
+    <!--根据身份证号码查询人员信息-->
+    <select id="queryPersonTableByIdentityNo" resultType="com.bfdb.entity.PersonTable" parameterType="String">
+        select * from persontable where identityNo=#{identityNo} and is_deleted = 1
+    </select>
+    <!--根据学号或教工号查询人员信息-->
+    <select id="selectPersonTableByIdentityTypeCode" resultType="com.bfdb.entity.PersonTable" parameterType="String">
+        select * from persontable where identity_type_code=#{identityTypeCode} and is_deleted = 1 and identication_info = 7
+    </select>
+
+    <!--根据人员id查询人员信息-->
+    <select id="selectPersonTableBypersonId" resultType="com.bfdb.entity.PersonTable">
+        select person_id,person_code,create_time,
+         modify_time,is_deleted, description from persontable where person_id=#{personId,jdbcType=INTEGER}
+    </select>
+
+    <!--根据人员id查询人员信息-->
+    <select id="selectByPersonId" resultType="com.bfdb.entity.PersonTable" parameterType="int">
+        select * from persontable where person_id=#{personId,jdbcType=INTEGER}
+    </select>
+
+    <!--上传文件时覆盖已有的用户-->
+    <delete id="deletePersontableByPersonId" parameterType="int">
+        delete from persontable where person_id in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!--修改学级信息和年纪-->
+    <update id="updateGradeAndStudentLevlByPersonId" parameterType="int">
+        update persontable set student_level = " ",grade = " " where person_id=#{perspnId}
+    </update>
+
+    <!--查询教工号或学号或一卡通号是否已存在-->
+    <select id="selectByIdentityTypeCode" parameterType="com.bfdb.entity.PersonTable"  resultMap="BaseResultMap">
+        select identity_type_code  from persontable where identity_type_code=#{identityTypeCode,jdbcType=VARCHAR} and is_deleted='1'
+    </select>
+
+    <select id="getTotal" resultType="int">
+        select count(*) from persontable
+    </select>
+
+    <!--根据人员身份证号修改人员信息-->
+    <update id="updateByPrimaryKeyIdentityNo" parameterType="com.bfdb.entity.PersonTable">
+        update persontable
+        <set>
+            <if test="personName != null">
+                person_name = #{personName,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=INTEGER},
+            </if>
+            <!--<if test="identityNo != null">-->
+            <!--identityNo = #{identityNo,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <if test="birthday != null">
+                birthday = #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="residentialAddress != null">
+                residentialAddress = #{residentialAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="ethnicity != null">
+                ethnicity = #{ethnicity,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="identicationInfo != null">
+                identication_info = #{identicationInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="studentLevel != null">
+                student_level = #{studentLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                grade = #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="departments != null">
+                departments = #{departments,jdbcType=VARCHAR},
+            </if>
+            <if test="identityTypeCode != null">
+                identity_type_code = #{identityTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="outPersonInfomation != null">
+                out_person_infomation = #{outPersonInfomation,jdbcType=VARCHAR},
+            </if>
+            <if test="personCode != null">
+                person_code = #{personCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where identityNo = #{identityNo,jdbcType=VARCHAR}
+    </update>
+    <!--根据openid查询是否已经录入信息-->
+    <select id="selectPersonTableByopenId" parameterType="String" resultType="com.bfdb.entity.PersonTable">
+        select * from persontable where open_id=#{openId} and is_deleted='1'
+    </select>
+
+    <!--根据openid查询人员信息-->
+    <select id="selectPersonTableListByopenId" parameterType="String" resultMap="BaseResultMap1">
+        select * from persontable p,person_face_infomation_table pf where p.person_id=pf.person_id and open_id=#{openId} and is_deleted='1'
+    </select>
+
+    <!--根据orgid查询人员信息-->
+    <select id="getPersonTableByorgId" parameterType="com.bfdb.entity.BaseOrganizition" resultMap="BaseResultMap1">
+        select * from persontable
+        <where>
+            and is_deleted='1'
+            <if test="_parameter != null">
+                <if test="orgType == 1">
+                    AND departments = #{id,jdbcType=VARCHAR}
+                </if>
+                <if test="orgType == 2">
+                    AND grade = #{id,jdbcType=VARCHAR}
+                </if>
+                <if test="orgType == 3">
+                    AND schoolclass = #{id,jdbcType=VARCHAR}
+                </if>
+                <if test="orgName != null and orgName != ''">
+                    AND person_name LIKE CONCAT('%',#{orgName,jdbcType=VARCHAR},'%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--根据字典表中子节点的code码查询人员信息-->
+    <select id="selectPersonTableByDepartments" parameterType="com.bfdb.entity.PersonTable"  resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>    from persontable
+        <where>
+            and is_deleted=1
+            <if test="_parameter != null">
+                <if test="ethnicity!=null and ethnicity!=''">
+                    AND ethnicity =#{ethnicity,jdbcType=VARCHAR}
+                </if>
+                <if test="studentLevel!=null and studentLevel!=''">
+                    AND student_level =#{studentLevel,jdbcType=VARCHAR}
+                </if>
+                <if test="grade!=null and grade!=''">
+                    AND grade =#{grade,jdbcType=VARCHAR}
+                </if>
+                <if test="departments!=null and departments!=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info = #{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="gender!=null ">
+                    AND gender = #{gender,jdbcType=INTEGER}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--根据姓名、身份证号/教工号查询personID-->
+    <select id="SelectDeletePersonId" parameterType="com.bfdb.entity.ExcelPersonDelete" resultType="com.bfdb.entity.PersonTable">
+        select * from persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null">
+                    AND person_name =#{personName,jdbcType=VARCHAR}
+                </if>
+                <if test="identityNo != null">
+                    AND identityNo = #{identityNo,jdbcType=VARCHAR}
+                </if>
+                <if test="identityTypeCode != null">
+                    AND identity_type_code = #{identityTypeCode,jdbcType=VARCHAR}
+                </if>
+                AND is_deleted = 1
+            </if>
+        </where>
+    </select>
+    <!--根据姓名、身份证号/教工号查询personID-->
+    <select id="SelectUpdatePersonId" parameterType="com.bfdb.entity.ExcelPersonUpdate" resultType="com.bfdb.entity.PersonTable">
+        select * from persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null">
+                    AND person_name =#{personName,jdbcType=VARCHAR}
+                </if>
+                <if test="identityNo != null">
+                    AND identityNo = #{identityNo,jdbcType=VARCHAR}
+                </if>
+                <if test="identityTypeCode != null">
+                    AND identity_type_code = #{identityTypeCode,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--根据姓名、身份证号/教工号查询personID-->
+    <select id="SelectUpdatePersonIdByIdentityNoOrIdentityTypeCode" parameterType="com.bfdb.entity.ExcelPersonUpdate" resultType="com.bfdb.entity.PersonTable">
+        select * from persontable where identityNo=#{identityNo} or identity_type_code=#{identityTypeCode} and person_name=#{personName}
+    </select>
+    <!--根据人员姓名、身份证号、还有一卡通号，去查询-->
+    <select id="selectByPersonNameIdentityNoIdentity" parameterType="com.bfdb.entity.PersonTable"  resultMap="BaseResultMap" >
+        select  <include refid="Base_Column_List"/>
+        from persontable
+        <where>
+            <if test="_parameter != null">
+                <if test="personName!=null">
+                    AND person_name =#{personName,jdbcType=VARCHAR}
+                </if>
+                <if test="identityNo != null and identityTypeCode != null">
+                    AND (identityNo=#{identityNo,jdbcType=VARCHAR} or identity_type_code=#{identityTypeCode,jdbcType=VARCHAR})
+                </if>
+                <if test="identityNo != null and identityTypeCode == null">
+                    AND identityNo = #{identityNo,jdbcType=VARCHAR}
+                </if>
+                <if test="identityNo == null and identityTypeCode != null">
+                    AND identity_type_code=#{identityTypeCode,jdbcType=VARCHAR}
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--根据当前personCode去查询该人员信息-->
+    <select id="selectByPersonCode" parameterType="com.bfdb.entity.PersonTable"  resultMap="BaseResultMap">
+        select  <include refid="Base_Column_List"/>  from persontable  where   person_code = #{personCode,jdbcType=VARCHAR}
+    </select>
+</mapper>

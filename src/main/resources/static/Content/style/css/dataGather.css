@@ -1,0 +1,198 @@
+*{
+    margin:0;padding:0;list-style: none;
+}
+@font-face {
+    font-family: 'UnidreamLED';
+    src: url('../fonts/numFonts/UnidreamLED.eot') format('embedded-opentype'), url('../fonts/numFonts/UnidreamLED.TTF') format('truetype'),url('../fonts/numFonts/UnidreamLED.woff') format('woff');
+}
+html{
+    width:100%;
+    height:100%;
+}
+body{
+    width:100%;
+    height:100%;
+    background:url(/Content/style/images/bigData/dataGather/bg.png);
+    background-size:100%;
+    color:#fff;
+    overflow: hidden;
+}
+/*头部*/
+.header{
+    height:6vh;
+    background:url(/Content/style/images/bigData/dataGather/header.png);
+    background-size:100% 100%;
+    display:flex;
+    display:-webkit-flex;
+    display:-moz-flex;
+    align-items: center;
+    padding: 0 5%;
+    line-height: 5vh;
+    margin:0 auto;
+    width: 90%;
+}
+.header-left,.header-right{
+    width:35%;
+    height:100%
+}
+.header-logo{
+    width:30%;
+    height:100%
+}
+.header-logo>img{
+    width:100%;
+}
+.header-left>a{
+    display:flex;
+    display:-webkit-flex;
+    display:-moz-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.header-left>a>i{
+    font-size: 24px;
+    margin-right: 5px;
+}
+.header-right{
+    display:flex;
+    display:-webkit-flex;
+    display:-moz-flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.header-right>span{
+    font-size: 36px;
+    font-family: 'UnidreamLED';
+    letter-spacing:8px;
+}
+.header-right>i{
+    font-size: 30px;
+    margin-right: 10px;
+}
+/*内容*/
+.content{
+    padding:0 1%;
+    height:94vh;
+}
+.content-top{
+    display:flex;
+    display:-webkit-flex;
+    display:-moz-flex;
+    align-items: center;
+    width:100%;
+    height:12vh;
+    margin-top:1vh;
+}
+.content-top>div{
+    width:50%;
+    height:100%;
+    background:url(/Content/style/images/bigData/dataGather/bg_window1.png);
+    background-size:100% 100%;
+    position: relative;
+}
+.content-top>div>h3{
+    position:absolute;
+    right:10px;
+    top:10px;
+    font-weight: normal;
+    font-size: 14px;
+}
+.content-num{
+    width:100%;
+    height:100%;
+    display:flex;
+    display:-webkit-flex;
+    display:-moz-flex;
+    align-items: center;
+}
+.content-num>div{
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+}
+.content-num>.left{
+    width:45%;
+}
+.content-num>.right{
+    width:55%;
+}
+.content-num>.left>span{
+    display:inline-block;
+    width:100%;
+}
+.content-num>.left>p{
+    display:inline-block;
+    width:100%;
+    font-size:24px;
+}
+.content-num>.right>span{
+    display:inline-block;
+    width:2.2vw;
+    height:6vh;
+    line-height:6vh;
+    /*border:1px solid #00CCFF;*/
+    background:#042648;
+    text-align: center;
+    margin:0 .5vw;
+    font-size:35px;
+}
+.dataStatistics .digit_set{
+    width:2.2vw;
+    height:6vh;
+    line-height:6vh;
+    text-align: center;
+    margin:0 .5vw;
+    font-size:35px;
+}
+.dataStatistics .digit > div.digit_top, .dataStatistics .digit > div.shadow_top{
+    border:1px solid #00CCFF;
+    border-bottom:none;
+    background:#042648;
+}
+.dataStatistics .digit > div.digit_bottom, .dataStatistics .digit > div.shadow_bottom{
+    border:1px solid #00CCFF;
+    border-top:none;
+    background:#042648;
+}
+.dataStatistics .digit_set:nth-child(2) .digit > div.digit_bottom .digit_wrap, .dataStatistics .digit_set:nth-child(2) .digit > div.shadow_bottom .digit_wrap{
+    margin-left: 1px;
+}
+.person-gather{
+    margin-right:1%;
+}
+
+.content-center{
+    display:flex;
+    display:-webkit-flex;
+    display:-moz-flex;
+    align-items: center;
+    width:100%;
+    height:39vh;
+    margin:1vh auto;
+}
+.content-center>div{
+    width:33%;
+    height:100%;
+    background:url(/Content/style/images/bigData/dataGather/bg_window3.png);
+    background-size:100% 100%;
+}
+.center-area{
+    margin:0 1%;
+}
+.content-bottom{
+    width:100%;
+    height:39vh;
+    background:url(/Content/style/images/bigData/dataGather/bg_window2.png);
+    background-size:100% 100%;
+}
+.title-area{
+    height:40px;
+    line-height:42px;
+    padding:0 30px;
+    font-size:16px;
+    font-weight: 600;
+}
+.main-area{
+    height:calc(100% - 40px);
+    width:100%;
+}

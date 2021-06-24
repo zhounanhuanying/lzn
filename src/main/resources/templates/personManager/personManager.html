@@ -1,0 +1,3045 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>人员管理</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/progressBar/progressBar.js}"></script>
+    <script th:src="@{/Content/check/IDcardverification.js}"></script>
+    <script th:src="@{/Content/check/mask.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            top: 10px;
+            transform: translateY(-50%);
+        }
+
+        .layui-popup .large-form1 .layui-form-label {
+            width: 160px;
+        }
+
+        .layui-popup .large-form1 {
+            width: 100%;
+        }
+
+        .layui-popup .large-form1 .layui-inline {
+            width: 50%;
+            float: left;
+        }
+
+        .layui-popup .textarea-inline {
+            width: 73%;
+        }
+
+        .layui-layer-page .layui-layer-content {
+            overflow-y: auto;
+            overflow-x: hidden !important;
+        }
+
+        .person_img {
+            display: flex;
+            display: -webkit-flex;
+            flex-wrap: wrap;
+        }
+
+        .person_img > label {
+            width: 120px;
+        }
+
+        .person_img > div {
+            width: 78%;
+        }
+
+        body .importPercent {
+            border-radius: 10px;
+        }
+
+        body .importPercent .layui-layer-title {
+            border-radius: 10px 10px;
+        }
+
+        .layui-table-grid-down {
+
+            display: none;
+
+        }
+
+        /*表格*/
+        .table-style {
+            padding: 10px;
+        }
+
+        .table-style .table-btn-group {
+            margin-bottom: 10px;
+        }
+
+        .table-btn-group .layui-btn + .layui-btn {
+            margin-left: 0;
+        }
+
+        .table-btn-group .layui-input {
+            height: 30px;
+        }
+
+        .table-btn-group .layui-form-label {
+            line-height: 12px;
+        }
+
+        .load-file-content .layui-form-item {
+            margin: 10px;
+        }
+
+        .load-file-content .layui-input-block {
+            margin: 0;
+            padding: 0;
+        }
+
+        .load-file-content .layui-form-item .layui-inline {
+            margin: 0;
+            width: 290px;
+            float: left;
+            position: relative;
+        }
+
+        .load-file-content .layui-inline input[type="text"] {
+            height: 30px;
+        }
+
+        .load-file-content .layui-inline input[type="file"] {
+            height: 30px;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .select-exported {
+            position: relative;
+        }
+
+        .select-exported .layui-input-inline {
+            position: absolute;
+            left: 0;
+            opacity: 0;
+        }
+        personManager .layui-inline {
+            /* width: 290px; */
+            height: 39px;
+            line-height: 29px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="personManager" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline">
+            <label class="layui-form-label">姓名：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="personName" class="layui-input" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">身份证号、工号：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="identityTypeCode" class="layui-input" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">人员类型：</label>
+            <div class="layui-input-inline">
+                <select name="identicationInfo" lay-verify="required" class="layui-input">
+                    <option value="">请选择</option>
+                    <option th:each="dataDictionary:${identicationInfoList}"
+                            th:value="${dataDictionary.dicCode}"
+                            th:text="${dataDictionary.dicName}"></option>
+                </select>
+            </div>
+        </div>
+        <!--<div class="layui-inline">
+            <label class="layui-form-label">办公地点：</label>
+            <div class="layui-input-inline">
+                <select name="departments" lay-verify="required" class="layui-input">
+                    <option value="">请选择</option>
+                    <option th:each="dataDictionary:${departmentsList}"
+                            th:value="${dataDictionary.dicCode}"
+                            th:text="${dataDictionary.dicName}"></option>
+                </select>
+            </div>
+        </div>-->
+        <div class="layui-inline">
+            <label class="layui-form-label">园区：</label>
+            <div class="layui-input-inline">
+                <select name="parkId" lay-verify="required" class="layui-input">
+                    <option value="">请选择</option>
+                    <option th:each="parkList:${parkList}"
+                            th:value="${parkList.id}"
+                            th:text="${parkList.parkName}"></option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="logSearch()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary" onclick="refreshService()">重置</button>
+
+    </div>
+</form>
+<div class="layui-fluid list-box no-screen">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card table-style">
+                <div class="layui-inline table-btn-group">
+                    <!--<a class="layui-btn layui-btn-sm" href="/poi/exportDataDictionary">下载字典信息</a>-->
+                    <a class="layui-btn layui-btn-sm" onclick="jiajia()">批量新增</a>
+                    <a class="layui-btn layui-btn-sm" onclick="jiajia1()">批量删除</a>
+                    <a class="layui-btn layui-btn-sm" onclick="jiajia2()">批量修改</a>
+                    <div class="layui-inline select-exported">
+                        <label class="layui-btn layui-btn-sm">导出
+                            <div class="layui-input-inline">
+                                <select name="zipdownload" class="layui-input" id="u18"
+                                        onchange="show_sub(this.options[this.options.selectedIndex].value)">
+                                    <option value="">请选择</option>
+                                    <option value="zi">导出文本</option>
+                                    <option value="photo">导出文本和图片</option>
+                                </select>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+                <div style="display:none;" id="show">
+                    <div class="layui-progress layui-progress-big" lay-showpercent="true"
+                         lay-filter="uploadProgressBar">
+                        <div class="layui-progress-bar" lay-percent="0%"></div>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container list-btn-group">
+                            <button class="layui-btn test icon-add" lay-event="getCheckData" onclick="addService()">
+                                新增
+                            </button>
+                            <!--                            <button class="layui-btn test icon-revise" lay-event="getCheckData" onclick="editService()">-->
+                            <!--                                编辑-->
+                            <!--                            </button>-->
+                            <button class="layui-btn test icon-delete" lay-event="getCheckData"
+                                    onclick="deleteService()">
+                                删除
+                            </button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">编辑</a>
+                    </script>
+                    <script type="text/html" id="identityNoTable">
+                        {{#  if(d.identityNo != null && d.identityNo != ""){ }}
+                        <div>{{d.identityNo}}
+                        </div>
+                        {{#  } else{ }}
+                        <div style="text-align: center">-</div>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="gendersTable">
+                        {{#  if(d.genders != null && d.genders != ""){ }}
+                        <div>{{d.genders}}
+                        </div>
+                        {{#  } else{ }}
+                        <div style="text-align: center">-</div>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="identityTypeCodeTable">
+                        {{#  if(d.identityTypeCode != null && d.identityTypeCode != ""){ }}
+                        <div>{{d.identityTypeCode}}
+                        </div>
+                        {{#  } else{ }}
+                        <div style="text-align: center">-</div>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="telephoneTable">
+                        {{#  if(d.telephone != null && d.telephone != ""){ }}
+                        <div>{{d.telephone}}
+                        </div>
+                        {{#  } else{ }}
+                        <div style="text-align: center">-</div>
+                        {{# } }}
+                    </script>
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看人员弹窗-->
+<div class="layui-row layui-popup" id="tab-chakan" style="display: none;">
+    <div id="PreviewImg" onclick="closeImg();"
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 200%;
+      height: 100%;
+      margin-left: -500px;
+      top: 0;
+
+"
+    ></div>
+    <div>
+        <form class="layui-form large-form1" lay-filter="formTestFilter" id="chakan">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">姓名:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="personName" id="personName" readonly="true" class="layui-input"
+                               disabled>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <!--                    <label class="layui-form-label">教工号/学号/学工号:</label>-->
+                    <label class="layui-form-label">学工号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="identityTypeCode" id="identityTypeCode" class="layui-input"
+                               readonly="true" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">性别:</label>
+                    <div class="layui-input-block" style="
+                    color: #333;
+                    -webkit-text-fill-color:#333;
+                    -webkit-opacity:1;
+                    opacity: 1; ">
+                        <input type="radio"  name="gender" id="gender" th:each="sexs:${sexList}" class="layui-input"
+                               lay-filter="testRadio" th:value="${sexs.dicCode}"
+                               th:title="${sexs.dicName}"  disabled >
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="telephone" readonly="true" id="telephone" class="layui-input" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">身份证号码:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="identityNo" id="identityNo" class="layui-input" disabled>
+                    </div>
+                </div>
+                <!--<div class="layui-inline">
+                    <label class="layui-form-label">生日:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="birthday" id="birthday" class="layui-input" disabled
+                               lay-verify="date">&lt;!&ndash; placeholder="yyyy-MM-dd"&ndash;&gt;
+                    </div>
+                </div>-->
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">地址:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="residentialAddress" id="residentialAddress" class="layui-input"
+                               disabled>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">民族:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="ethnicity" id="ethnicity" class="layui-input" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">人员类型:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="identicationInfo" id="identicationInfo" class="layui-input" disabled>
+                    </div>
+                </div>
+                <!--<div class="layui-inline">
+                    <label class="layui-form-label">办公地点:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="departments" id="departments" class="layui-input" disabled>
+                    </div>
+                </div>-->
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">所属园区:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="parkId" id="parkId" class="layui-input" disabled>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">年级/班级</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="orgId" id="orgId" class="layui-input" disabled>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="layui-form-item">
+                <div class="layui-inline" id="xueli" style="display: none">
+                    <label class="layui-form-label">学历:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="studentLevel" id="studentLevel" class="layui-input" disabled>
+                    </div>
+                </div>
+                <div class="layui-inline" id="xueji" style="display: none">
+                    <label class="layui-form-label">学级:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="grade" id="grade" class="layui-input" disabled>
+                    </div>
+                </div>
+            </div>-->
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:100%;">
+                    <label class="layui-form-label">备注：</label>
+                    <div class="layui-input-inline textarea-inline">
+                        <textarea type="text" name="description" id="description" class="layui-textarea" readonly="true"
+                                  disabled>
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-input-inline person-img" id="imgDiv"
+                 style="height:auto;margin-bottom:10px;width:92%!important">
+                <div class="person_img">
+                    <label class="layui-form-label" style="line-height: 150px;">人脸照片：</label>
+                    <div id="faceImage">
+
+                    </div>
+                </div>
+            </div>
+            <!--<div class="layui-input-inline person-img" id="imgDiv2"
+                 style="height:auto;margin-bottom:10px;width:92%!important">
+                <div class="person_img">
+                    <label class="layui-form-label" style="line-height: 150px;">校园卡照片：</label>
+                    <div id="cardImage">
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-input-inline person-img" id="imgDiv4"
+                 style="height:auto;margin-bottom:10px;width:92%!important">
+                <div class="person_img">
+                    <label class="layui-form-label" style="line-height: 150px;">人证校验照片：</label>
+                    <div id="personCardImage">
+
+                    </div>
+                </div>
+            </div>-->
+        </form>
+
+    </div>
+</div>
+
+<!--编辑人员弹窗-->
+<div class="layui-row layui-popup" id="tab-edit" style="display: none;">
+    <div id="PreviewImgEdit" onclick="closeEditImg();"
+
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 200%;
+      height: 100%;
+      margin-left: -500px;
+      top: 0;
+
+"
+    ></div>
+    <div>
+        <form class="layui-form large-form1" lay-filter="formTestFilter" id="editStaff">
+            <input type="text" name="personId" id="personId" class="layui-input" style="display: none">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">姓名:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="personName" id="edit-personName" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">手机号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="telephone" id="edit-telephone" class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">性别:</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="gender" id="edit-gender" th:each="sexs:${sexList}"
+                               lay-filter="testRadio" th:value="${sexs.dicCode}"
+                               th:title="${sexs.dicName}">
+                    </div>
+                </div>
+                <!--<div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">生日:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="birthday" id="edit-birthday" class="layui-input"
+                               lay-verify="date" readonly>
+                    </div>
+                </div>-->
+
+            </div>
+            <span class="asterisk">*</span>学工号与身份证号二选一即可
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <!--                    <label class="layui-form-label">教工号/学号/学工号:</label>-->
+                    <label class="layui-form-label layui-form-required">学工号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="identityTypeCode" id="edit-identityTypeCode" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">身份证号码:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="identityNo" id="edit-identityNo" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">地址:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="residentialAddress" id="edit-residentialAddress" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">民族:</label>
+                    <div class="layui-input-inline">
+                        <select name="ethnicity" lay-verify="required" id="edit-ethnicity" class="border-style"
+                                lay-filter="edit-ethnicity">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${ethnicityList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline" id="editshenfen">
+                    <label class="layui-form-label layui-form-required">人员类型:</label>
+                    <div class="layui-input-inline">
+                        <select name="identicationInfo" lay-verify="required" id="edit-identicationInfo"
+                                class="border-style" lay-filter="edit-identicationInfo">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${identicationInfoList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+                <!--<div class="layui-inline" id="edityuanxi">
+                    <label class="layui-form-label">办公地点:</label>
+                    <div class="layui-input-inline">
+                        <select name="departments" lay-verify="required" id="edit-departments"
+                                class="border-style" lay-filter="edit-departments">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${departmentsList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>-->
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" id="edityuanqu">
+                    <label class="layui-form-label layui-form-required">所属园区:</label>
+                    <div class="layui-input-inline">
+                        <select name="departments" lay-verify="required" id="edit-parkId"
+                                class="border-style" lay-filter="edit-parkIdOnchange">
+                            <option value="">请选择</option>
+                            <option th:each="parkList:${parkList}"
+                                    th:value="${parkList.id}"
+                                    th:text="${parkList.parkName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">年级/班级:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="orgName" id="edit-orgId" class="layui-input"
+                               autocomplete="off"disabled>
+                        <input id="edit-orgIdHidden" type="hidden" name = "organizitionId" style = "display:none">
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="queryOrgTree($('#edit-parkId').val())"><i class="layui-icon"></i></button>
+                </div>
+            </div>
+            <!--<div class="layui-form-item">
+                <div class="layui-inline" id="editxueli" style="display: none">
+                    <label class="layui-form-label">学历:</label>
+                    <div class="layui-input-inline">
+                        <select name="studentLevel" lay-verify="required" id="edit-studentLevel"
+                                class="border-style" lay-filter="projectfilter">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${studentLevelList}"
+                                    th:value="${dataDictionary.dicCode}" id="edit-option"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" id="editxueji" style="display: none">
+                    <label class="layui-form-label">学级:</label>
+                    <div class="layui-input-inline">
+                        <select name="grade" lay-verify="required" id="edit-grade" lay-search="" class="border-style">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${gradeList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>-->
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:100%">
+                    <label class="layui-form-label">备注：</label>
+                    <div class="layui-input-inline textarea-inline">
+                        <textarea type="text" name="description" id="edit-description" class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div style="color: red">(提示：人脸照片上传一张)</div>
+            <div class="layui-input-inline person-img" id="editImg">
+                <div id="faceEditImage" style="height: 150px;width: 730px"><label class="layui-form-label"
+                                                                                  style="line-height: 150px">人脸照片：</label>
+                    <div id="button10" style="display: inline;width: 140px;height:150px;">
+                        <button type="button" class="upload" id="test20"></button>
+                    </div>
+                    <!--<div id="button11" style="display: inline;width: 140px;height:150px;">
+                        <button type="button" class="upload" id="test21"></button>
+                    </div>
+                    <div id="button12" style="display: inline;width: 140px;height:150px;">
+                        <button type="button" class="upload" id="test22"></button>
+                    </div>-->
+                </div>
+                <div style="height: 10px"></div>
+                <!--<div id="cardEditImage" style="height: 150px;width: 730px"><label class="layui-form-label"
+                                                                                  style="line-height: 150px">校园卡照片：</label>
+                    <div id="button20" style="display: inline;width: 140px;height:150px;">
+                        <button type="button" class="upload" id="test30"></button>
+                    </div>
+                </div>
+                <div style="height: 10px"></div>
+                <div id="personCardEditImage" style="height: 150px;width: 730px"><label class="layui-form-label"
+                                                                                        style="line-height: 150px">人证校验照片：</label>
+                    <div id="button40" style="display: inline;width: 140px;height:150px;">
+                        <button type="button" class="upload" id="test50"></button>
+                    </div>
+                </div>-->
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--新增人员弹窗-->
+<div class="layui-row layui-popup" id="tab-add" style="display: none;">
+    <div id="PreviewImgAdd" onclick="closeAddImg();"
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 200%;
+      height: 100%;
+      margin-left: -500px;
+      top: 0;
+      "
+    ></div>
+    <div>
+        <form class="layui-form large-form1" lay-filter="formTestFilter" id="addStaff">
+            <input type="text" name="personId" id="addPersonId" class="layui-input" style="display: none">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">姓名:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="personName" id="add-personName" class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="telephone" id="add-telephone" class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-required">学工号与身份证号二选一即可</div>
+            <div class="layui-form-item">
+                <div class="layui-inline" id="noMargin">
+                    <label class="layui-form-label layui-form-required">性别:</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="gender" id="add-gender" th:each="sexs:${sexList}"
+                               lay-filter="testRadio" th:value="${sexs.dicCode}"
+                               th:title="${sexs.dicName}" checked>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">学工号:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="identityTypeCode" id="add-identityTypeCode" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <!--<div class="layui-inline">
+                    <label class="layui-form-label">生日:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="birthday" id="add-birthday" class="layui-input" autocomplete="off"
+                               lay-verify="date" readonly>
+                    </div>
+                </div>-->
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">地址:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="residentialAddress" id="add-residentialAddress" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">民族:</label>
+                    <div class="layui-input-inline">
+                        <select name="ethnicity" lay-verify="required" id="add-ethnicity" class="border-style"
+                                lay-filter="ethnicity">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${ethnicityList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                    <div class="layui-inline" id="addyuanqu">
+                        <label class="layui-form-label layui-form-required">所属园区:</label>
+                        <div class="layui-input-inline">
+                            <select name="park" lay-verify="required" id="add-parkId"
+                                    class="border-style" lay-filter="Add-parkIdOnchange">
+                                <option value="">请选择</option>
+                                <option th:each="parkList:${parkList}"
+                                        th:value="${parkList.id}"
+                                        th:text="${parkList.parkName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                <span id="danwei"></span>
+                    <!--<div class="layui-inline">
+                        <label class="layui-form-label layui-form-required">年级/班级:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="org" id="add-org" class="layui-input" onclick ="queryOrgTree" autocomplete="off"disabled>
+                            <input id="orgIdHidden" type="hidden" style = "width:2px; display:none">
+                        </div>
+                        <button type="button" class="layui-btn layui-btn-sm" onclick="queryOrgTree($('#add-parkId').val())"><i class="layui-icon"></i></button>
+                    </div>
+                    <div style="color: red">(提示：年级/班级在选择所属园区之后选择)</div>-->
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline" id="addshenfen">
+                    <label class="layui-form-label layui-form-required">人员类型:</label>
+                    <div class="layui-input-inline">
+                        <select name="identicationInfo" lay-verify="required" id="add-identicationInfo"
+                                class="border-style" lay-filter="Add-identicationInfo">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${identicationInfoList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+                <span id="shenfenzheng"></span>
+            </div>
+
+                <!--<div class="layui-inline" id="addyuanxi">
+                    <label class="layui-form-label">办公地点:</label>
+                    <div class="layui-input-inline">
+                        <select name="departments" lay-verify="required" id="add-departments"
+                                class="border-style">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${departmentsList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>-->
+           <!-- <div class="layui-form-item">
+                <div class="layui-inline" id="addxueli" style="display: none">
+                    <label class="layui-form-label">学历:</label>
+                    <div class="layui-input-inline">
+                        <select name="studentLevel" lay-verify="required" id="add-studentLevel" class="border-style">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${studentLevelList}"
+                                    th:value="${dataDictionary.dicCode}" id="edit-option"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline" id="addxueji" style="display: none">
+                    <label class="layui-form-label">学级:</label>
+                    <div class="layui-input-inline">
+                        <select name="grade" lay-verify="required" id="add-grade" class="border-style">
+                            <option value="">请选择</option>
+                            <option th:each="dataDictionary:${gradeList}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>-->
+
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:100%">
+                    <label class="layui-form-label">备注：</label>
+                    <div class="layui-input-inline textarea-inline">
+                        <textarea type="text" name="description" id="add-description" class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!--<div style="color: red">(提示：人脸照片至少上传一张)</div>-->
+            <!--            bugs审查-->
+            <div class="layui-input-inline person-img" id="addImg">
+                <div id="faceAddImage" style="height: 150px;width: 730px"><label class="layui-form-label layui-form-required"
+                                                                                 style="line-height: 150px;">人脸照片：</label>
+                    <div id="button5" style="display: inline">
+                        <button type="button" class="upload" id="test6"></button>
+                    </div>
+                    <!--<div id="button52" style="display: inline">
+                        <button type="button" class="upload" id="test62"></button>
+                    </div>
+                    <div id="button53" style="display: inline">
+                        <button type="button" class="upload" id="test63"></button>
+                    </div>-->
+                </div>
+                <!--<div style="height: 10px"></div>
+                <div id="cardAddImage" style="height: 150px;width: 730px"><label class="layui-form-label"
+                                                                                 style="line-height: 150px;">校园卡照片：</label>
+                    <div id="button6" style="display: inline">
+                        <button type="button" class="upload" id="test7"></button>
+                    </div>
+                </div>
+                <div style="height: 10px"></div>
+                <div id="personCardAddImage" style="height: 150px;width: 730px"><label class="layui-form-label" style="line-height: 150px;">人证校验照片：</label>
+                    <div id="button8" style="display: inline">
+                        <button type="button" class="upload" id="test9"></button>
+                    </div>
+                </div>-->
+            </div>
+        </form>
+    </div>
+</div>
+<!--ztree弹窗-->
+<div class="layui-row layui-popup" id="orgTree_Staff" style="display: none;">
+<div>
+    <form class="layui-form large-form1" lay-filter="formTestFilter">
+        <!-- ztree树 -->
+        <input id="orgIdaaaa" type="text" style = "display:none">
+        <input id="orgIdbbbb" type="text" style = "display:none">
+        <input id="orgIdcccc" type="text" style = "display:none">
+        <div class="ztree-orangization" id="orgTree2">
+            <ul id="orgTree" class="ztree" style="height:98%" ></ul>
+        </div>
+    </form>
+</div>
+</div>
+
+<!--下载，上传弹窗-->
+<!--上传zip-->
+<div class="load-file-content" id="loadFile"  style="display: none">
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-input-block">文件路径：(注：请先<a href="/poi/downloadZip" style="color: #01AAED">下载模板</a>，确保内容格式与模板一致后再进行批量导入)</label>
+            <div class="layui-inline">
+                <input type="text" readonly="readonly" id="fileName" class="layui-input" placeholder="请选择文件">
+                <!-- <input type="file" class="layui-input">-->
+            </div>
+            <button type="button" id="zipupload" class="layui-btn layui-btn-normal layui-btn-sm">点击上传文件</button>
+            <!--            <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="uploadSelect">导入</button>-->
+        </div>
+    </div>
+</div>
+<!--修改zip-->
+<div class="load-file-content" id="loadFile2"  style="display: none">
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-input-block">文件路径：(注：请先<a href="/poi/downupdateZip" style="color: #01AAED">下载模板</a>，确保内容格式与模板一致后再进行批量导入)</label>
+            <div class="layui-inline">
+                <input type="text" readonly="readonly" id="fileName2" class="layui-input" placeholder="请选择文件">
+                <!-- <input type="file" class="layui-input">-->
+            </div>
+            <button type="button" id="zipUpdate" class="layui-btn layui-btn-normal layui-btn-sm">点击上传文件</button>
+            <!--            <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="uploadSelect2">导入</button>-->
+        </div>
+    </div>
+</div>
+<!--删除zip-->
+<div class="load-file-content" id="loadFile1"  style="display: none">
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-input-block">文件路径：(注：请先<a href="/poi/downdeleteZip" style="color: #01AAED">下载模板</a>，确保内容格式与模板一致后再进行批量导入)</label>
+            <div class="layui-inline">
+                <input type="text" readonly="readonly" id="fileName1" class="layui-input" placeholder="请选择文件">
+                <!-- <input type="file" class="layui-input">-->
+            </div>
+            <button type="button" id="zipDelete" class="layui-btn layui-btn-normal layui-btn-sm">点击上传文件</button>
+            <!--<button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="uploadSelect1">导入</button>-->
+        </div>
+    </div>
+</div>
+<script>
+    //上传zip
+    function jiajia(){
+        layui.use(['form', 'layer'], function () {
+            var layer = layui.layer,
+                form = layui.form;
+//下载，上传弹窗
+            layer.open({
+                type: 1,
+                title: "批量上传",
+                content: $('#loadFile'),
+                area: ["500px", "120px"],
+                shade: 0.3,
+                success: function () {
+                    form.render();
+                }
+            })
+        })
+    }
+    function jiajia1(){
+        layui.use(['form', 'layer'], function () {
+            var layer = layui.layer,
+                form = layui.form;
+            layer.open({
+                type: 1,
+                title: "批量删除",
+                content: $('#loadFile1'),
+                area: ["500px", "120px"],
+                shade: 0.3,
+                success: function () {
+                    form.render();
+                }
+            })
+        })
+    }
+    function jiajia2(){
+        layui.use(['form', 'layer'], function () {
+            var layer = layui.layer,
+                form = layui.form;
+
+            layer.open({
+                type: 1,
+                title: "批量修改",
+                content: $('#loadFile2'),
+                area: ["500px", "120px"],
+                shade: 0.3,
+                success: function () {
+                    form.render();
+                }
+            })
+        })
+    }
+</script>
+
+<!--表格渲染和批量上传js-->
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var personName = "";
+    var identityTypeCode = "";
+    var identicationInfo = "";
+    var departments = "";
+    var isDeleted = 1;
+    var identification="2";
+    var parkId = "";
+    //赋值表格
+    var tableIns = "";
+    //   进度条监听
+    $(function () {
+        data();
+    });
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    })
+
+    function data() {
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , layer = layui.layer
+                , laydate = layui.laydate
+                , form = layui.form
+                , table = layui.table;
+
+
+            function tdTitle() {
+                $('th').each(function (index, element) {
+                    $(element).attr('title', $(element).text());
+                });
+                $('td').each(function (index, element) {
+                    $(element).attr('title', $(element).text());
+                });
+            };
+            form.render(null, 'component-form-group');
+
+            laydate.render({
+                elem: '#LAY-component-form-group-date'
+            });
+            var str = [
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'personId', title: '序号', hide: true}
+                , {field: 'personName', title: '姓名'}
+                // , {field: 'identityTypeCode', title: '教工号/学号/学工号', width: 170}
+                , {field: 'identityTypeCode', title: '学工号',templet:"#identityTypeCodeTable"}
+                , {field: 'genders', title: '性别', width: 70,templet:"#gendersTable"}
+                , {field: 'identityNo', title: '身份证号码',templet: '#identityNoTable'}
+                /* , {field: 'birthday', title: '生日',width: 100}
+                 , {field: 'residentialAddress', title: '地址',width: 100}
+                 , {field: 'ethnicity', title: '民族',width: 100}*/
+                , {field: 'telephone', title: '手机号',templet: '#telephoneTable'}
+                , {field: 'identicationInfo', title: '人员类型', width: 150}
+                // , {field: 'studentLevel', title: '学历', width: 80}
+                // , {field: 'grade', title: '年级', width: 80}
+                //, {field: 'departments', title: '办公地点', width: 300}
+                , {field: 'createTime', title: '创建时间'}
+                , {
+                    field: 'dataSource', title: '数据来源',
+                    templet: function (d) {
+                        var dataSource = " ";
+                        /* if(d.personFaceInfomationTable[0] !=null){
+                             dataSource=d.personFaceInfomationTable[0].dataSource;
+                         }*/
+                        for (var i in d.personFaceInfomationTable) {
+                            if (d.personFaceInfomationTable[i] != null) {
+                                if (d.personFaceInfomationTable[i].dataSource != null) {
+                                    dataSource = d.personFaceInfomationTable[i].dataSource;
+                                    if(dataSource == 1){
+                                        return dataSource = "H5端人脸采集";
+                                    }else if (dataSource == 2){
+                                        return dataSource = "人证核验终端采集";
+                                    }else if(dataSource == 3){
+                                        return dataSource = "web端";
+                                    }else {
+                                        return dataSource = "接口调用采集";
+                                    }
+                                }
+                            }
+                        }
+
+                        return dataSource;
+                    },
+                }
+                , {field: 'barDemo', align: 'center', title: '常用操作', toolbar: '#barDemo', fixed: 'right'}
+            ];
+            // 表格渲染
+            tableIns = table.render({
+                elem: '#test-table-operate',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url: basePath + '/personTable/getPersonTableAll?&&ieRandom=' + new Date().getTime()
+                , id: 'tableId'
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: []
+                , height: 'full-131'
+                , loading: true
+                , cols: [str]
+                /*  ,done:function(res){
+                      tdTitle();
+                  }*/
+                , parseData: function (res) {
+                    var data = res.data;
+                }, done: function (res) {
+                    // 获得当前页码
+                    var brforeCurr = tableIns.config.page.curr;
+                    // 获得当前页的记录数
+                    var dataLength = table.cache['tableId'].length;
+                    var count = res.count; // 获得总记录数
+                    //如果当前页的记录数为0并且总记录数不为0
+                    if (dataLength == 0 && count != 0) {
+                        // 刷新表格到上一页
+                        table.reload("tableId", {
+                            page: {
+                                curr: brforeCurr - 1
+                            }
+                        });
+                    }
+                }, where: {
+                    personName: personName,
+                    identityTypeCode: identityTypeCode,
+                    identicationInfo: identicationInfo,
+                    departments: departments,
+                    isDeleted: isDeleted,
+                    identification:identification,
+                    parkId: parkId
+                },
+                page: true,
+                limits: [20, 40],
+                limit: 20
+            });
+        });
+    }
+</script>
+
+<script>
+    layui.use(['table', 'layer'], function () {
+        var table = layui.table
+            , layer = layui.layer;
+        var $ = layui.$, active = {
+            reload: function () {
+                //执行重载
+                table.reload('tableId', {
+                    page: {
+                        curr: 1
+                    }
+                });
+            },
+        };
+    });
+
+    // 选择日期
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#edit-birthday' //指定元素
+        });
+    });
+    // 选择日期
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#add-birthday' //指定元素
+        });
+    });
+
+    layui.use(['upload', 'element'], function () {
+        var upload = layui.upload
+            , element = layui.element;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#zipupload' //绑定元素
+            , url: basePath + '/poi/importZip' //上传接口
+            , async: true
+            , auto: true
+            , accept: 'file'
+            , exts: 'zip|rar'
+            , multiple:true
+            , number: 1
+            , size: 0
+            , before: function (value) {//上传进度回调 value进度值
+                layer.close(layer.index);
+                layer.open({
+                    type: 1,
+                    title: '上传进度',
+                    closeBtn: 0,
+                    skin: 'importPercent',
+                    content: $("#show"),
+                    shade:0.1,
+                    area: ["400px", "100px"],
+                    success: function (layero, index) {
+                        //定义扫描时间
+                        var scanTime = 500;
+                        //进度条方法查看进度
+                        var timer = setInterval(function () {
+                            $.ajax({
+                                url: basePath + '/poi/uploadStatus',
+                                success: function (data) {
+                                    //动态设置百分比
+                                    element.progress('uploadProgressBar', data.precent + '%')
+                                    if ((data.successTotal + data.errorTotal) == 100) {
+                                        //进度到100%，注意关闭定时器
+                                        clearInterval(timer);
+                                        showloadinge(false);
+                                    }
+                                }
+                            });
+                        }, scanTime);
+                    },
+
+
+                });
+                showloadinge(true);
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    layer.msg("成功导入" + res.successTotal + "条人员信息！", {time: 3000, icon: 6,}, function () {
+                        location.reload();
+                    })
+                }else if(res.code == 2){
+                    layer.msg("空包无法导入数据", {time: 1500, icon: 5,}, function () {
+                        location.reload();
+                    })
+                }else if(res.code == 3){
+                    layer.msg("excel表格无数据或格式有误", {time: 1500, icon: 5,}, function () {
+                        location.reload();
+                    })
+                } else if (res.code == 1) {
+                    /*layer.msg("成功导入"+res.successTotal+"条人员信息！"+res.errorTotal+"条数据导入失败，请检查姓名、手机号、身份证号均为必填项！且至少有一张照片！", {time: 3000, icon: 5, shift: 6}, function () {
+                       location.reload();
+                   })*/
+                    layer.confirm('存在异常数据' + res.errorTotal + '条，是否导出?', {
+                        title: '异常信息', end: function () {
+                            layer.msg("部分人员添加成功", {time: 2000, icon: 1}, function () {
+                                //重新渲染表格
+                                /*tableIns.reload();*/
+                                location.reload(true);
+                            })
+                        }
+                    }, function (index) {
+                        location.href = basePath + "/poi/exportErrorExcel";
+                        layer.close(index);
+                    });
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                layer.msg("接口请求异常", {time: 1500, icon: 5,}, function () {
+                    location.reload();
+                })
+            }
+        });
+
+        var uploadInst = upload.render({
+            elem: '#zipDelete' //绑定元素
+            , url: basePath + '/poi/deletePersonByExcel' //上传接口
+            , async: true
+            , auto: true
+            , accept: 'file'
+            , exts: 'zip|rar'
+            , multiple:true
+            , number: 1
+            , size: 0
+            , progress: function (value) {//上传进度回调 value进度值
+                layer.close(layer.index);
+                layer.open({
+                    type: 1,
+                    title: '上传进度',
+                    closeBtn: 0,
+                    shade:0.1,
+                    skin: 'importPercent',
+                    content: $("#show"),
+                    area: ["400px", "100px"],
+                    success: function (layero, index) {
+                        //定义扫描时间
+                        var scanTime = 500;
+                        //进度条方法查看进度
+                        var timer = setInterval(function () {
+                            $.ajax({
+                                url: basePath + '/poi/uploadStatus',
+                                success: function (data) {
+                                    //动态设置百分比
+                                    element.progress('uploadProgressBar', data.precent + '%')
+                                    if ((data.successTotal + data.errorTotal) == 100) {
+                                        //进度到100%，注意关闭定时器
+                                        clearInterval(timer);
+                                        showloadinge(false);
+                                    }
+                                }
+                            });
+                        }, scanTime);
+                    },
+                });
+                showloadinge(true);
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    layer.msg("成功删除" + res.successTotal + "条人员信息！", {time: 3000, icon: 6,}, function () {
+                        location.reload();
+                    })
+                } else if(res.code == 2){
+                    layer.msg("空包无法删除数据", {time: 1500, icon: 5,}, function () {
+                        location.reload();
+                    })
+                }else if(res.code == 3){
+                    layer.msg("excel表格无数据或格式有误", {time: 1500, icon: 5,}, function () {
+                        location.reload();
+                    })
+                } else if (res.code == 1) {
+                    /*layer.msg("成功导入"+res.successTotal+"条人员信息！"+res.errorTotal+"条数据导入失败，请检查姓名、手机号、身份证号均为必填项！且至少有一张照片！", {time: 3000, icon: 5, shift: 6}, function () {
+                        location.reload();
+                    })*/
+                    layer.confirm('存在异常数据' + res.errorTotal + '条，是否导出?', {
+                        title: '异常信息', end: function () {
+                            layer.msg("部分人员删除成功", {time: 2000, icon: 1}, function () {
+                                //重新渲染表格
+                                /*tableIns.reload();*/
+                                location.reload(true);
+                            })
+                        }
+                    }, function (index) {
+                        location.href = basePath + "/poi/exportErrorDeleteExcel";
+                        layer.close(index);
+                    });
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                //请求异常回调
+                layer.msg("接口请求异常", {time: 1500, icon: 5,}, function () {
+                    location.reload();
+                })
+            }
+        });
+
+
+        var uploadInst = upload.render({
+            elem: '#zipUpdate' //绑定元素
+            , url: basePath + '/poi/updatePersonByExcel' //上传接口
+            , async: true
+            , auto: true
+            , accept: 'file'
+            , exts: 'zip|rar'
+            , multiple:true
+            , number: 1
+            , size: 0
+            , progress: function (value) {//上传进度回调 value进度值
+                layer.close(layer.index);
+                layer.open({
+                    type: 1,
+                    title: '上传进度',
+                    closeBtn: 0,
+                    shade:0.1,
+                    skin: 'importPercent',
+                    content: $("#show"),
+                    area: ["400px", "100px"],
+                    success: function (layero, index) {
+                        //定义扫描时间
+                        var scanTime = 500;
+                        //进度条方法查看进度
+                        var timer = setInterval(function () {
+                            $.ajax({
+                                url: basePath + '/poi/uploadStatus',
+                                success: function (data) {
+                                    //动态设置百分比
+                                    element.progress('uploadProgressBar', data.precent + '%')
+                                    if ((data.successTotal + data.errorTotal) == 100) {
+                                        //进度到100%，注意关闭定时器
+                                        clearInterval(timer);
+                                        showloadinge(false);
+                                    }
+                                }
+                            });
+                        }, scanTime);
+                    },
+                });
+                showloadinge(true);
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    layer.msg("成功修改" + res.successTotal + "条人员信息！", {time: 3000, icon: 6,}, function () {
+                        location.reload();
+                    })
+                } else if(res.code == 2){
+                    layer.msg("空包无法修改数据", {time: 1500, icon: 5,}, function () {
+                        location.reload();
+                    })
+                } else if(res.code == 3){
+                    layer.msg("excel表格无数据或格式有误", {time: 1500, icon: 5,}, function () {
+                        location.reload();
+                    })
+                }else if (res.code == 1) {
+                    /*layer.msg("成功导入"+res.successTotal+"条人员信息！"+res.errorTotal+"条数据导入失败，请检查姓名、手机号、身份证号均为必填项！且至少有一张照片！", {time: 3000, icon: 5, shift: 6}, function () {
+                        location.reload();
+                    })*/
+                    layer.confirm('存在异常数据' + res.errorTotal + '条，是否导出?', {
+                        title: '异常信息', end: function () {
+                            layer.msg("部分人员修改成功", {time: 2000, icon: 1}, function () {
+                                //重新渲染表格
+                                /*tableIns.reload();*/
+                                location.reload(true);
+                            })
+                        }
+                    }, function (index) {
+                        location.href = basePath + "/poi/exportErrorUpdateExcel";
+                        layer.close(index);
+                    });
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                //请求异常回调
+                layer.msg("接口请求异常", {time: 1500, icon: 5,}, function () {
+                    location.reload();
+                })
+            }
+        });
+
+    });
+</script>
+
+<!--查看，编辑和删除js实现-->
+<script>
+
+    function LoadOrganazationTree(parkId) {
+        $.ajax({
+            url: basePath + "/baseOrganizition/getOrganizationTree",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            type: "GET",
+            data: {parkId: parkId},
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                // alert(JSON.stringify(data))
+                if (data.data.length == 0 || data.data == null) {
+                    $("#orgTree").hide();
+                    layer.alert("所选园区没有数据！！！请选择其他园区", {icon: 2});
+                } else {
+                    $("#orgTree").show();
+                    var zTree = $.fn.zTree.init($("#orgTree"), setting, data.data);
+                    zTree.expandAll(true);
+                    for (var i in data.data) {
+                        if (i.pid != '0') {
+                            orgId = data.data[i].id;
+                            orgName = data.data[i].orgName;
+                            var node = zTree.getNodeByParam("id", orgId);
+                            zTree.selectNode(node, true);   //将指定ID的节点选中
+                            break;
+                        }
+                    }
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                layer.alert("获取组织架构错误" + XMLHttpRequest.status + "错误请联系管理员！", {icon: 2});
+            }
+        })
+    };
+
+    function queryOrgTree(parkId) {
+        LoadOrganazationTree(parkId);
+        layer.open({
+                type: 1
+                , title: '组织机构树形结构图'
+                , area: ["250px", "350px"]
+                , btn: ['确认', '取消']
+                , btnAlign: 'c'
+                , content: $("#orgTree_Staff")
+                , yes: function (index) {
+                    orgName = $("#orgIdaaaa").val();
+                    $("#add-org").val(orgName);
+                    $("#edit-orgId").val(orgName);
+                    orgId = $("#orgIdbbbb").val();
+                    $("#orgIdHidden").val(orgId);
+                    $("#edit-orgIdHidden").val(orgId);
+                    //console.log(orgId);
+                    //console.log(queryData);
+                    layer.close(index);
+                }
+                , cancel: function () {
+                }
+            });
+        }
+
+    var setting = {
+        data: {//表示tree的数据格式
+            simpleData: {
+                enable: true,//表示使用简单数据模式
+                idKey: "id",//设置之后id为在简单数据模式中的父子节点关联的桥梁
+                pidKey: "pid",//设置之后pid为在简单数据模式中的父子节点关联的桥梁和id互相对应
+                rootPId: "-1"
+            },
+        },
+        view: {
+            dblClickExpand: true,
+            showIcon: true,//设置是否显示节点图标
+            showLine: true,//设置是否显示节点与节点之间的连线
+            showTitle: true,  //设置是否显示节点的title提示信息
+        },
+        callback: {
+            onClick: zTreeOnClick,
+        }
+    }
+
+    function zTreeOnClick(event, treeId, treeNode) {
+        if(treeNode.orgType === 3){
+            orgId = treeNode.id,
+            orgName = treeNode.name,
+            orgPid = treeNode.pid
+            alert(orgName)
+            $("#orgIdaaaa").val(orgName);
+            $("#orgIdbbbb").val(orgId);
+        }else {
+            return null;
+        }
+    }
+
+    // 实例化表单,让表单上面的数据显示
+    layui.use(['table', 'element', 'layer', 'form'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer        //弹层
+            , table = layui.table
+            , form = layui.form
+        //表格
+        table.render();
+
+        form.on('select(identicationInfo)', function (data) {
+            //使用layui的form.on绑定select选中事件
+            if (data.value == 0) {
+                $("#editxueji").hide();
+                $("#editxueli").hide();
+            } else if (data.value == 1) {
+                $("#editxueji").hide();
+                $("#editxueli").hide();
+            } else if (data.value == 2) {
+                $("#editxueji").show();
+                $("#editxueli").show();
+            } else if (data.value == 3) {
+                $("#editxueji").show();
+                $("#editxueli").show();
+            } else if (data.value == 4) {
+                $("#editxueji").hide();
+                $("#editxueli").hide();
+            } else if (data.value == 5) {
+                $("#editxueji").hide();
+                $("#editxueli").hide();
+            } else if (data.value == 6) {
+                $("#editxueji").hide();
+                $("#editxueli").hide();
+            }
+        });
+
+        //监听工具条
+        table.on('tool(test-table-operate)', function (obj) {
+            //注：tool是工具条事件名，test-table-operate是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            console.log(data);
+            if (layEvent === 'detail') {
+                layer.open({
+                    type: 1
+                    , title: '查看人员信息'
+                    , area: ["850px", "660px"]
+//                    ,closeBtn:false
+                    , btn: '确定'
+                    , btnAlign: 'center'
+                    , content: $("#tab-chakan")
+                    , yes: function (index) {
+                        closeImg()
+                        $("input[name=gender]").prop("checked",false);
+                        layer.close(index)
+                    }
+                    , cancel: function () {
+                        closeImg();
+                        $("input[name=gender]").prop("checked",false);
+                    }
+                });
+                $("#personName").val(data.personName);
+                $("#identityTypeCode").val(data.identityTypeCode);
+                $("#identityNo").val(data.identityNo);
+                $("#birthday").val(data.birthday);
+                $("#residentialAddress").val(data.residentialAddress);
+                $("#ethnicity").val(data.ethnicity);
+                $("#telephone").val(data.telephone);
+                $("#identicationInfo").val(data.identicationInfo);
+                $("#departments").val(data.departments);
+                $("#orgId").val(data.gradeName +"/"+ data.orgName);
+                $.ajax({
+                    url : basePath + "/basePark/queryParkNameById",
+                    type : "get",
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    data : "parkId="+data.parkId,
+                    success:function(result) {
+                        $("#parkId").val(result);
+                    },error:function(result) {
+                        alert(result)
+                    }
+                });
+
+                $("#description").val(data.description);
+                if (data.studentLevels != "" && data.studentLevels != null) {
+                    $('#xueli').show();
+                    $("#studentLevel").val(data.studentLevel);
+                } else {
+                    $('#xueli').hide()
+                }
+                if (data.grades != "" && data.grades != null) {
+                    $('#xueji').show();
+                    $("#grade").val(data.grade);
+                } else {
+                    $('#xueji').hide();
+                }
+                //性别回显
+                if (data.gender != null) {
+                    if (data.gender == 1) {
+                        $("input[name=gender][value=" + data.gender.toString() + "]").prop("checked", data.gender == '1' ? true : false);
+                    } else if (data.gender == 0) {
+                        $("input[name=gender][value=" + data.gender.toString() + "]").prop("checked", data.gender == '0' ? true : false);
+                    }
+                    form.render("radio");
+                }
+                // console.log(data);
+                var arr = data.personFaceInfomationTable;
+                $('#imgDiv').find('img').remove();
+                $('#faceImage').empty();
+                $('#imgDiv2').find('img').remove();
+                $('#imgDiv3').find('img').remove();
+                $('#imgDiv4').find('img').remove();
+                for (var i in arr) {
+                    if (arr[i].faceAddress != null) {
+                        if (arr[i].identification == "1") {
+                            $('#faceImage').append('<div style="display: inline;position:relative;width: 140px;height:150px;padding: 0 10px"><img id="' + 'faceImg' + i + '" src="/imageEcho/' + arr[i].faceAddress + '" onclick="PreviewImg(this.src)"><span  style="font-size: 15px;position: absolute;bottom:-68px;left:72px;color: red;border: red 1px solid">身份证人脸</span></div>')
+                        } else {
+                            // $('#faceImage').append('<img style="margin: 10px" id="' + 'faceImg' + i + '" src="/image/toFindImg?imgUrl=' + arr[i].faceAddress + '">')
+                            $('#faceImage').append('<div style="display: inline;position:relative;width: 140px;height:150px;padding: 0 10px"><img id="' + 'faceImg' + i + '" src="/imageEcho/' + arr[i].faceAddress + '" onclick="PreviewImg(this.src)"></div>')
+                        }
+                    } else if (arr[i].campusCardAddress != null) {
+                        $('#cardImage').append('<img style="margin:10px" id="' + 'campusCard' + i + '" src="/imageEcho/' + arr[i].campusCardAddress + '" onclick="PreviewImg(this.src)">')
+                    } /*else if (arr[i].idcardImage != null) {
+                        $('#idcardImage').append('<img style="margin:10px" id="' + 'idcardImage' + i + '" src="/image/toFindImg?imgUrl=' + arr[i].idcardImage + '">')
+                    } */ else if (arr[i].faceImage != null) {
+                        $('#personCardImage').append('<img style="margin:10px" id="' + 'personCardImage' + i + '" src="/imageEcho/' + arr[i].faceImage + '" onclick="PreviewImg(this.src)">')
+                    }
+                }
+                form.render();
+            } else if (layEvent === 'edit') {
+                var str = obj.data;
+                //console.log(JSON.stringify(str))
+                layer.open({
+                    type: 1
+                    , title: '编辑人员数据'
+                    , area: ["840px", "610px"]
+                    , closeBtn: false
+                    , btn: ['确认更改', '取消']
+                    , btnAlign: 'c'
+                    , content: $("#tab-edit")
+                    , success: function () {
+                        $("#edit-personIdNumber").focus(function () {
+                            $("#edit-personIdNumber").css('border-color', '');
+                        })
+                        $("#edit-telephone").focus(function () {
+                            $("#edit-telephone").css('border-color', '');
+                        })
+                        $("#edit-description").focus(function () {
+                            $("#edit-description").css('border-color', '');
+                        })
+                        $("#edit-personName").focus(function () {
+                            $("#edit-personName").css('border-color', '');
+                        })
+
+                        //监听单选
+                        $("#edit-identityTypeCode").val(str.identityTypeCode);
+                        $("#edit-personName").val(str.personName);
+                        $("#edit-personIdNumber").val(str.personIdNumber);
+                        $("#edit-identityNo").val(str.identityNo);
+                        $("#edit-birthday").val(str.birthday);
+                        $("#edit-residentialAddress").val(str.residentialAddress);
+                        $("#edit-telephone").val(str.telephone);
+                        alert(str.gradeName +"/"+ str.orgName);
+                        $("#edit-orgId").val(str.gradeName +"/"+ str.orgName);
+                        /*console.log(JSON.stringify(str))
+                        if (str.identicationInfo != "") {
+                            $("#edit-identicationInfo").find("option[value='" + str.identicationInfo + "']").prop("selected", 'selected');
+                            form.render("select");
+                        } else {
+                            $("#edit-identicationInfo").val("");
+                        }*/
+                        //判断人员类型
+                        if (str.identicationInfo != "") {
+                            $.ajax({
+                                url : basePath + "/dataDictionary/queryDataDictionaryByName",
+                                type : "get",
+                                headers: {
+                                    "access_token": access_token//此处放置请求到的用户token
+                                },
+                                data : "name="+data.identicationInfo,
+                                success: function (result) {
+                                    $("#edit-identicationInfo").find("option[value='" + result + "']").prop("selected", 'selected');
+                                    form.render("select");
+                                },error(){
+                                    $("#edit-identicationInfo").val("");
+                                }
+                            });
+                        }
+                        //判断民族
+                        if (str.ethnicity != "") {
+                            $.ajax({
+                                url :basePath + "/dataDictionary/queryDataDictionaryByName",
+                                type : "get",
+                                headers: {
+                                    "access_token": access_token//此处放置请求到的用户token
+                                },
+                                data : "name="+data.ethnicity,
+                                success: function (result) {
+                                    $("#edit-ethnicity").find("option[value=" + result + "]").prop('selected', 'selected');
+                                    form.render("select");
+                                },error(){
+                                    $("#edit-ethnicity").val("");
+                                }
+                            });
+                        }
+
+                        if (str.ethnicity != "") {
+                            $("#edit-ethnicity").find("option[value=" + str.ethnicity + "]").prop('selected', 'selected');
+                            form.render("select");
+                        } else {
+                            $("#edit-ethnicity").val("");
+                        }
+                        // if (str.departmentss != "") {
+                        //     $("#edit-departments").find("option[value=" + str.departmentss + "]").prop('selected', 'selected');
+                        //
+                        // } else {
+                        //     $("#edit-departments").val("");
+                        // }
+                        if (str.parkId != "") {
+                            $("#edit-parkId").find("option[value=" + str.parkId + "]").prop('selected', 'selected');
+
+                        } else {
+                            $("#edit-parkId").val("");
+                        }
+                        if (str.identicationInfos == '2') {
+                            $('#editxueli').show();
+                            $("#edit-studentLevel").find("option[value=" + str.studentLevels + "]").prop('selected', 'selected');
+                            $('#editxueji').show();
+                            $("#edit-grade").find("option[value=" + str.grades + "]").prop('selected', 'selected');
+                        } else if (str.identicationInfos == '3') {
+                            $('#editxueli').show();
+                            $("#edit-studentLevel").find("option[value=" + str.studentLevels + "]").prop('selected', 'selected');
+                            $('#editxueji').show();
+                            $("#edit-grade").find("option[value=" + str.grades + "]").prop('selected', 'selected');
+                        } else {
+                            $("#edit-studentLevel").val("");
+                            $('#editxueli').hide();
+                            $("#edit-grade").val("");
+                            $('#editxueji').hide();
+                        }
+
+                        $("#edit-description").val(str.description);
+                        $("#personId").val(str.personId);
+                        //性别回显
+                        if (str.gender != null) {
+                            if (str.gender == 1) {
+                                $("input[name=gender][value=" + str.gender.toString() + "]").prop("checked", str.gender == '1' ? true : false);
+                            } else if(str.gender == 0) {
+                                $("input[name=gender][value=" + str.gender.toString() + "]").prop("checked", str.gender == '0' ? true : false);
+                            }
+                            form.render("radio");
+                        }
+
+                        var brr = str.personFaceInfomationTable;
+                        var faceImageArr = new Array();
+                        var cardImageArr = new Array();
+                        // var idCardImageArr = new Array();
+                        var personCardImageArr = new Array();
+                        $('.faceEdit').remove();
+                        $('.cardEdit').remove();
+                        $('.idcardEdit').remove();
+                        $('.PersonCardEdit').remove();
+                        /*    $('#button1').show();
+                            $('#button2').show();
+                            $('#button3').show();
+                            $('#button4').show();*/
+                        for (var i in brr) {
+                            if (brr[i].faceAddress != null) {
+                                faceImageArr.push(brr[i]);
+                            } else if (brr[i].campusCardAddress != null) {
+                                cardImageArr.push(brr[i])
+                            } /*else if (brr[i].idcardImage != null) {
+                                idCardImageArr.push(brr[i])
+                            }*/ else if (brr[i].faceImage != null) {
+                                personCardImageArr.push(brr[i])
+                            }
+                        }
+
+                        for (var i1 in faceImageArr) {
+                            $('#test2' + i1 + '').hide();
+                            $("input[name=add_pic2]").remove();
+                            if (faceImageArr[i1].identification == "1") {
+                                $('#button1' + i1 + '').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                                    '<img src="/imageEcho/' + faceImageArr[i1].faceAddress + '" onclick="PreviewImgEdit(this.src)">' +
+                                    '<span  style="font-size: 15px;position: absolute;bottom:0px;right:0;color: red;border: red 1px solid">身份证人脸</span><input type="hidden"  name="add_pic23" value="' + faceImageArr[i1].faceAddress + '"/>' +
+                                    '<input type="hidden"  id="biaoshi" value="' + faceImageArr[i1].identification + '"/></div>')
+                            } else {
+                                $('#button1' + i1 + '').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                                    '<img src="/imageEcho/' + faceImageArr[i1].faceAddress + '" onclick="PreviewImgEdit(this.src)">' +
+                                    '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0px;right:0;color: red" onclick="deleteImg(this)">' +
+                                    '</i><input type="hidden"  name="add_pic2" value="' + faceImageArr[i1].faceAddress + '"/></div>')
+                            }
+                        }
+                        if (faceImageArr.length == 1) {
+                            $('#test21').show();
+                            $('#test22').show();
+                        } else if (faceImageArr.length == 2) {
+                            $('#test22').show();
+                        }
+                        if (cardImageArr.length == 0) {
+                            $('#test30').show();
+                        }
+                        for (var i2 in cardImageArr) {
+                            $('#test3' + i2 + '').hide();
+                            $("input[name=add_pic3]").remove();
+                            $('#button2' + i2 + '').append('<div class="cardEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                                '<img src="/imageEcho/' + cardImageArr[i2].campusCardAddress + '" onclick="PreviewImgEdit(this.src)">' +
+                                '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0px;right:0;color: red" onclick="deleteImg(this)">' +
+                                '</i><input type="hidden"  name="add_pic3" value="' + cardImageArr[i2].campusCardAddress + '"/></div>')
+                        }
+                        if (personCardImageArr.length == 0) {
+                            $('#test50').show();
+                        }
+                        for (var i4 in personCardImageArr) {
+                            $('#test5' + i4 + '').hide();
+                            $("input[name=add_pic5]").remove();
+                            $('#button4' + i4 + '').append('<div class="PersonCardEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                                '<img src="/imageEcho/' + personCardImageArr[i4].faceImage + '" onclick="PreviewImgEdit(this.src)">' +
+                                '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0px;right:0;color: #ff0000" onclick="deleteImg(this)">' +
+                                '</i><input type="hidden"  name="add_pic5" value="' + personCardImageArr[i4].faceImage + '"/></div>')
+                        }
+
+                        form.render();
+                    }, yes: function (index) {
+                        var emptyValidationResult = emptyValidationDataDic();
+                        if (!emptyValidationResult) {
+                            return false;
+                        }
+                        $.ajax({
+                            type: 'PUT',
+                            url: basePath + '/personTable/updateByPrimaryKeySelective',
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            data: $("#editStaff").serialize(),
+                            success: function (result) {
+                                var code = result.code;
+                                if (code == -1) {
+                                    //edit-personIdNumber
+                                    $("#edit-personIdNumber").css('border-color', 'red');
+                                    layer.msg("修改人员失败,请检查身份证信息", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                } else if (code == -2) {
+                                    $("#edit-telephone").css('border-color', 'red');
+                                    layer.msg("修改人员失败，请检查人员电话", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                } else if (code == -3) {
+                                    $("#edit-description").css('border-color', 'red');
+                                    layer.msg("修改人员失败，请检查备注信息", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                } else if (code == -4) {
+                                    $("#edit-personName").css('border-color', 'red');
+                                    layer.msg("修改人员失败，请检查人员姓名", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                } else if (code == 5) {
+                                    layer.msg("修改人员失败，该身份证号码已存在！", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                } else if (code == 6) {
+                                    layer.msg("该教工号或学工号已存在！", {time: 1000, icon: 5, shift: 6}, function () {
+                                    });
+                                } else {
+                                    layer.msg("修改人员信息成功", {time: 800, icon: 6}, function () {
+                                        //重新渲染表格
+                                        tableIns.reload();
+                                        // location.reload(true);
+                                    })
+                                    layer.close(index);
+                                    $("input[name=gender]").prop("checked",false);
+                                    closeEditImg();
+                                }
+                            }
+                            , error: function (msg) {
+                                layer.msg("修改人员失败", {time: 1000, icon: 5, shift: 6}, function () {
+                                });
+
+                                layer.close(index);
+                            }
+
+                        });
+                        //修改人员照片
+                        var datats = {};
+                        datats.personNewTable = getPersonNewTable();
+                        datats.faceAddressList = selectimg();
+                        datats.imgs = delImg;
+                        var formData = new FormData();
+                        formData.append("datats", JSON.stringify(datats));
+                        $.ajax({
+                            url: basePath + '/personTable/updatePersonImg',
+                            type: 'POST',
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            data: formData,
+                            dateType: "json",
+                            cache: false,
+                            processData: false,
+                            contentType: false
+                        })
+                        delImg = []
+                    },
+                    btn2: function () {
+                        $("input[name=gender]").prop("checked",false);
+                        closeEditImg();
+                    }
+                })
+            } else if (layEvent === 'del') {
+                layer.alert('将要删除该行数据,确定吗?', {
+                    closeBtn: 0    // 是否显示关闭按钮
+                    , anim: 6
+                    , btn: ['确定', '取消'] //按钮
+                    , yes: function (index) {
+                        var getData = new Object();
+//                        getData.userId = data.userId;
+                        $.ajax({
+                            url: basePath + '/staff/deleteStaffInfoByUserId',
+                            type: 'post',
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            dataType: 'json',
+                            success: function (res) {
+                                layer.msg("删除人员成功", {time: 800, icon: 1}, function () {
+                                    //重新渲染表格
+                                    tableIns.reload();
+                                    // location.reload(true);
+                                })
+                            },
+                            error: function (msg) {
+                                layer.msg("删除人员失败", {time: 800, icon: 2, shift: 6}, function () {
+                                })
+                            }
+                        });
+                        layer.close(index);
+                    }
+                });
+            }
+        });
+
+    });
+    //layui 遮罩层
+    function showloadinge(t) {
+        if (t) {//如果是true则显示loading
+            // console.log(t);
+            var loadingIndex = layer.load(2, { //icon支持传入0-2
+                shade: [0.1, 'gray'], //0.5透明度的灰色背景
+                content: '请稍等...',
+                color:'red',
+                success: function (layero) {
+                    layero.find('.layui-layer-content').css({
+                        'padding-top': '39px',
+                        'width': '60px'
+                    });
+                }
+            });
+        } else {
+            console.log("关闭loading层:" + t);
+            layer.closeAll('loading');
+        }
+    }
+    //关闭查看预览
+    function closeImg() {
+        // $("#PreviewImg").hide()
+        $("#chakan").css('filter', '');
+        $("#PreviewImg").css("display","none");
+
+    }
+
+    //关闭新增预览
+    function closeAddImg() {
+        // $("#PreviewImgAdd").hide()
+        $("#addStaff").css('filter', '');
+        $("#PreviewImgAdd").css("display","none");
+    }
+
+    //关闭编辑预览
+    function closeEditImg() {
+        // $("#PreviewImgEdit").hide()
+        $("#editStaff").css('filter', '');
+        $("#PreviewImgEdit").css("display","none");
+    }
+
+
+    //预览查看图片
+    function PreviewImg(that) {
+        // let s = $("#PreviewImg");
+        // s.show();
+        // s.attr({src: that, alt: "图片加载失败"});
+        $("#chakan").css('filter', 'blur(10px)');
+        $("#PreviewImg").css("display","block");
+        $("#PreviewImg").html("<img src="+that+" style='height: 500px;width: 500px;z-index: 150;margin-top: 200px;margin-left: 650px;'/>");
+
+    }
+
+    //预览新增图片
+    function PreviewImgAdd(that) {
+        // let s = $("#PreviewImgAdd");
+        // s.show();
+        // s.attr({src: that, alt: "图片加载失败"});
+        $("#addStaff").css('filter', 'blur(10px)');
+        $("#PreviewImgAdd").css("display","block");
+        $("#PreviewImgAdd").html("<img src="+that+" style='height: 500px;width: 500px;z-index: 150;margin-top: 200px;margin-left: 650px;'/>");
+    }
+
+    //预览新增图片
+    function PreviewImgEdit(that) {
+        // let s = $("#PreviewImgEdit");
+        // s.show();
+        // s.attr({src: that, alt: "图片加载失败"});
+        $("#editStaff").css('filter', 'blur(10px)');
+        $("#PreviewImgEdit").css("display","block");
+        $("#PreviewImgEdit").html("<img src="+that+" style='height: 500px;width: 500px;z-index: 150;margin-top: 200px;margin-left: 650px;'/>");
+    }
+
+    //选择不同的导出类型
+    function show_sub(expor) {
+        var id = document.getElementById("u18");
+        id.addEventListener('change', function () {
+        });//单一添加下拉改变事件
+        id.onmousedown = function () {//当按下鼠标按钮的时候
+            this.sindex = this.selectedIndex;//把当前选中的值得索引赋给下拉选中的索引
+            this.selectedIndex = -1;//把下拉选中的索引改变为-1,也就是没有!
+        }
+        id.onmouseout = function () {//当鼠标移开的时候
+            var index = id.selectedIndex;//获取下拉选中的索引
+            if (index == -1) {//如果为-1,就是根本没有选
+                this.selectedIndex = this.sindex;//就把下拉选中的索引改变成之前选中的值得索引,就默认选择的是之前选中的值
+            }
+        };
+        //加载中样式...
+        showloading(true);
+        var personName = $("input[name='personName']").val();
+        var identityTypeCode = $("input[name='identityTypeCode']").val();
+        var identicationInfo = $("select[name='identicationInfo']").val();
+        var departments = $("select[name='departments']").val();
+        var parkId = $("select[name='parkId']").val();
+        var table = layui.table;
+        var checkStatus = table.checkStatus('tableId'),
+            data = checkStatus.data;
+        var personId = new Array();
+        for (var i = 0; i < data.length; i++) {
+            personId[i] = data[i].personId;
+        }
+        ;
+        if (expor == "zi") {
+            //只导出人员信息
+            location.href = basePath + "/poi/exportZipZi?personName=" + personName + "&identityTypeCode=" + identityTypeCode +"&identicationInfo=" + identicationInfo + "&departments=" + departments + "&personIds=" + personId;
+            //根据cookies判断遮罩层的关闭
+            initDownloadCheckTimer();
+        } else if (expor == "photo") {
+            //导出人员信息以及人员信息的照片
+            location.href = basePath + "/poi/exportZipZiAndPhoto?personName=" + personName + "&identityTypeCode=" + identityTypeCode + "&identicationInfo=" + identicationInfo + "&departments=" + departments + "&personIds=" + personId;
+            //根据cookies判断遮罩层的关闭
+            initDownloadCheckTimer();
+        }
+    }
+
+</script>
+
+
+</img>
+<!--顶部工具编辑和删除js实现-->
+<script>
+    //java中的endWith方法
+    String.prototype.endWith=function(s){
+        if(s==null||s==""||this.length==0||s.length>this.length)
+            return false;
+        if(this.substring(this.length-s.length)==s)
+            return true;
+        else
+            return false;
+        return true;
+    }
+    //编辑人员信息 获取照片地址  input拿不到数据  使用img中的src地址
+    function selectimg() {
+        //人脸照片
+        var am = $(".faceEdit").find("img")
+        var identification = $("#biaoshi").val();
+        let sdf = new Array();
+        let val = $(" input[ name='add_pic23' ] ").val();
+        for (var i = 0; i < am.length; i++) {
+            var sss=am[i].src;
+            // 采集终端的身份证照片
+            if (sss.endWith(val)){
+                sdf.push({'faceAddress': am[i].src,'identification': identification})
+            }else {
+                sdf.push({'faceAddress': am[i].src})
+            }
+
+        }
+        //获取value值
+        //校园卡照片
+        var campusCardAddress = $(".cardEdit").find("img");
+        for (var i = 0; i < campusCardAddress.length; i++) {
+            sdf.push({'campusCardAddress': campusCardAddress[i].src})
+        }
+        //获取value值
+        //人证信息
+        var personCardImage = $(".PersonCardEdit").find("img");
+        // let personCardAddress = new Array();
+        for (var i = 0; i < personCardImage.length; i++) {
+            // console.log(personCardImage[0].src)
+            sdf.push({"faceImage": personCardImage[i].src})
+        }
+        // }
+        return sdf;
+    }
+
+    // 新增人员
+    function addService() {
+        layui.use(['layer', 'jquery', 'form'], function () {
+            var layer = layui.layer
+                , $ = layui.$
+                , form = layui.form;
+            form.on('select(AddidenticationInfo)', function (data) {
+                //使用layui的form.on绑定select选中事件
+                if (data.value == 0) {
+                    $("#addxueji").hide();
+                    $("#addxueli").hide();
+                } else if (data.value == 1) {
+                    $("#addxueji").hide();
+                    $("#addxueli").hide();
+                } else if (data.value == 2) {
+                    $("#addxueji").show();
+                    $("#addxueli").show();
+                } else if (data.value == 3) {
+                    $("#addxueji").show();
+                    $("#addxueli").show();
+                } else if (data.value == 4) {
+                    $("#addxueji").hide();
+                    $("#addxueli").hide();
+                } else if (data.value == 5) {
+                    $("#addxueji").hide();
+                    $("#addxueli").hide();
+                } else if (data.value == 6) {
+                    $("#addxueji").hide();
+                    $("#addxueli").hide();
+                }
+            });
+
+                layer.open({
+                    type: 1
+                    , title: '新增人员数据'
+                    , area: ["840px", "610px"]
+                    , btn: ['确认', '取消']
+                    , btnAlign: 'c'
+                    , content: $("#tab-add")
+                    , btn2: function () {
+                        $("#add-personName").val("");//名字
+                        $("#add-identityTypeCode").val("");//学工号
+                        $("#add-telephone").val("");//手机号
+                        $("#add-identityNo").val("");//身份号
+                        //$("#add-birthday").val("");//生日
+                        $("#add-residentialAddress").val("");//地址
+                        $("#add-ethnicity").val("");//民族
+                        $("#add-identicationInfo").val("");//人员类型
+                        $("#add-departments").val("");//办公地点班级
+                        $("#add-parkId").val("");//园区
+                        $("#PDEPT_KEYHide").val("");//组织机构
+                        $("#add-description").val("");//备注
+                        $("#button5").find("img").remove();
+                        //$("#button5").find("div").remove();
+                        $("#button5").find("input").remove();
+                        $("#button52").find("img").remove();
+                        $("#button52").find("div").remove();
+                        $("#button53").find("img").remove();
+                        $("#button53").find("div").remove();
+                        closeAddImg()
+                        // location.reload()
+                    }
+
+                    , yes: function (index) {
+                        var emptyValidationResult = AddemptyValidationDataDic();
+                        if (!emptyValidationResult) {
+                            return false;
+                        }
+                        var datats = {};
+                        datats.personNewTable = getAddPersonNewTable();
+                        datats.faceAddressList = getAddFaceAddressList();
+                        var formData = new FormData();
+                        formData.append("datats", JSON.stringify(datats));
+                        $.ajax({
+                            url: basePath + '/personTable/personInsertPersonNewTable',
+                            type: 'POST',
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            data: formData,
+                            dateType: "json",
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                if (data.code == 200) {
+                                    layer.msg('人员信息提交成功！！！', {time: 2000, icon: 6}, function () {
+                                        //重新渲染表格
+                                        //tableIns.reload();
+                                        location.reload(true);
+                                    })
+                                    layer.close(index);
+                                } else if (data.code == 1) {
+                                    layer.msg('人员信息提交失败！！！该身份证号已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                                } else if (data.code == 2) {
+                                    layer.msg('该教工号或学工号已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                                } else if (data.code == 3) {
+                                    layer.msg('组织机构为空！,请联系管理员', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                                } else {
+                                    layer.msg('人员信息提交失败！ ！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                                }
+                            },
+                            error: function (returndata) {
+                                alert("error" + returndata);
+                            }
+                        })
+                        closeAddImg()
+                    }
+                    , cancel: function () {
+                        closeAddImg()
+                    }
+                });
+                form.render();
+            });
+        }
+
+    layui.use(['layer', 'jquery', 'form'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+        form.on('select(Add-identicationInfo)', function(data){
+            identicationInfo = $('#add-identicationInfo').val();
+            if(identicationInfo == 7 ){
+                $('#shenfenzheng').show();
+                $('#shenfenzheng').html(" <div class=\"layui-inline\">\n" +
+                    "                    <label class=\"layui-form-label layui-form-required\">身份证号码:</label>\n" +
+                    "                    <div class=\"layui-input-inline\">\n" +
+                    "                        <input type=\"text\" name=\"identityNo\" id=\"add-identityNo\" class=\"layui-input\" autocomplete=\"off\">\n" +
+                    "                    </div>\n" +
+                    "                </div>")
+            }else {
+                $('#shenfenzheng').hide();
+            }
+        });
+    });
+
+    layui.use(['layer', 'jquery', 'form'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+        form.on('select(Add-parkIdOnchange)', function(data){
+            parkId = $('#add-parkId').val();
+            if(parkId != undefined && parkId != null && parkId != "" ){
+                $('#danwei').html("<div class=\"layui-inline\">\n" +
+                    "                        <label class=\"layui-form-label layui-form-required\">年级/班级:</label>\n" +
+                    "                        <div class=\"layui-input-inline\">\n" +
+                    "                            <input type=\"text\" name=\"org\" id=\"add-org\" class=\"layui-input\" onclick =\"queryOrgTree\" autocomplete=\"off\"disabled>\n" +
+                    "                            <input id=\"orgIdHidden\" type=\"hidden\" style = \"width:2px; display:none\">\n" +
+                    "                        </div>\n" +
+                    "                        <button type=\"button\" class=\"layui-btn layui-btn-sm\" onclick=\"queryOrgTree($('#add-parkId').val())\"><i class=\"layui-icon\"></i></button>\n" +
+                    "                    </div>")
+            }else {
+                $("#danwei").html("<div style=\"color: red\">(提示：年级/班级在选择所属园区之后选择)</div>")
+            }
+        });
+    });
+
+    //批量删除人员
+    function deleteService() {
+        layui.use(['table', 'layer', 'jquery'], function () {
+            var table = layui.table
+                , layer = layui.layer;
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+            var personId = new Array();
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    personId[i] = data[i].personId;
+                }
+                ;
+
+                //是否删除这'+data.length+'数据
+                layer.confirm('确定删除所选数据吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        traditional: true,
+                        url: basePath + '/personTable/deletePersonTableByUserId',
+                        type: 'DELETE',
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        contentType: "application/json",
+                        data: JSON.stringify(personId)
+                        , success: function (data) {
+                            if (data.code == 0) {
+                                layer.msg("删除人员成功", {time: 800, icon: 1}, function () {
+                                    tableIns.reload();
+                                    // location.reload(true);
+                                })
+                            } else {
+                                layer.msg("删除人员失败", {time: 800, icon: 1}, function () {
+                                    // location.reload(true);
+                                    //重新渲染表格
+                                    tableIns.reload();
+                                })
+                            }
+                        }, error: function () {
+                            layer.msg("删除人员失败", {time: 800, icon: 2, shift: 6}, function () {
+                            })
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else {
+                layer.alert("请选择要删除的数据!")
+            }
+        });
+    };
+
+    function logSearch() {
+        personName = $("input[name='personName']").val();
+        identityTypeCode = $("input[name='identityTypeCode']").val();
+        identicationInfo = $("select[name='identicationInfo']").val();
+        departments = $("select[name='departments']").val();
+        parkId = $("select[name='parkId']").val();
+        isDeleted = $("select[name='isDeleted']").val();
+        identification = $("select[name='identification']").val();
+        data();
+    }
+
+    function refreshService() {
+        personName = "";
+        identityTypeCode = "";
+        identicationInfo = "";
+        departments = "";
+        isDeleted = 1;
+        identification = "2";
+        parkId = "";
+        data();
+    }
+
+    let delImg = new Array();
+    //修改删除图片
+    function deleteImg(obj) {
+
+        delImg.push($(obj).parent("div").find("img").attr("src"))
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").parent("div").find('button').show();
+        $(obj).parent("div").remove();
+    }
+    function deleteImg3(obj) {
+        $(obj).parent("div").parent("div").find('button').show();
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").remove();
+    }
+
+    //修改人员基本信息
+    function getPersonNewTable() {
+        var personNewTable = {};
+        personNewTable.personId = $("#personId").val();//id
+        return personNewTable;
+    }
+
+    // 新增人员照片信息
+    function getAddFaceAddressList() {
+        var faceAddressList = new Array();
+        //获取value值
+        var apm = document.getElementsByName("add_pic6");
+        for (var i = 0; i < apm.length; i++) {
+            var arr =
+                {
+                    "faceAddress": apm[i].value,
+                }
+            //把创建的arr添加
+            faceAddressList.push(arr);
+
+        }
+        //获取value值
+        var campusCardAddress = document.getElementsByName("add_pic7");
+        for (var j = 0; j < campusCardAddress.length; j++) {
+            var arr =
+                {
+                    "campusCardAddress": campusCardAddress[j].value,
+                }
+            faceAddressList.push(arr);
+        }
+        //人证校验图片
+        var faceImage = document.getElementsByName("add_pic9");
+        for (var j = 0; j < faceImage.length; j++) {
+            var arr =
+                {
+                    "faceImage": faceImage[j].value,
+                }
+            faceAddressList.push(arr);
+        }
+
+        return faceAddressList;
+    }
+
+    //新增人员基础信息
+    function getAddPersonNewTable() {
+        var personNewTable = {};
+        personNewTable.personName = $("[id='add-personName']").val();//姓名
+        personNewTable.gender = $('#noMargin input[name="gender"]:checked ').val();//性别
+        personNewTable.telephone = $("[id='add-telephone']").val();//手机号
+        personNewTable.identityNo = $("[id='add-identityNo']").val();//身份证
+        //personNewTable.birthday = $("[id='add-birthday']").val();//生日
+        personNewTable.residentialAddress = $("[id='add-residentialAddress']").val();//地址
+        personNewTable.ethnicity = $("option:selected", "[id='add-ethnicity']").val();//民族
+        personNewTable.identicationInfo = $("option:selected", "[id='add-identicationInfo']").val();//人员类型
+        //personNewTable.studentLevel = $("option:selected", "[id='add-studentLevel']").val();//学历
+        //personNewTable.grade = $("option:selected", "[id='add-grade']").val();//学级
+        //personNewTable.departments = $("option:selected", "[id='add-departments']").val();//办公地点班级
+        personNewTable.parkId = $("option:selected", "[id='add-parkId']").val();//园区
+        personNewTable.schoolClass = $("[id='orgIdHidden']").val();//组织机构
+        personNewTable.identityTypeCode = $("[id='add-identityTypeCode']").val();//教工号或学工号
+        personNewTable.description = $("[id='add-description']").val();//备注
+        return personNewTable;
+    }
+</script>
+
+
+<!--编辑上传-->
+<script>
+    layui.use(['form', 'upload', 'element', 'layer'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        //定义一个数组用来存储长传成功的图片
+        //多图片上传
+        upload.render({
+            elem: '#test20'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    //预读本地文件示例，不支持ie8
+                    $('#test20').hide();
+                    $('#button10').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgEdit(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: #ff0000" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button10").append('<input type="hidden"  name="add_pic2" value="' + result + '"/><input type="hidden"  name="biaoshi"/>');
+
+                });
+
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    /*photo.push(res.msg);*/
+                    // layer.msg('人员照片提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+        upload.render({
+            elem: '#test21'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test21').hide();
+                    $('#button11').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img"  onclick="PreviewImgEdit(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button11").append('<input type="hidden"  name="add_pic2" value="' + result + '"/><input type="hidden"  name="biaoshi"/>');
+
+                });
+
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    /*photo.push(res.msg);*/
+                    // layer.msg('人员照片提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+        upload.render({
+            elem: '#test22'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test22').hide();
+                    $('#button12').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img"  onclick="PreviewImgEdit(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button12").append('<input type="hidden"  name="add_pic2" value="' + result + '"/><input type="hidden"  name="biaoshi"/>');
+
+                });
+
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    /*photo.push(res.msg);*/
+                    // layer.msg('人员照片提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+
+        // 校园卡照片上传
+        upload.render({
+            elem: '#test30'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test30').hide();
+                    $('#button20').append('<div class="cardEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgEdit(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button20").append('<input type="hidden"  name="add_pic3" value="' + result + '"/>');
+
+                });
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    // layer.msg('校园卡照片提交成功！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('校园卡照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+
+        //人证校验图片上传
+        upload.render({
+            elem: '#test50'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test50').hide();
+                    $('#button40').append('<div class="PersonCardEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgEdit(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button40").append('<input type="hidden"  name="add_pic5" value="' + result + '"/>');
+
+                });
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    // layer.msg('人员校验照片提交成功！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员校验照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+
+        //新增人员照片上传
+        upload.render({
+            elem: '#test6'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+
+                    // $.ajax({
+                    //     url: basePath + '/personTable/faceJianCe',
+                    //     success: function (data) {
+                    //
+                    //     }
+                    // });
+
+                    $('#test6').hide();
+                    $('#button5').append('<div class="faceAdd" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button5").append('<input type="hidden"  name="add_pic6" value="' + result + '"/>');
+                });
+
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    /*photo.push(res.msg);*/
+                    // layer.msg('人员照片提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+        //新增人员照片上传
+        upload.render({
+            elem: '#test62'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test62').hide();
+                    $('#button52').append('<div class="faceAdd" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button52").append('<input type="hidden"  name="add_pic6" value="' + result + '"/>');
+
+                });
+
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    /*photo.push(res.msg);*/
+                    // layer.msg('人员照片提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+        //新增人员照片上传
+        upload.render({
+            elem: '#test63'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test63').hide();
+                    $('#button53').append('<div class="faceAdd" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button53").append('<input type="hidden"  name="add_pic6" value="' + result + '"/>');
+
+                });
+
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    /*photo.push(res.msg);*/
+                    // layer.msg('人员照片提交成功！    ！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+
+        // 校园卡照片上传
+        upload.render({
+            elem: '#test7'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test7').hide();
+                    $('#button6').append('<div class="cardAdd" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button6").append('<input type="hidden"  name="add_pic7" value="' + result + '"/>');
+
+                });
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    // layer.msg('校园卡照片提交成功！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('校园卡照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+
+
+        //人证校验图片上传
+        upload.render({
+            elem: '#test9'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test9').hide();
+                    $('#button8').append('<div class="PersonCardAdd" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button8").append('<input type="hidden"  name="add_pic9" value="' + result + '"/>');
+
+                });
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    // layer.msg('人员校验照片提交成功！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    // layer.msg('人员校验照片提交失败！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+    });
+
+    /*    /!**
+     * 读取文件
+     * @param {file or Blob} file 上传文件
+     * @param {object} config 压缩配置 可配置压缩长宽、质量等
+     * @param {function} callback
+     *!/*/
+    function canvasDataURL(path, config, callback) {
+        var img = new Image();
+        img.src = path;
+
+        img.onload = function () {
+            var that = this, quality = 0.7;
+            var w = that.width, h = that.height, scale = w / h;
+            w = config.width || w;
+            h = config.height || (w / scale);
+
+            //生成canvas
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var anw = document.createAttribute("width");
+            anw.nodeValue = w;
+            var anh = document.createAttribute("height");
+            anh.nodeValue = h;
+            canvas.setAttributeNode(anw);
+            canvas.setAttributeNode(anh);
+            ctx.drawImage(that, 0, 0, w, h);
+
+            if (config.quality && config.quality <= 1 && config.quality > 0) {
+                quality = config.quality;
+            }
+            callback(canvas.toDataURL('image/jpeg', quality));
+        }
+    }
+
+    /**
+     * 将图片 base64 转为 File 对象或者 Blob
+     * @param {*} urlData 图片 base64
+     * @param {*} filename 图片名 没有图片名将转为 Blob
+     */
+    function convertBase64UrlTo(urlData, filename) {
+        var base64Arr = urlData.split(','), mime = base64Arr[0].match(/:(.*?);/)[1],
+            bstr = atob(base64Arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+
+        return filename ? new File([u8arr], filename, {type: mime}) : new Blob([u8arr], {type: mime});
+    }
+
+
+    //验证信息是否为空
+    function emptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var personName = $("#edit-personName").val();
+        if (reg.test(personName) === true || personName == null || "" == (personName)) {
+            layer.msg("姓名不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var gender = $("#edit-gender").val();
+        if (reg.test(gender) === true || gender == null || "" == (gender)) {
+            layer.msg("性别为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var identicationInfo = $("#edit-identicationInfo").val();
+        if (reg.test(identicationInfo) === true || identicationInfo == null || "" == (identicationInfo)) {
+            layer.msg("人员类型为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var parkId = $("#edit-parkId").val();
+        if (reg.test(parkId) === true || parkId == null || "" == (parkId)) {
+            layer.msg("所属园区为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+
+        var orgName = $("input[name='orgName']");
+        var orgNameVal = $.trim(orgName.val());
+        if (orgNameVal == null || "" == (orgNameVal)) {
+            layer.msg("年级/班级不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var telephone = $("#edit-telephone").val();
+        //验证手机号是否正常
+        if (!telephoneUtils(telephone) && telephone != "") {
+            layer.msg('手机号码填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+
+        var identityNo = $("#edit-identityNo").val();
+        var identityTypeCode = $("#edit-identityTypeCode").val();
+        if (identityNo == null || "" == (identityNo)) {
+            if (identityTypeCode == null || "" == (identityTypeCode)) {
+                layer.msg("身份证号和工牌号必须选填一个！", {time: 1000, icon: 5, offset: '250px'});
+                return false;
+            } else if (identityTypeCode != null || "" != (identityTypeCode)) {
+                if (!identityTypeCodeUtils(identityTypeCode)) {
+                    layer.msg("学工号不能超过15位数或者不是纯数字！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+            }
+        } else if (identityNo != null && "" != (identityNo)) {
+            if (identityTypeCode != null && "" != (identityTypeCode)) {
+                if (reg.test(identityNo) === true || identityNo == null || "" == (identityNo) || identityNo.length != 18) {
+                    layer.msg("身份证不能为空或存在空格且必须是18位！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!validateIdCard(identityNo)) {
+                    layer.msg('身份证填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+
+                if (reg.test(identityTypeCode) === true || identityTypeCode == null || "" == (identityTypeCode)) {
+                    layer.msg("教工号或学工号不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!identityTypeCodeUtils(identityTypeCode)) {
+                    layer.msg('学工号不能超过15位数或者不是纯数字，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+
+            } else if (identityTypeCode == null || "" == (identityTypeCode)) {
+                if (!validateIdCard(identityNo)) {
+                    layer.msg('身份证填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+            }
+
+        }
+
+        if (selectimg().length < 1) {
+            layer.msg('至少上传一张照片！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        return true;
+    }
+
+    function AddemptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var personName = $("#add-personName").val();
+        if (reg.test(personName) === true || personName == null || "" == (personName)) {
+            layer.msg("姓名不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var gender = $("#add-gender").val();
+        if (reg.test(gender) === true || gender == null || "" == (gender)) {
+            layer.msg("性别为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var identicationInfo = $("#add-identicationInfo").val();
+        if (reg.test(identicationInfo) === true || identicationInfo == null || "" == (identicationInfo)) {
+            layer.msg("人员类型为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var parkId = $("#add-parkId").val();
+        if (reg.test(parkId) === true || parkId == null || "" == (parkId)) {
+            layer.msg("所属园区为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var org = $("#add-org").val();
+        if (org == null || "" == (org)) {
+            layer.msg("年级/班级不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var telephone = $("#add-telephone").val();
+        //验证手机号是否正常
+        if (!telephoneUtils(telephone) && telephone != "") {
+            layer.msg('手机号码填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        var identityNo = $("#add-identityNo").val();
+        var identityTypeCode = $("#add-identityTypeCode").val();
+        if (identityNo == null || "" == (identityNo)) {
+            if (identityTypeCode == null || "" == (identityTypeCode)) {
+                layer.msg("身份证号和学工号必须选填一个！", {time: 1000, icon: 5, offset: '250px'});
+                return false;
+            } else if (identityTypeCode != null || "" != (identityTypeCode)) {
+                if (!identityTypeCodeUtils(identityTypeCode)) {
+                    layer.msg("学工号不能超过15位数或者不是纯数字！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+
+            }
+        } else if (identityNo != null && "" != (identityNo)) {
+            if (identityTypeCode != null && "" != (identityTypeCode)) {
+                if (reg.test(identityNo) === true || identityNo == null || "" == (identityNo) || identityNo.length != 18) {
+                    layer.msg("身份证不能为空或存在空格且必须是18位！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!validateIdCard(identityNo)) {
+                    layer.msg('身份证填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+
+                if (reg.test(identityTypeCode) === true || identityTypeCode == null || "" == (identityTypeCode)) {
+                    layer.msg("教工号或学工号不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!identityTypeCodeUtils(identityTypeCode)) {
+                    layer.msg("学工号不能超过15位数或者不是纯数字！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+            } else if (identityTypeCode == null || "" == (identityTypeCode)) {
+                if (reg.test(identityNo) === true || identityNo == null || "" == (identityNo) || identityNo.length != 18) {
+                    layer.msg("身份证不能为空或存在空格且必须是18位！", {time: 1000, icon: 5, offset: '250px'});
+                    return false;
+                }
+                if (!validateIdCard(identityNo)) {
+                    layer.msg('身份证填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                    return false;
+                }
+            }
+
+        }
+        if (getAddFaceAddressList().length < 1) {
+            layer.msg('至少上传一张照片！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        return true;
+    }
+
+
+</script>
+</body>
+</html>

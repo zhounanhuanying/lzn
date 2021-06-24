@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Facelnfo DB人脸基础管理系统</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/Content/Css/bootstrap.min.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/fonts/menuFont/iconfont.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/fonts/faceollection/iconfont.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/fonts/ai/iconfont.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/fonts/jiekougunali/iconfont.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/fonts/yuanquguanli/iconfont.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/master/shop.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/master/Sellerber.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Css/master/bkg_ui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Fonts/Masterfont/css/font-awesome.min.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/skin/dpsim/skin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layer/skin/layer.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Fonts/Masterfont/css/font-awesome.min.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layer/layer.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/bootstrap.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/shopFrame.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/Sellerber.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery.cookie.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/common.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery.nicescroll.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/common.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <style>
+        .layui-form-label {
+            width: 120px;
+        }
+
+        .layui-layer-content {
+            overflow-x: hidden;
+        }
+
+        .layui-form-item {
+            margin-bottom: 0;
+        }
+        .layui-layer-iframe .layui-layer-btn, .layui-layer-page .layui-layer-btn {
+            padding-top: 0 !important;
+        }
+    </style>
+</head>
+<body>
+<!--关于弹窗-->
+<div id="AboutUs" style="display: none" onclick="closeAboutUs()">
+    <h3 style="margin-left: 56px;margin-top: 40px">Facelnfo DB</h3>
+    <div>
+        <p style="margin-top: 35px;margin-left: 25px;float: left" >版本号：<span>V1.0.0</span></p>
+        <p style="margin-top: 35px;margin-left: 25px;float: left">发布时间：<span id="FabuTime"></span></p>
+    </div>
+
+</div>
+<div class="Sellerber" id="Sellerber">
+    <!--顶部-->
+    <div class="Sellerber_header apex clearfix" id="Sellerber_header">
+        <div class="l_f logo header">
+            <img src="../Content/Images/logo/logo.png"/></div>
+        <div class="r_f Columns_top clearfix header">
+            <div class="search_style l_f" style="display:none;">
+                <form action="#" method="get" class="sidebar_form">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control"><span class="input-group-btn"><a
+                            class="btn_flat" href="javascript:" onclick=""><i class="fa fa-search"></i></a></span>
+                    </div>
+                </form>
+            </div>
+            <div class="news l_f " onclick="aboutVersion()">
+                <a href="javascript:void(0);" class="iconfont icon-ziyuan prompt" id="btnAbout" data-toggle="tooltip"
+                   data-placement="bottom" title="关于"></a>
+                <!--关于弹窗-->
+            </div>
+            <div class="administrator l_f " style="padding-top: 4px;">
+                <span class="user-info" th:value="${session.user.userName}" th:text="${session.user.userName}"></span><i
+                    class="glyph-icon fa fa-caret-down" style="margin-top:8px;"></i>
+                <input type="hidden" th:value="${session.user.userId}" id="userId">
+                <ul class="dropdown-menu" style="margin-top:8px;">
+                   <!-- <li onclick="personInformation()"><a href="javascript:void(0);"><i class="fa fa-user"></i>个人信息</a>
+                    </li>
+                    <li onclick="personPasswordModify()"><a href="javascript:void(0);"><i class="fa fa-cog"></i>修改密码</a>
+                    </li>-->
+                    <li><a th:href="@{/logout}" class="removeToken"><i class="fa fa-user-times"></i>退出</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--左侧-->
+    <div class="Sellerber_left menu" id="menuBar">
+        <div class="show_btn" id="rightArrow"><span></span></div>
+        <div class="side_title"><a title="隐藏" class="close_btn"><span></span></a></div>
+        <div class="menu_style" id="menu_style">
+            <div class="list_content">
+                <!--栏目切换-->
+                <div class="switch_style">
+                    <em class="fa fa-th-large switch"></em>
+                    <em class="fa fa-list switch_unfold"></em>
+                </div>
+                <!--左侧菜单栏目-->
+                <div class="column_list">
+                    <ul class="menuUl menu_list" id="column_list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--内容-->
+    <div class="Sellerber_content" id="contents">
+        <div class="breadcrumbs" id="breadcrumbs">
+            <a id="js-tabNav-prev" class="radius btn-default left_roll" href="javascript:;"><i
+                    class="fa fa-backward"></i></a>
+            <div class="breadcrumb_style clearfix">
+                <ul class="breadcrumb clearfix" id="min_title_list">
+                    <li class="active home"><span title="我的桌面" href="index.html"><i></i>欢迎界面</span></li>
+                </ul>
+            </div>
+            <a id="js-tabNav-next" class="radius btn-default right_roll" href="javascript:;" style="right:172px;"><i
+                    class="fa fa-forward"></i></a>
+            <div class="btn-group radius roll-right dropdown-op">
+                <a class="dropdown tabClose" data-toggle="dropdown" aria-expanded="false">页签操作<i class="fa fa-caret-down" style="padding-left: 3px;"></i></a>
+                <ul>
+                    <li>
+                    </li>
+                </ul>
+                <ul class="dropdown-menu dropdown-menu-right" id="dropdown_menu" style="margin-left:-40px;">
+                    <li><a class="tabReload" href="javascript:void(0);">刷新当前</a></li>
+                    <li><a class="tabCloseCurrent" href="javascript:void(0);">关闭当前</a></li>
+                    <li><a class="tabCloseAll" href="javascript:void(0);">全部关闭(首页)</a></li>
+                    <li><a class="tabCloseOther" href="javascript:void(0);">除此之外全部关闭</a></li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+        <!--具体内容-->
+        <div id="iframe_box" class="iframe_content">
+            <div class="show_iframe index_home" id="show_iframe">
+                <iframe scrolling="yes" class="simei_iframe" frameborder="0" th:src="@{/welcomePage}"
+                        name="iframepage"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var fabuTime="";
+    $(function () {
+        var userid = $("#userId").val();
+        var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+        $.ajax({
+            url: basePath + "/user/selectPermissionByUserIdIndex",
+            type: "POST",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            data: {
+                "userId": userid//当前登录用户的id
+            },
+            success: function (data) {
+                // //获取header中 存放的token
+                // var tokenID = request.getResponseHeader("access_token");
+                // var storage=window.localStorage;
+                // //判断token是否为空
+                // if (tokenID != null) {
+                //     storage.setItem("access_token",tokenID);//本地存储，存储在客户端
+                // }
+//                console.log(tokenID);
+                var permissionsArr = data.permissions;
+                //如果菜单为空，跳转到登陆页面
+                if(permissionsArr==null){
+                    window.location.href = basePath + "/login";
+                }
+                var framedata = new Array();
+                for (var i = 0; i < permissionsArr.length; i++) {
+                        var a = {
+                            id: permissionsArr[i].permissionId,
+                            pId: permissionsArr[i].pid,
+                            url: permissionsArr[i].visitorUrl,
+                            icon: permissionsArr[i].iconAddress,
+                            name: permissionsArr[i].permissionName,
+                            target: "iframe"
+                        }
+
+                    framedata[i] = a;
+                }
+                showFrame(framedata);//向框架传递数据
+            },
+            error: function (data) {
+                alert("页面加载失败");
+            }
+        });
+
+        $.ajax({
+            url: basePath + "/getFabuTime",
+            type: "GET",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            success:function (data) {
+                fabuTime=data;
+            }
+        })
+    });
+
+    //设置框架
+    var showFrame = function (data) {
+        iframe = $("#Sellerber").frame({
+            float: 'left',//设置菜单栏目方向属性
+            minStatue: true,//切换模式
+            hheight: 60,//设置顶部高度 高度为0时自动样式切换（达到另外一种界面效果）
+            bheight: 0,//设置底部高度
+            mwidth: 160,//菜单栏宽度（最好不要改动该数值，一般200的宽度值最好）
+            switchwidth: 50,//切换菜单栏目宽度
+            color_btn: '.skin_select',//设置颜色
+            menu_nav: '.menu_list',//设置栏目属性
+            column_list: '.column_list',//设置栏目名称
+            time: '.date_time',//设置时间属性(不填写不显示)
+            logo_img: '~/Content/Images/logo_01.png',//logo地址链接（当header为0时显示该属性）
+            Sellerber_content: '.Sellerber_content',//右侧名称
+            Sellerber_menu: '.list_content', //左侧栏目
+            header: '.Sellerber_header',//顶部栏目
+            prompt: '.prompt_style',
+            prompt_btn: '#promptbtn',//点击事件
+            data: data,//数据
+            mouIconOpen: "fa fa-angle-down",// 菜单(展开)图标
+            mouIconClose: "fa fa-angle-up", // 菜单（隐藏）图标
+            Rightclick: true,//是否禁用右键
+        });
+    }
+
+    // $("#column_list").on("click", "ul li", function () {
+    //     // var aaa = $(this).children().prop("name");
+    //     var  aurl=$(this).children("a").attr("name");
+    //     // var arr = [];
+    //     // $(".submenu").find("li").find("a").each(function(i, o){
+    //     //     arr[i] = $(o).attr('name');
+    //     // });
+    //         if (aurl== "/dataKanbanTt") {
+    //             var newWindow = window.open();
+    //             $.ajax({
+    //                 url: '/dataKanbanTt',
+    //                 method: 'GET',
+    //                 success: function (data) {
+    //                     if (data.code == '10000') {
+    //                         console.log(data.url);
+    //                         newWindow.location.href = data.url;
+    //                         // location.href = "/welcomePage";
+    //                     }
+    //
+    //                 }
+    //             });
+    //         }else {
+    //             $('#ewqweq').attr('src', aurl);
+    //         }
+    //
+    // })
+    // $("#column_list").on("click","li" ,function(){
+    //     if($(this).children().prop("name")=="/dataKanban"){
+    //         // $(this).children().removeAttr("data-target");
+    //         window.open("/dataKanban","_blank")
+    //
+    //         // $("#iframe_box").find('iframe[src="/dataKanban"]').parent().remove();
+    //
+    //     }
+    //    $('#Exit_system').on('click', function () {
+    //        layer.confirm('是否确定退出系统？', {
+    //                btn: ['是', '否'],//按钮
+    //                icon: 2,
+    //            },
+    //            function () {
+    //                location.href = "../login.html";
+    //            });
+    //    });
+</script>
+<script>
+    // 关闭关于
+    function closeAboutUs() {
+        layer.close(layer.index);
+    }
+    function aboutVersion() {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+                title: '关于',
+                type: 1
+                , area: ['360px', '180px']
+                , content: $('#AboutUs') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                ,success: function(layero, index){
+                    document.getElementById("FabuTime").innerText = fabuTime;
+                }
+            });
+        })
+    }
+
+    //功能优化
+    function personInformation() {
+        layui.use('layer', function () {
+            layer.alert("功能正在开发中，敬请期待...");
+        })
+    }
+
+    function personPasswordModify() {
+        layui.use('layer', function () {
+            layer.alert("功能正在开发中，敬请期待...");
+        })
+    }
+
+    //用户退出后，清空localStorage中的token的
+    $(".removeToken").click(function () {
+        window.localStorage.removeItem('access_token')
+    })
+</script>
+</html>

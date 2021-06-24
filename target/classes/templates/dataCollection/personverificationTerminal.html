@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!--<link rel="stylesheet" href="css/layui/css/layui.css">-->
+    <!--<script src="css/layui/layui.js"></script>-->
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/Content/Css/personverificationTerminal.css}" media="all"/>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <style>
+        .personal-prove{
+            padding:15px;
+            background-color: #f5f5f5;
+        }
+        .personal-prove .layui-card-header h3{
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .div-lineheight{
+            margin-bottom:10px;
+        }
+        .div-lineheight .layui-input-block{
+            margin-left: 185px;
+        }
+        .div-lineheight .layui-form-label{
+            width:155px;
+        }
+        .img-show{
+            width: 125px;
+            height: 160px;
+        }
+        .img-show img{
+            width: 100%;
+            height: 100%;
+        }
+        .load-group>div{
+            margin-bottom: 20px;
+        }
+        .load-group .layui-form-label{
+            width:100px;
+        }
+        .load-group .layui-input-block{
+            margin-left: 130px;
+        }
+        .upload-card-img{
+            float: left;
+            margin-right: 10px;
+        }
+        .upload-card-img:last-child{
+            margin-right: 0;
+        }
+        .upload-operate{
+            width:210px;
+            height: 138px;
+            position: relative;
+        }
+        .upload-operate img{
+            width: 100%;
+            height: 100%;
+        }
+        .upload-operate input[type="file"]{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .text-color-blue{
+            width:210px;
+            text-align: center;
+            color:#20b6e9;
+        }
+        .upload {
+            height: 160px;
+            width: 100%;
+            background-size: 30px;
+            border: none;
+            cursor: pointer;
+            margin-top: -30px;
+            margin-left: 2px;
+        }
+        .upLoadBox {
+            margin-top: 0;
+        }
+        .layuiUploadImg {
+            margin-top: -30px;
+            width: 146px;
+            height: 160px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="success-icon" style="display: none"><i class="layui-icon layui-icon-ok-circle"></i>
+    <div style="font-size: 20px;color: green;margin-left: 20px" class="success-ok">提交成功！3秒后自动刷新</div>
+</div>
+<div id="PreviewImgAdd" onclick="closeAddImg();"
+
+     style="
+      position: fixed;
+      z-index: 99;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      display: none;
+
+"
+></div>
+<div id="yincang" class="layui-fluid personal-prove layuinoMargin" style="display: block">
+    <form class="layui-form" id="addStaff">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <h3>基本信息</h3>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-row layui-form">
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <label class="layui-form-label">采集设备名称：</label>
+                            <div class="layui-input-block">
+                                <!--                            <select>-->
+                                <!--                                <option>请选择</option>-->
+                                <!--                            </select>-->
+                                <select class="form-control" name="serverIds" id="serverIds">
+                                    <option value="">请选择</option>
+                                    <option th:each="sysServer:${sysServerListSuccess}"
+                                            th:value="${sysServer.serverIp}"
+                                            th:text="${sysServer.serverName}"></option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">姓名：</div>
+                            <div class="layui-input-block">
+                                <!--                            <input type="text" class="layui-input">-->
+                                <input type="text" name="personName" id="personName" lay-verify="title"
+                                       class="layui-input" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">身份证号：</div>
+                            <div class="layui-input-block">
+                                <!--                            <input type="text" class="layui-input">-->
+                                <input type="text" name="identityNo" lay-verify="required" id="identityNo"
+                                       class="layui-input" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">性别：</div>
+                            <div class="layui-input-block">
+                                <!--                            <input type="radio" name="sex" value="男" title="男" checked="">-->
+                                <!--                            <input type="radio" name="sex" value="女" title="女">-->
+                                <input type="radio" name="gender" value="1" id="gender1" title="男" readonly checked="">
+                                <input type="radio" name="gender" value="0" id="gender2" title="女" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">联系方式：</div>
+                            <div class="layui-input-block">
+                                <!--                            <input type="text" class="layui-input">-->
+                                <input type="tel" name="telephone" id="telephone" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">人员类别：</div>
+                            <div class="layui-input-block">
+                                <!--                            <select></select>-->
+                                <select class="form-control" name="identicationInfo" id="identicationInfo"
+                                        lay-filter="projectfilter">
+                                    <option value="">请选择</option>
+                                    <option th:each="dataDictionary:${identicationInfoList}"
+                                            th:value="${dataDictionary.dicCode}"
+                                            th:text="${dataDictionary.dicName}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">出生年月：</div>
+                            <div class="layui-input-block">
+                                <!--                            <input type="text" class="layui-input" id="time" placeholder="yyyy-MM-dd">-->
+                                <input type="text" class="layui-input" name="birthday" id="birthday" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">教工号/学号/一卡通号：</div>
+                            <div class="layui-input-block">
+                                <!--                            <input type="text" class="layui-input" id="time" placeholder="yyyy-MM-dd">-->
+                                <input type="text" name="identityTypeCode" id="identityTypeCode" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">民族：</div>
+                            <div class="layui-input-block">
+                                <!--                            <select></select>-->
+                                <select class="form-control" name="ethnicity" id="ethnicity" readonly>
+                                    <option value="">请选择</option>
+                                    <option th:each="dataDictionary:${ethnicityList}"
+                                            th:value="${dataDictionary.dicCode}"
+                                            th:text="${dataDictionary.dicName}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                        <div class="div-lineheight">
+                            <div class="layui-form-label">办公地点：</div>
+                            <div class="layui-input-block">
+                                <!--                            <select></select>-->
+                                <select name="departments" id="departments" class="form-control">
+                                    <option value="">请选择</option>
+                                    <option th:each="dataDictionary:${departmentsList}"
+                                            th:value="${dataDictionary.dicCode}"
+                                            th:text="${dataDictionary.dicName}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <div class="div-lineheight left-range">
+                            <div class="layui-form-label">地址：</div>
+                            <div class="layui-input-block">
+                                <!--                            <textarea class="layui-textarea" placeholder="请输入内容"></textarea>-->
+                                <textarea name="residentialAddress" id="residentialaddre"
+                                          class="layui-textarea layuClass" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <div class="div-lineheight left-range">
+                            <div class="layui-form-label">备注：</div>
+                            <div class="layui-input-block">
+                                <!--                            <textarea class="layui-textarea" placeholder="请输入内容"></textarea>-->
+                                <textarea placeholder="请输入内容" name="description"
+                                          class="layui-textarea layuClass"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <h3>照片上传</h3>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-row load-group">
+                    <div class="layui-col-md2">
+                        <label class="layui-form-label">人脸照片：</label>
+                        <div class="layui-input-block">
+                            <div class="img-show" id="sonFiles">
+                                <img src="/Content/Images/nopictures.png"  onclick="PreviewImg(this.src)">
+                            </div>
+                        </div>
+                    </div>
+                <div class="layui-col-md2">
+                    <label class="layui-form-label">人脸采集照片：</label>
+                    <div class="layui-input-block">
+                        <div class="img-show">
+                            <div class="img-show" id="faceInfoFiles">
+                                <img src="/Content/Images/nopictures.png"  onclick="PreviewImg(this.src)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="layui-col-md2">
+                        <label class="layui-form-label">校园卡照片：</label>
+                        <div class="layui-input-block upload-imgbox">
+                            <!--                        <div class="upload-card-img">-->
+                            <!--                            <div class="upload-operate">-->
+                            <!--                                <img src="images/upload_card.png">-->
+                            <!--                                <input type="file">-->
+                            <!--                            </div>-->
+                            <!--                            <div class="text-color-blue">图片上传</div>-->
+                            <!--                        </div>-->
+                            <!--                        <div class="upload-card-img">-->
+                            <!--                            <div class="upload-operate">-->
+                            <!--                                <img src="images/upload_card.png">-->
+                            <!--                            </div>-->
+                            <!--                            <div class="text-color-blue">图片预览</div>-->
+                            <!--                        </div>-->
+                            <div id="cardEditImage" class="upLoadBox" style="margin-left: -5px">
+                                <button type="button" class="upload" id="time"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+    <div class="layui-form-item">
+        <div class="layui-input-block" style="text-align: center;margin:0 auto;">
+            <!--<input type="hidden" th:value="${serverPort}" id="serverPort">-->
+            <button type="button" class="layui-btn" id="submitBtn">立即提交</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+<!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+<script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+<script th:src="@{/Content/check/IDcardverification.js}"></script>
+<script  type="text/javascript" th:inline="javascript">
+    let basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    // console.log(basePath);
+
+    layui.use(['form','laydate','upload', 'element', 'layer'],function(){
+        var form=layui.form,
+            laydate=layui.laydate;
+
+        form.render();
+
+        // laydate.render({
+        //     elem: '#time'
+        // });
+
+        var $ = layui.jquery;
+        // var form = layui.form;
+        var upload = layui.upload;
+        var layer = layui.layer;
+        // //人脸图片地址
+        // upload.render({
+        //     elem: '#time',
+        //     headers: {
+        //         "access_token": access_token//此处放置请求到的用户token
+        //     }
+        //     , url: basePath + '/personTable/upload'
+        //     , multiple: true
+        //     , before: function (obj) {
+        //         //预读本地文件示例，不支持ie8
+        //         obj.preview(function (index, file, result) {
+        //             $('#faceEditImage').append('<div style="position: absolute;width: 120px;">' +
+        //                 '<img  src="' + result + '" alt="' + file.name + '" class="layuiUploadImg">' +
+        //                 '<i class="layui-icon layui-icon-close"  onclick="deleteImg(this)" style="font-size: 30px;position: absolute;top:-15px;right:-15px;color: red">' +
+        //                 '</i></div>')
+        //             $("#faceEditImage").append('<input type="hidden"  name="personFaceInfomationTableBean.faceAddress" value="' + result + '"/>');
+        //
+        //         });
+        //     }
+        //     , done: function (res) {
+        //         if (res.code == 0) {
+        //             // layer.msg('人员照片提交成功！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+        //         } else {
+        //             layer.msg('人员照片提交失败！！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+        //
+        //         }
+        //     }
+        // });
+        //校园卡照片
+        upload.render({
+            elem: '#time',
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            , url: basePath + '/personTable/upload'
+            , multiple: true
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#cardEditImage').append('<div style="position: absolute;width: 124px; height: 159px">' +
+                        '<img  src="' + result + '" alt="' + file.name + '" class="layuiUploadImg" onclick="PreviewImg(this.src)">' +
+                        '<i class="layui-icon layui-icon-close"  onclick="deleteImg(this)" style="font-size: 30px;position: absolute;top:-30px;right:-16px;color: red">' +
+                        '</i></div>')
+                    $("#cardEditImage").find("i").each(function (i) {
+                        $(this).attr("id", "deleteIcon" + i);
+                    });
+                    $("#cardEditImage").find("img").each(function (i) {
+                        $(this).attr("id", "add_pic" + i);
+                    });
+                    $("#cardEditImage").append('<input type="hidden"  name="personFaceInfomationTableBean.campusCardAddress" value="' + result + '"/>');
+
+                });
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    // layer.msg('校园卡照片提交成功！！！', {time: 1000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                } else {
+                    layer.msg('校园卡照片提交失败！！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                }
+            }
+        });
+        //点击select进行切换隐藏学历
+        form.on('select(projectfilter)', function (data) {
+            var show = data.value;
+            switch (show) {
+                case '0':
+                    $(".others").hide();
+                    break;
+                case '1':
+                    $(".others").hide();
+                    break;
+                case '2':
+                    $(".others").show();
+                    break;
+                case '3':
+                    $(".others").show();
+                    break;
+                case '4':
+                    $(".others").hide();
+                    break;
+                case '5':
+                    $(".others").hide();
+                    break;
+                case '6':
+                    $(".others").hide();
+                    break;
+                default:
+                    $(".others").hide();
+                    break;
+            }
+        });
+        //重新加载
+        layui.form.render("select");
+        //获取项目的端口号
+        // var serverPort = $("#serverPort").val();
+        //动态获取当前登录人的ip + 端口号
+        var curWwwPath=document.location.host;
+        // console.log(curWwwPath);
+        var websocket = null;
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            //建立连接，这里的/websocket ，是Servlet中注解中的那个值
+            //替换成自己的项目名
+            // console.log("ws://" + curWwwPath + "/websocket");
+            websocket = new WebSocket("ws://" + curWwwPath + "/websocket");
+        } else {
+            // alert('当前浏览器不支持websocket');
+            layer.msg('当前浏览器不支持websocket', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+        }
+        //连接发生错误的回调方法
+        websocket.onerror = function () {
+            console.log("WebSocket连接发生错误");
+            // layer.msg('WebSocket连接发生错误！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+        };
+        //连接成功建立的回调方法
+        websocket.onopen = function () {
+            console.log("WebSocket连接成功");
+            // layer.msg('WebSocket连接成功！！！', {time: 2000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+        };
+
+        //接收到消息的回调方法
+        websocket.onmessage = function (event) {
+            //可以在此处添加提示框和页面刷新
+            var tar = event.data;
+            //Json 对象转换为json字符串
+            var jsonObj = JSON.parse(tar); //转换为json对象
+            //获取设备ip
+            var serverIds = $("option:selected", "[name='serverIds']").val();
+            // alert(serverIds);
+            if (serverIds == jsonObj.serverIp) {
+                $("#personName").val(jsonObj.name);
+                if (jsonObj.gender == '1') {
+                    $("#gender1").prop("checked", true);
+                } else {
+                    $("#gender2").prop("checked", true);
+                }
+                //渲染layui中的radio回显的问题
+                layui.form.render('radio');
+                $("#ethnicity").find("option[value=" + jsonObj.ethnicity + "]").attr('selected', 'selected');
+                layui.form.render('select');
+                $("#birthday").val(jsonObj.birthday);
+                //地址
+                $("#residentialaddre").val(jsonObj.residentialAddress);
+                //身份证号码
+                $("#identityNo").val(jsonObj.identityNo);
+                //拼接图片信息
+                var sonFiles = "";
+                sonFiles += '<img id="smallImage" src="data:image/jpeg;base64,' + jsonObj.smallImage + '" class="img_toFindImg" onclick="PreviewImg(this.src)">'
+                    + '<input type="hidden"  name="personFaceInfomationTableBean.faceAddress" value="' + jsonObj.smallImage + '"/>';
+                $("#sonFiles").html(sonFiles);
+                // var sonFiles = "";
+                // sonFiles += '<img id="smallImage" src="/imageEcho/' + jsonObj.smallImage + '" class="img_toFindImg">'
+                //     + '<input type="hidden"  name="personFaceInfomationTableBean.idcardImage" value="' + jsonObj.smallImage + '"/>';
+                // $("#sonFiles").html(sonFiles);
+                var faceImage = "";
+                faceImage += '<img id="faceImage" src="data:image/jpeg;base64,' + jsonObj.faceImage + '" class="img_toFindImg" onclick="PreviewImg(this.src)">'
+                    + '<input type="hidden"  name="personFaceInfomationTableBean.faceImage" value="' + jsonObj.faceImage + '"/>';
+                ;
+                $("#faceInfoFiles").html(faceImage);
+                // console.log(event.data + "\n");
+
+            }
+        };
+        //连接关闭的回调方法
+        websocket.onclose = function () {
+            console.log("WebSocket连接关闭");
+            // layer.msg('WebSocket连接关闭！！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+        };
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭WebSocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            closeWebSocket();
+        };
+
+        //关闭WebSocket连接
+        function closeWebSocket() {
+            websocket.close();
+        }
+        //人证核验信息提交
+        $("#submitBtn").click(function () {
+            // console.log($("#addStaff").serialize())
+            //验证信息是否正常
+            var emptyValidationResult = emptyValidationDataDic();
+            if (!emptyValidationResult) {
+                return false;
+            }
+            if ($("#identityNo").val() !=null){
+                $.ajax({
+                    url: basePath + '/personTable/selectByIdentityNo?identityNo='+$("#identityNo").val(),
+                    type: 'GET',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.code == 200){
+                            layer.msg('该人员已存在', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                            return false;
+                        }else {
+                            if ($("#identityTypeCode").val() != null) {
+                                $.ajax({
+                                    url: basePath + '/personTable/selectByIdentityTypeCode?identityTypeCode=' + $("#identityTypeCode").val(),
+                                    type: 'GET',
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (data) {
+                                        if (data.code == 200) {
+                                            layer.msg('教工号或学号或一卡通号已存在！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                                            return false;
+                                        } else {
+                                            $.ajax({
+                                                type: 'POST',
+                                                headers: {
+                                                    "access_token": access_token//此处放置请求到的用户token
+                                                },
+                                                url: basePath + '/personTable/insertPersonTableTerminal',
+                                                data: $("#addStaff").serialize(),
+                                                success: function (data) {
+                                                    if (data.code == 200) {
+                                                        $(".layuinoMargin").hide();
+                                                        $(".success-icon").show();
+                                                        var timer = null;
+                                                        var i = 3;
+                                                        var fn = function () {
+                                                            // layer.msg('当前浏览器不支持websocket', {time: 2000, icon: 1, offset: '250px'})
+                                                            $(".success-ok").html("提交成功！"+i+"秒后自动刷新")
+                                                            if (!i) {
+                                                                location.reload();
+                                                                clearInterval(timer);
+                                                            }
+                                                            i--;
+                                                        };
+                                                        timer = setInterval(fn, 1000);
+                                                        fn();
+                                                    } else {
+                                                        layer.msg('人员信息提交失败！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                                                    }
+                                                }
+                                                , error: function (msg) {
+                                                    layer.msg('新增人员失败！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+
+                                                }
+
+                                            });
+                                        }
+                                    },
+                                    error: function (returndata) {
+                                        alert("error" + returndata);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+            }
+
+
+
+        });
+
+    })
+
+    //关闭预览
+    function closeAddImg() {
+        $("#yincang").css('filter', '');
+        $("#PreviewImgAdd").css("display","none");
+    }
+
+
+    //预览图片
+    function PreviewImg(that) {
+        let s = $("#PreviewImgAdd");
+        s.show();
+
+
+        $("#yincang").css('filter', 'blur(10px)');
+        $("#PreviewImgAdd").css("display","block");
+        $("#PreviewImgAdd").html("<img src="+that+" style='height: 500px;width: 30%;z-index: 150;margin-top: 200px;margin-left: 35%;'/>");
+
+    }
+
+
+
+
+    /**
+     * 选择不同的采集设备
+     * @param obj
+     */
+    function clickBtn(obj) {
+        switch (obj.id) {
+            case "confirm":
+                // alert("确定");
+                $("#cancel").removeClass('layui-btn-danger');
+                $("#cancel").addClass('layui-btn-normal');
+                $("#confirm").addClass('layui-btn-danger');
+                document.getElementById("confirm").disabled = true;
+                layui.use('form', function () {
+                    var form = layui.form;
+                    $('#serverIds').attr("disabled", "disabled");
+                    form.render('select');
+                });
+                // var   globalVariableState= $("option:selected", "[name='serverIds']").val();
+                //   $.ajax({
+                //       url: basePath + '/sysServer/globalVariable?globalVariableState='+globalVariableState,
+                //       type: 'GET',
+                //       headers: {
+                //           "access_token": access_token//此处放置请求到的用户token
+                //       },
+                //       cache: false,
+                //       processData: false,
+                //       contentType: false,
+                //       success: function (data) {
+                //           if (data.code == 1) {
+                //               layer.msg('采集设备正在使用！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                //           } else {
+                //               layer.msg('采集设备绑定成功！！！', {time: 2000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                //
+                //           }
+                //       }
+                //
+                //   })
+                break;
+            case "cancel":
+                // alert("撤消");
+                $("#cancel").addClass('layui-btn-danger');
+                $("#confirm").removeClass('layui-btn-danger');
+                $("#confirm").addClass('layui-btn-normal');
+                document.getElementById("confirm").disabled = false;
+                layui.use('form', function () {
+                    var form = layui.form;
+                    $('#serverIds').attr("disabled", false);
+                    form.render('select');
+                });
+                // var   globalVariableState= $("option:selected", "[name='serverIds']").val();
+                // $.ajax({
+                //     url: basePath + '/sysServer/cancelGlobalVariable?globalVariableState='+globalVariableState,
+                //     type: 'GET',
+                //     headers: {
+                //         "access_token": access_token//此处放置请求到的用户token
+                //     },
+                //     cache: false,
+                //     processData: false,
+                //     contentType: false,
+                //     success: function (data) {
+                //         if (data.code == 1) {
+                //             layer.msg('采集设备正在使用！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                //         } else {
+                //             layer.msg('采集设备绑定成功！！！', {time: 2000, icon: 6, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                //
+                //         }
+                //     }
+                //
+                // })
+                break;
+        }
+    }
+    function deleteImg(obj) {
+        //删除图片展示上传按钮
+        $(obj).parent("div").parent("div").find('button').show();
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").remove();
+
+        // var imgurl = $(obj).parent("div").next().val();
+        // var formData = new FormData();
+        // formData.append("imgurl", JSON.stringify(imgurl));
+        // $.ajax({
+        //     url: basePath + '/personTable/deleteImg',
+        //     type: 'POST',
+        //     headers: {
+        //         "access_token": access_token//此处放置请求到的用户token
+        //     },
+        //     cache: false,
+        //     data: formData,
+        //     dateType: "json",
+        //     processData: false,
+        //     contentType: false,
+        //     success: function (data) {
+        //         if (data.code == 0) {
+        //             $(obj).parent("div").next().remove();
+        //             $(obj).parent("div").remove();
+        //         }
+        //     }
+        //
+        // })
+    }
+
+    //验证信息是否为空
+    function emptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var personName = $("#personName").val();
+        if (reg.test(personName) === true || personName == null || "" == (personName)) {
+            layer.msg("姓名不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var identityNo = $("#identityNo").val();
+        if (reg.test(identityNo) === true || identityNo == null || "" == (identityNo)) {
+            layer.msg("身份证号码不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var telephone = $("#telephone").val();
+        //验证手机号是否正常
+        if (telephoneUtils(telephone) == false && telephone != "") {
+            layer.msg('手机号码填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        //验证教工号是否正常
+        var identityTypeCode = $("#identityTypeCode").val();
+        if (identityTypeCodeUtils(identityTypeCode) == false && identityTypeCode != ""){
+            layer.msg('教工号或一卡通号填写有误，请重填！！', {time: 1000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+            return false;
+        }
+        // var faceAddress = $("[name='personFaceInfomationTableBean.faceAddress']").val();
+        // if (reg.test(faceAddress) === true || faceAddress == null || "" == (faceAddress)) {
+        //     layer.msg("人脸照片为必填项！", {time: 1000, icon: 5, offset: '250px'});
+        //     return false;
+        // }
+        // var campusCardAddress = $("[name='personFaceInfomationTableBean.campusCardAddress']").val();
+        // if (reg.test(campusCardAddress) === true || campusCardAddress == null || "" == (campusCardAddress)) {
+        //     layer.msg("校园卡正面照为必填项！", {time: 1000, icon: 5, offset: '250px'});
+        //     return false;
+        // }
+        return true;
+    }
+
+</script>
+</body>
+</html>

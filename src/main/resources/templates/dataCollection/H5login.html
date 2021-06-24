@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <style>
+        body{
+            margin:0;
+            padding:0;
+        }
+        .info-collect-body{
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .info-login-header{
+            width:100%;
+            height:602px;
+            background: url(/Content/Images/head_bg.png) no-repeat;
+            background-size: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .info-login-header h3{
+            font-size: 2.5rem;
+            color: #fff;
+            letter-spacing:10px;
+            margin-top: -60px;
+        }
+        .info-login-content{
+            width: 35%;
+            margin: 55px auto 0;
+            
+        }
+        .user-name,.user-pass{
+            width: 100%;
+            height: 58px;
+            background: #eee;
+            font-size: 1rem;
+            padding-left: 45px;
+        }
+        .info-login-content .layui-form-item{
+            position: relative;
+        }
+        .user-icon::before{
+            display: block;
+            content: "";
+            width:30px;
+            height: 30px;
+            background: url(/Content/Images/user_icon.png) no-repeat;
+            background-size: 100%;
+            position: absolute;
+            top:12px;
+            left:10px;
+        }
+        .pass-icon::before{
+            display: block;
+            content: "";
+            width:30px;
+            height: 30px;
+            background: url(/Content/Images/pass_icon.png) no-repeat;
+            background-size: 100%;
+            position: absolute;
+            top:12px;
+            left:10px;
+        }
+        .login-btn{
+            width: 100%;
+            height: 58px;
+            font-size: 1rem;
+            background-color: #4d5ff6;
+            margin-top:30px;
+        }
+        @media screen and (max-width:768px){
+            .info-login-header{
+                height: 430px;
+            }
+            .info-login-content{
+                width: 55%;
+                margin: 85px auto 0;
+                
+            }
+            .user-name, .user-pass{
+
+                font-size: 1.3rem;
+            }
+            .login-btn{
+                font-size: 1.3rem;
+            }
+        }
+        @media screen and (max-width:375px){
+            .info-login-header{
+                height: 210px;
+            }
+            .info-login-header h3{
+                font-size: 2rem;
+                margin-top: 0;
+            }
+            .info-login-content{
+                width: 80%;
+                margin: 55px auto 0;
+                
+            }
+            .user-name, .user-pass{
+
+                font-size: 1.3rem;
+            }
+            .login-btn{
+                font-size: 1.3rem;
+            }
+            .user-icon::before,.pass-icon::before{
+                width: 25px;
+                height: 25px;
+                top: 16px;
+            }
+            .user-name, .user-pass{
+                font-size: 1rem;
+            }
+        }
+        @media screen and (min-width:376px) and (max-width:416px){
+            .info-login-header {
+                height: 230px;
+            }
+            .info-login-content {
+                width: 80%;
+                margin: 55px auto 0;
+            }
+            .user-icon::before,.pass-icon::before{
+                width: 25px;
+                height: 25px;
+                top: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="info-collect-body">
+        <div class="info-login-header">
+            <i id="return" class="layui-icon layui-icon-left" style="position: absolute;top:8px;left:10px;color: white"></i>
+            <h3>用户登录</h3>
+        </div>
+        <div class="layui-form info-login-content">
+            <div class="layui-form-item">
+                <i class="user-icon"></i>
+                <input type="text" class="layui-input user-name" placeholder="请输入教工号或学号">
+            </div>
+            <div class="layui-form-item">
+                <i class="pass-icon"></i>
+                <input type="password" class="layui-input user-pass" placeholder="请输入密码">
+            </div>
+            <div class="layui-form-item">
+                <button type="buttom" class="layui-btn layui-btn-normal login-btn" onclick="Information()">登录</button>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        // 跳转到首页
+        $(document).on('click','#return',function(){
+            location.href="/H5index";
+        });
+
+        layui.use('form',function(){
+            var form=layui.form,
+            $=layui.jquery;
+            
+            form.render();
+        })
+        //功能优化
+        function Information() {
+            layui.use('layer', function () {
+                layer.alert("功能正在开发中，敬请期待...");
+            })
+        }
+
+    </script>
+</body>
+</html>

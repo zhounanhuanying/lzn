@@ -1,0 +1,152 @@
+﻿
+body{
+    color:#666!important;
+    font-family: '微软雅黑';
+    background:#eee!important;
+    overflow:hidden;
+}
+.list-btn-group{
+    margin-bottom: 10px;
+}
+.list-btn-group .layui-btn{
+    height: 30px;
+    line-height: 30px;
+    border-left: 1px solid #e4e4e4;
+}
+.list-btn-group .layui-btn{
+    margin-right: 10px !important;
+    padding: 0 0 0 30px;
+    color: #666;
+}
+.list-btn-group .icon-download{
+    background: url(../images/download.png) no-repeat;
+    background-size: 30px;
+}
+.list-btn-group .icon-upload{
+    background: url(../images/upload.png) no-repeat;
+    background-size: 30px;
+}
+.list-btn-group .icon-add{
+    background: url(../images/add.png) no-repeat;
+    background-size: 30px;
+}
+.list-btn-group .icon-delete{
+    background: url(../images/delete.png) no-repeat;
+    background-size: 30px;
+}
+.list-btn-group .icon-revise{
+    background: url(../images/revise.png) no-repeat;
+    background-size: 30px;
+}
+.list-btn-group .icon-freshen{
+    background: url(../images/freshen.png) no-repeat;
+    background-size: 30px;
+}
+.list-btn-group .icon-sync{
+    background: url(../images/sync.png) no-repeat;
+    background-size: 30px;
+}
+.layui-table-tool{
+    min-height: inherit;
+    padding: 0;
+}
+
+.layui-btn-container .layui-btn{
+    margin-bottom:0;
+}
+.list-btn-group .border-left{
+    border-left:1px solid #ddd;
+}
+.layui-laypage-em{
+    background-color: #1e9fff !important;
+}
+
+/*筛选条件*/
+.search-form{
+    padding-top: 10px;
+}
+.search-form .layui-form-item{
+    padding: 10px;
+    margin: 0 10px 0 10px;
+    border: 1px solid #f3f3f3;
+    background: #fff;
+}
+
+.search-form .layui-inline{
+    /*width: 325px;*/
+    height: 29px;
+    line-height: 29px;
+}
+.search-form .layui-form-item .layui-input-inline{
+    width: 197px;
+    height: 29px;
+    border: 1px solid #ddd;
+}
+.search-form .layui-input, search-form .layui-textarea{
+    height: 29px;
+    line-height: 29px;
+    border: none;
+    color:#666;
+}
+.search-form .layui-form-label{
+    width:auto;
+    line-height: 29px;
+    text-align: left;
+    padding:0;
+}
+.search-form .layui-btn{
+    height: 31px;
+    line-height: 31px;
+    margin-bottom: 5px;
+}
+
+
+/*列表样式*/
+.list-box{
+    padding-top: 5px;
+    padding-bottom: 1px;
+    margin-top: 10px;
+}
+.list-box .layui-col-space15>*{
+    padding: 3px;
+
+}
+.list-box .layui-card-body{
+    padding:0;
+
+}
+/*.no-screen{*/
+/*padding-top: 15px;*/
+/*}*/
+.list-box .list-btn-group{
+    display: block;
+    padding: 2px 0;
+    border: 1px solid #e6e6e6;
+    background: #f2f2f2;
+    border-bottom: 0;
+    margin-bottom:0;
+}
+.list-box .layui-table-view .layui-table td, .list-box .layui-table-view .layui-table th{
+    padding: 2px 0;
+}
+.list-box .layui-table-page{
+    padding: 3px 0;
+    height: 32px;
+}
+.layui-table-cell .layui-form-checkbox[lay-skin=primary]{
+    top: 5px;
+}
+.layui-table-tool .list-btn-group{
+    border:none;
+}
+.layui-table-tool-self{
+    top:4px;
+}
+
+/*列表里的下拉*/
+.list-select .layui-input{
+    height:25px;
+    border:1px solid #ddd;
+}
+
+

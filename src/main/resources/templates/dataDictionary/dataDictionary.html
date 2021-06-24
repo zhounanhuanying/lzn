@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>字典信息管理页面</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <!--解决数据表格复选框位置不对-->
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            top: 35%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="serverManager" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline" >
+            <label class="layui-form-label">字典类型：</label>
+            <div class="layui-input-inline" id="selectDiv">
+                <select name="dicType" id="dicTypeSerach" lay-verify="required"
+                        class="border-style layui-input">
+                    <option value="">请选择基础类型</option>
+                    <option th:each="dataDictionary:${ServerJson}"
+                            th:value="${dataDictionary.dicCode}"
+                            th:text="${dataDictionary.dicName}"></option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="searchByType()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary" onclick="refreshService()">重置</button>
+    </div>
+</form>
+<div class="layui-fluid list-box">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container list-btn-group">
+                            <a class="layui-btn icon-add" lay-event="insertDataDictionaryBtn"
+                               onclick="insertDataDictionaryBtn()">新增数据字典</a>
+                            <a class="layui-btn icon-add" lay-event="insertDictionaryTypeBtn"
+                               onclick="insertDictionaryTypeBtn()">新增基础类型</a>
+                            <a class="layui-btn icon-revise" lay-event="deleteDictionaryListBtn"
+                               onclick="updataDictionaryListBtn()">修改</a>
+                            <a class="layui-btn icon-delete" lay-event="deleteDictionaryListBtn"
+                               onclick="deleteDictionaryListBtn()">删除</a>
+                        </div>
+                    </script>
+                    <script type="text/html" id="test-table-toolbar-barDemo">
+                        <!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增字典-->
+<div class="layui-row layui-popup" id="insertDataDictionaryDiv" style="display: none;">
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="insertDataDictionaryForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">字典名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="dicName" id="dataDicName" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">字典编码：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="dicCode" id="dataDicCode" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">字典类型：</label>
+                    <div class="layui-input-inline">
+                        <select name="dicType" id="dicType" lay-verify="required"
+                                class="border-style layui-input">
+                            <option value="">请选择基础类型</option>
+                            <option th:each="dataDictionary:${ServerJson}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--修改字典-->
+<div class="layui-row layui-popup" id="updataDataDictionaryDiv" style="display: none;">
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="updataDataDictionaryForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">字典名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="dicName" id="updatadataDicName" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">字典编码：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="dicCode" id="updatadataDicCode" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">字典类型：</label>
+                    <div class="layui-input-inline">
+<!--                        <select name="dicType" id="updatadicType" lay-verify="required"-->
+<!--                                class="border-style layui-input">-->
+<!--                            <option value="">请选择基础类型</option>-->
+<!--                        </select>-->
+                        <select name="dicType" id="updatadicType" lay-verify="required"
+                                class="border-style layui-input">
+                            <option value="">请选择基础类型</option>
+                            <option th:each="dataDictionary:${ServerJson}"
+                                    th:value="${dataDictionary.dicCode}"
+                                    th:text="${dataDictionary.dicName}"></option>
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="dicId" id="updataDicId">
+        </form>
+    </div>
+</div>
+
+<div class="layui-row layui-popup" id="insertDictionaryTypeDiv" style="display: none;">
+    <div>
+        <form class="layui-form" lay-filter="formTestFilter" id="insertDictionaryTypeForm">
+            <div class="layui-form-item">
+                <div class="layui-inline inline-margin-right">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">类型名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="dicName" id="typeDicName" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">类型编码：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="dicCode" id="typeDicCode" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="dicType" value="-1">
+        </form>
+    </div>
+</div>
+
+<!--表格渲染js-->
+
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var dicType = "";
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    });
+    $(function () {
+        data();
+        form = layui.form
+        // initDicType();
+    });
+    //赋值表格
+    var tableIns ="";
+    function data() {
+        layui.use(['index', 'form', 'laydate', 'table','layer'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , layer = layui.layer
+                , form = layui.form
+                , table = layui.table;
+
+            tableIns =   table.render({
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                elem: '#test-table-operate',
+                url: basePath + '/dataDictionary/getDataDictionaryList?&&ieRandom=' + new Date().getTime()
+                , toolbar: '#toolbarDemo'
+                , loading: true
+                , defaultToolbar: []
+                , height: 'full-85'
+                , cols: [
+                    [
+                        {type: 'checkbox', fixed: 'left', lay_checked: false, filter: "test"}
+                        , {field: 'dicName', title: '字典名称'}
+                        , {field: 'dicCode', title: '字典编码'}
+                        , {field: 'dicType', title: '字典类型'}
+//                    ,{fixed: 'right', title:'操作', toolbar: '#test-table-toolbar-barDemo'}
+                    ]
+                ]
+                , done: function (res) {
+                    // 获得当前页码
+                    var brforeCurr = tableIns.config.page.curr;
+                    // 获得当前页的记录数
+                    var dataLength = table.cache['testReload'].length;
+                    var count = res.count; // 获得总记录数
+                    //如果当前页的记录数为0并且总记录数不为0
+                    if (dataLength == 0 && count != 0) {
+                        // 刷新表格到上一页
+                        table.reload("testReload", {
+                            page: {
+                                curr: brforeCurr - 1
+                            }
+                        });
+                    }
+                } , where: {dicType: dicType}
+                , page: true
+                , limits: [20, 40]
+                , limit: 20
+                , id: 'testReload'
+            });
+            //监听行工具事件
+            table.on('tool(test-table-operate)', function (obj) {
+                var dicId = obj.data.dicId;
+                if (obj.event === 'del') {
+                    layer.confirm('确定删除么？', function (index) {
+                        obj.del();
+                        $.ajax({
+                            type: "POST",
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            url: basePath + "/dataDictionary/deleteDataDictionaryById",
+                            data: {dicId: dicId},
+                            success: function (result) {
+                                if (result.code == 1) {
+                                    tableIns.reload();
+                                    // location.reload(true);
+                                    layer.msg("删除成功！", {time: 2000, icon: 6}, function () {
+                                    })
+                                } else if (result.code == -1){
+                                    layer.msg("办公地点中的无不能删除！", {time: 2000, icon: 5}, function () {
+                                    })
+                                } else{
+                                    layer.msg("删除失败！", {time: 2000, icon: 5, shift: 6}, function () {
+                                    });
+                                }
+                            }
+                        });
+                        layer.close(index);
+                        table.reload('test-table-toolbar', {
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            url: basePath + '/dataDictionary/getDataDictionaryListNoLogBook'
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    layer.prompt({
+                        formType: 2
+                        , value: data.email
+                    }, function (value, index) {
+                        obj.update({
+                            email: value
+                        });
+                        layer.close(index);
+                    });
+                }
+
+            });
+        })
+    }
+</script>
+
+<script type="text/javascript" th:inline="javascript">
+    // function initDicType() {
+    //     layui.use(['index', 'form', 'laydate', 'table'], function () {
+    //         form = layui.form;
+    //         $.ajax({
+    //             headers: {
+    //                 "access_token": access_token//此处放置请求到的用户token
+    //             },
+    //             url: basePath + "/dataDictionary/getDictionaryType",
+    //             type: "GET",
+    //             dataType: "json",
+    //             success: function (result) {
+    //                 $("#dicTypeSerach").html("");//清空select，解决select数据叠加问题
+    //                 var list = result;    //返回的数据
+    //                 var server = document.getElementById("dicTypeSerach"); //server为select定义的id
+    //                 $("#dicTypeSerach").append("<option value=''>请选择基础类型</option>");
+    //                 for (var p in list) {
+    //                     var option = document.createElement("option");  // 创建添加option属性
+    //                     option.setAttribute("value", p); // 给option的value添加值
+    //                     option.innerText = list[p];     // 显示option对应的纯文本
+    //                     server.appendChild(option);           //给select添加option子标签
+    //                     form.render("select");            // 刷性select，显示出数据
+    //                 }
+    //             }
+    //         });
+    //     })
+    // }
+
+    function insertDataDictionaryBtn() {
+        //
+        // form = layui.form,
+        //     $ = layui.$;
+        // $.ajax({
+        //     headers: {
+        //         "access_token": access_token//此处放置请求到的用户token
+        //     },
+        //     url: basePath + "/dataDictionary/getDictionaryType",
+        //     type: "GET",
+        //     dataType: "json",
+        //     success: function (result) {
+        //         $("#dicType").html("");//清空select，解决select数据叠加问题
+        //         var list = result;    //返回的数据
+        //         var server = document.getElementById("dicType"); //server为select定义的id
+        //         for (var p in list) {
+        //             var option = document.createElement("option");  // 创建添加option属性
+        //             option.setAttribute("value", p); // 给option的value添加值
+        //             option.innerText = list[p];     // 显示option对应的纯文本
+        //             server.appendChild(option);           //给select添加option子标签
+        //             form.render("select");            // 刷性select，显示出数据
+        //         }
+        //     }
+        // });
+        document.getElementById("insertDataDictionaryForm").reset();
+        layer.open({
+            title: '新增数据字典',
+            type: 1,
+            btn: ['确定', '取消'],
+            btnAlign: 'c',
+            shade: 0.3,
+            yes: function (index) {
+                var emptyValidationResult = emptyValidationDataDic();
+                if (!emptyValidationResult) {
+                    return false;
+                }
+                $.ajax({
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    type: "POST",
+                    url: basePath + "/dataDictionary/insertDataDictionary",
+                    data: $("#insertDataDictionaryForm").serialize(),
+                   success: function (result) {
+                        if (result.code == 1) {
+                            layer.close(index);
+                            tableIns.reload();
+                            // initDicType();
+                            // location.reload(true);
+                            layer.msg("新增成功！", {time: 2000, icon: 6}, function () {
+                            })
+                        }else if (result.code == -1) {
+                           layer.msg("字典编码重复，请更换！", {time: 2000, icon: 5, shift: 6}, function () {
+                           });
+                       }else if (result.code == -4) {
+                            layer.msg("请先添加字典类型！", {time: 2000, icon: 5, shift: 6}, function () {
+                            });
+                        } else {
+                            layer.msg("新增失败！", {time: 2000, icon: 5, shift: 6}, function () {
+                            });
+                        }
+                    }
+                });
+
+
+            },
+            area: ["340px", "250px"],
+            content: $("#insertDataDictionaryDiv")
+        });
+    };
+
+    function insertDictionaryTypeBtn() {
+        document.getElementById("insertDictionaryTypeForm").reset();
+        layer.open({
+            title: '新增基础类型',
+            type: 1,
+            btn: ['确定', '取消'],
+            btnAlign: 'c',
+            shade: 0.3,
+            yes: function (index) {
+                var emptyValidationResult = emptyValidationDicType();
+                if (!emptyValidationResult) {
+                    return false;
+                }
+                $.ajax({
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    type: "POST",
+                    url: basePath + "/dataDictionary/insertDataDictionaryType",
+                    data: $("#insertDictionaryTypeForm").serialize(),
+                   success: function (result) {
+                        if (result.code == 0) {
+                            layer.close(index);
+                            // tableIns.reload();
+                            // initDicType();
+                            layer.msg("新增成功！", {time: 2000, icon: 6}, function () {
+                                location.reload();
+                            })
+                        } else if (result.code == -1) {
+                            layer.msg("基础类型编码重复，请更换！", {time: 2000, icon: 5, shift: 6}, function () {
+                            });
+                        } else if (result.code == -2) {
+                            layer.msg("基础类型名称重复，请更换！", {time: 2000, icon: 5, shift: 6}, function () {
+                            });
+                        } else {
+                            layer.msg("新增失败！", {time: 2000, icon: 5, shift: 6}, function () {
+                            });
+                        }
+                    }
+                });
+            },
+            area: ["340px", "250px"],
+            content: $("#insertDictionaryTypeDiv")
+        })
+    };
+    //修改字典信息
+    function updataDictionaryListBtn() {
+        // form = layui.form,
+        //     $ = layui.$;
+        // $.ajax({
+        //     headers: {
+        //         "access_token": access_token//此处放置请求到的用户token
+        //     },
+        //     url: basePath + "/dataDictionary/getDictionaryType",
+        //     type: "GET",
+        //     dataType: "json",
+        //     success: function (result) {
+        //         $("#updatadicType").html("");//清空select，解决select数据叠加问题
+        //         var list = result;    //返回的数据
+        //         var server = document.getElementById("updatadicType"); //server为select定义的id
+        //         for (var p in list) {
+        //             var option = document.createElement("option");  // 创建添加option属性
+        //             option.setAttribute("value", p); // 给option的value添加值
+        //             option.innerText = list[p];     // 显示option对应的纯文本
+        //             server.appendChild(option);           //给select添加option子标签
+        //             layui.form.render("select");            // 刷性select，显示出数据
+        //         }
+        //     }
+        // });
+
+        // document.getElementById("updataDataDictionaryForm").reset();
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var table = layui.table
+                , form = layui.form;
+            var checkStatus = table.checkStatus('testReload'),
+                data = checkStatus.data;
+            if (data == "") {
+                layer.alert("请选择要修改的数据!");
+                return;
+            }
+            if (data.length > 1 || data.length < 1) {
+                layer.alert("请选择一条要编辑的数据!");
+                return;
+            }
+            if (data[0].dicType == '基础类型'){
+                layer.alert("基础类型不能修改!");
+                return;
+            }
+            if (data[0].dicCode == 'weizhi'){
+                layer.alert("该字典类型无法修改!");
+                return;
+            }
+            $("#updatadicType").find("option[value=" + data[0].dicTypes + "]").attr('selected', 'selected');
+            $("#updatadataDicName").val(data[0].dicName);
+            $("#updatadataDicCode").val(data[0].dicCode);
+            $("#updataDicId").val(data[0].dicId);
+            form.render();
+            layer.open({
+                title: '修改数据字典',
+                type: 1,
+                btn: ['确定', '取消'],
+                btnAlign: 'c',
+                shade: 0.3,
+                yes: function (index) {
+                    var emptyValidationResult = emptyValidationDicTypeUpdata();
+                    if (!emptyValidationResult) {
+                        return false;
+                    }else {
+                        $.ajax({
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            url: basePath + "/dataDictionary/updataDataDictionaryType",
+                            type: "PUT",
+                            data:  $("#updataDataDictionaryForm").serialize(),
+                            dataType: "json",
+                            success: function (result) {
+                                if (result.code == 1){
+                                    layer.close(index);
+                                    tableIns.reload();
+                                    // initDicType();
+                                    layer.msg("修改成功！", {time: 2000, icon: 6},function () {
+                                    })
+                                }else {
+                                    layer.msg("修改失败！", {time: 2000, icon: 5})
+                                }
+                            }
+                        })
+                    }
+
+                },
+                area: ["340px", "250px"],
+                content: $("#updataDataDictionaryDiv")
+            });
+
+        })
+    }
+
+    function deleteDictionaryListBtn() {
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var table = layui.table;
+            var checkStatus = table.checkStatus('testReload'),
+                data = checkStatus.data;
+            if (data == "") {
+                layer.alert("请选择要删除的数据!");
+                return;
+            }
+//            debugger;
+//            var ids = [];
+//            if(data.length>0){
+//                for(var i=0;i<data.length;i++){
+//                    ids.push(data[i])
+//                }
+//            }
+//            if(data.length>0){
+//                for(var i=0;i<data.length;i++){
+//                    ids.push(data[i].dicId)
+//                }
+//            }
+            layer.confirm('确定删除所选数据吗', {icon: 3, title: '提示'}, function (index) {
+                $.ajax({
+                    traditional: true,
+                    type: "POST",
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    url: basePath + "/dataDictionary/deleteDictionaryListBtn",
+//                    data:{ids:ids},'datalistBill':JSON.stringify(datalistBill)
+                    data: {'data': JSON.stringify(data)},
+                   success: function (result) {
+                        if (result.code == 0) {
+//                            location.reload(true);
+//                             data2();
+                            //重新渲染表格
+                            tableIns.reload();
+                            layer.msg("删除成功！", {time: 2000, icon: 6}, function () {
+                            })
+                        }  else if (result.code == -1){
+                           layer.msg("办公地点中的无不能删除！", {time: 2000, icon: 5}, function () {
+                           })
+                       } else if (result.code == -2){
+                            layer.msg("请取消人员信息中办公地点的关联！", {time: 2000, icon: 5}, function () {
+                            })
+                        }else if (result.code == -3){
+                            layer.msg("字典类型不能删除！", {time: 2000, icon: 5}, function () {
+                            })
+                        }else {
+                            layer.msg("删除失败！", {time: 2000, icon: 5, shift: 6}, function () {
+                            });
+                        }
+                    }
+                })
+            })
+        })
+
+    };
+
+    function refreshService() {
+        location.reload(true);
+    }
+
+    function searchByType() {
+        dicType = $("#dicTypeSerach").val();
+        data();
+    }
+
+    function emptyValidationDicType() {
+
+        var typeDicName = $("#typeDicName").val();
+        var codeTest = /^[a-zA-Z0-9_]{1,}$/;
+        var Ft = /\s\S+|S+\s|\S/;//空白符和字符串，字符串
+        var reg = /\s/;//空白符
+        //视频名称中不能有空格的
+        if (reg.test(typeDicName) === true || typeDicName == null || typeDicName == "") {
+            layer.msg("字典名称不能为空或存在空格！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+//        else if(Ft.test(typeDicName) ==true) {}
+//            //全是空格的
+//        else{
+//            layer.msg("字典类型不能为空！", {time:1000, icon:2, shift:6}, function(){
+//            });
+//            return false;
+//        }
+        var typeDicCode = $("#typeDicCode").val();
+        if (reg.test(typeDicCode) === true || typeDicCode == null || typeDicCode == "") {
+            layer.msg("字典编码不能为空或存在空格！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (!codeTest.test(typeDicCode)) {
+            layer.msg("字典编码只能为数字或字母！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        return true;
+    }
+    function emptyValidationDicTypeUpdata() {
+
+        var typeDicName = $("#updatadataDicName").val();
+        var codeTest = /^[a-zA-Z0-9_]{1,}$/;
+        var Ft = /\s\S+|S+\s|\S/;//空白符和字符串，字符串
+        var reg = /\s/;//空白符
+        //视频名称中不能有空格的
+        if (reg.test(typeDicName) === true || typeDicName == null || typeDicName == "") {
+            layer.msg("字典名称不能为空或存在空格！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+//        else if(Ft.test(typeDicName) ==true) {}
+//            //全是空格的
+//        else{
+//            layer.msg("字典类型不能为空！", {time:1000, icon:2, shift:6}, function(){
+//            });
+//            return false;
+//        }
+        var typeDicCode = $("#updatadataDicCode").val();
+        if (reg.test(typeDicCode) === true || typeDicCode == null || typeDicCode == "") {
+            layer.msg("字典编码不能为空或存在空格！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (!codeTest.test(typeDicCode)) {
+            layer.msg("字典编码只能为数字或字母！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var typeDicCode = $("#updatadicType").val();
+        if (typeDicCode == null || typeDicCode == ""){
+            layer.msg("请先添加字典类型！！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        return true;
+    }
+
+    function emptyValidationDataDic() {
+        var codeTest = /^[a-zA-Z0-9_]{1,}$/;
+        var reg = /\s/;//空白符
+        var dataDicName = $("#dataDicName").val();
+        if (reg.test(dataDicName) === true || dataDicName == null || "" == (dataDicName)) {
+            layer.msg("字典名不能为空或存在空格！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var dataDicCode = $("#dataDicCode").val();
+        if (reg.test(dataDicCode) === true || dataDicCode == null || "" == (dataDicCode)) {
+            layer.msg("字典编码不能为空或存在空格！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (!codeTest.test(dataDicCode)) {
+            layer.msg("字典编码只能为数字或字母！", {time: 2000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

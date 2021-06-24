@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>组织机构列表</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link th:href="@{/Content/style/css/fonts/iconfont.css}" rel="stylesheet" />
+    <link th:href="@{/Content/Css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/Content/style/css/public.css}" rel="stylesheet" />
+    <link th:href="@{/Content/style/css/popup.css}" rel="stylesheet" />
+    <link th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" rel="stylesheet" />
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/bootstrap.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery.nicescroll.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+
+    <style>
+        .ztree-orangization{
+            height:calc(100vh - 275px);
+            height:-webkit-calc(100vh - 275px);
+            height:-moz-calc(100vh - 275px);
+            width:100%;
+            overflow-y:auto;
+            border:1px solid #f6f6f6;
+            margin-top:10px;
+        }
+
+        .orangization-right{
+            height: calc(100vh - 147px);
+            height: -webkit-calc(100vh - 147px);
+            height: -moz-calc(100vh - 147px);
+            overflow-x:auto;
+        }
+        .orangization-card .layui-form .layui-form-item{
+            display:flex;
+            display:-moz-flex;
+            display:-webkit-flex;
+        }
+        .orangization-bottom-area{
+            height: calc(100% - 388px);
+            height: -webkit-calc(100% - 388px);
+            height: -moz-calc(100% - 388px);
+        }
+        .OrgDiagramDiv{
+            height:310px;
+            overflow:hidden;
+        }
+        .OrgDiagramDiv>canvas{
+            overflow-y:auto;
+
+        }
+        div#rMenu {
+            position:absolute;
+            visibility:hidden;
+            top:0;
+            background-color: #555;
+            text-align: left;
+            padding: 2px;
+        }
+        div#rMenu ul li{
+            margin: 2px 0;
+            padding: 0 2px;
+            cursor: pointer;
+            list-style: none outside none;
+            background-color: #DFDFDF;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card orangization-card">
+                <div class="layui-card-header">
+                    组织机构列表
+                </div>
+                <div class="layui-card-body" style="padding: 10px;">
+                    <button type="button" class="layui-btn" onclick="addGenOrgName(0)" style="margin-left: 5px">添加学校</button>
+                    <!-- ztree树 -->
+                    <div class="ztree-orangization" id="orgTree2">
+                        <ul id="orgTree" class="ztree" style="height:98%" ></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="rMenu"  style="width: 60px;">
+            <ul>
+                <li id="m_add">新增</li>
+                <li id="m_rename" >修改</li>
+                <li id="m_del" >删除</li>
+            </ul>
+        </div>
+        <div class="layui-col-md9 orangization-right">
+            <div class="layui-card  orangization-bottom-area" style=" height:900px;">
+                <div class="layui-card-body">
+                    <form lay-filter="infoEditForm" >
+                        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this">人员信息</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <div class="layui-form toolbar">
+                                        <div class="layui-form-item text-right">
+                                           <div class="layui-inline">
+                                                <input id="searchName" name="personName" class="layui-input searchName" placeholder="输入人员姓名"/>
+                                            </div>
+                                            <div class="layui-inline">
+                                                <button type="button" class="layui-btn icon-btn searchName" onclick="logSearch()">
+                                                    <i class="layui-icon"></i>搜索
+                                                </button>
+                                            </div>
+                                            <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增 年级，班级 节点 -->
+<div class="layui-row layui-popup" id="orgNameAdd" style="display: none;">
+        <div>
+            <form class="layui-form large-form1" lay-filter="formTestFilter_Add">
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">节点名称:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="orgName" id="orgName_Add" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">节点编码:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="orgCode" id="orgCode_Add" class="layui-input"
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">所属园区:</label>
+                    <div class="layui-input-inline">
+                        <span id = "Add-park"></span>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">节点描述:</label>
+                    <div class="layui-input-inline">
+                        <textarea type="text" name="orgContent" id="orgContent_Add" class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<!--新增 系部 节点 -->
+<div class="layui-row layui-popup" id="genOrgNameAdd" style="display: none;">
+    <div>
+        <form class="layui-form large-form1" lay-filter="formTestFilter_Add">
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">节点名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orgName" id="orgName-add" class="layui-input"
+                           autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">节点编码:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orgCode" id="orgCode-add" class="layui-input"
+                           autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">所属园区:</label>
+                <div class="layui-input-inline">
+                    <select name="departments" lay-verify="required" id="parkId-add"
+                            class="border-style">
+                        <option value="">请选择</option>
+                        <option th:each="parkList:${parkList}"
+                                th:value="${parkList.id}"
+                                th:text="${parkList.parkName}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">节点描述:</label>
+                <div class="layui-input-inline">
+                        <textarea type="text" name="orgContent" id="orgContent-add" class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--编辑 系部，年级，班级 节点 -->
+<div class="layui-row layui-popup" id="orgNameEdit" style="display: none;">
+    <div>
+        <form class="layui-form large-form1" lay-filter="formTestFilter" id="editStaff">
+            <input type="hidden" name="id" id="orgId_Edit">
+            <input type="hidden" name="orgType" id="orgType_Edit">
+            <input type="hidden" name="pid" id="pid_Edit">
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">节点名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orgName" id="orgName_Edit" class="layui-input"
+                           autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">节点编码:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="orgCode" id="orgCode_Edit" class="layui-input"
+                           autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">所属园区:</label>
+                <div class="layui-input-inline" id="layuiinputinline1">
+                    <input type="text" name="parkName" id="parkId-edit" class="layui-input" style="width: 200px" autocomplete="off"disabled>
+                </div>
+                <div class="layui-input-inline" id="layuiinputinline">
+                    <select name="parkId" lay-verify="required" id="parkId_Edit"
+                            class="border-style" lay-filter="parkId_Edit">
+                        <option value="">请选择</option>
+                        <option th:each="parkList:${parkList}"
+                                th:value="${parkList.id}"
+                                th:text="${parkList.parkName}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">节点描述:</label>
+                <div class="layui-input-inline">
+                        <textarea type="text" name="orgContent" id="orgContent_Edit" class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:inline="javascript">
+    //设置框架
+    $(function () {
+        //屏幕的宽高
+        winHeight = $(window).height();
+        winWidth = $(window).width();
+
+        var easyui_listh = (winHeight -85);
+        $('.easyui_list').css({ height: easyui_listh })
+        var ztree_lefth = (winHeight - 10);
+        $('.ztree_left').css({ height: ztree_lefth })
+
+        $(".list_ztree").niceScroll({
+            cursorcolor: "#efefef",
+            cursoropacitymax: 1,
+            touchbehavior: false,
+            cursorwidth: "3px",
+            cursorborder: "0",
+            cursorborderradius: "5px"
+
+        })
+        $(".module_select").niceScroll({
+            cursorcolor: "#efefef",
+            cursoropacitymax: 1,
+            touchbehavior: false,
+            cursorwidth: "3px",
+            cursorborder: "0",
+            cursorborderradius: "5px"
+        })
+        $(".module_tab").niceScroll({
+            cursorcolor: "#efefef",
+            cursoropacitymax: 1,
+            touchbehavior: false,
+            cursorwidth: "3px",
+            cursorborder: "0",
+            cursorborderradius: "5px"
+
+        })
+
+    });
+</script>
+<script  type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+      var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var personName = "";
+    //赋值表格
+    var tableIns = "";
+    var zTree;
+    var ztreeNode;
+    var rMenu = $("#rMenu");
+    $(function(){
+        LoadOrganazationTree();
+    })
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    })
+
+    function LoadOrganazationTree() {
+        $.ajax({
+            url: basePath+"/baseOrganizition/getOrganizationTree",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            type: "GET",
+            dataType: "json",
+            // async: true,
+            success: function (data) {
+                // alert(JSON.stringify(data))
+                if (data.data == null) {
+                    $("#orgTree").hide();
+                } else {
+                    $("#orgTree").show();
+                    //zTree初始化
+                    //debugger
+                    //alert(JSON.stringify(data.data))
+                    zTree = $.fn.zTree.init($("#orgTree"), setting, data.data);
+                    zTree.expandAll(true);
+                    for (var i in data.data) {
+                        if (i.pid != '0') {
+                            orgId = data.data[i].id;
+                            orgName = data.data[i].orgName;
+                            var node = zTree.getNodeByParam("id", orgId);
+
+                            zTree.selectNode(node, true);   //将指定ID的节点选中
+                            break;
+                        }
+                    }
+                    queryList();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // layer.alert("获取组织架构错误" + XMLHttpRequest.status + "错误请联系管理员！", {icon: 2});
+               alert("获取组织架构错误" + XMLHttpRequest.status + "错误请联系管理员！");
+
+            }
+        })
+    };
+
+    function queryList(parentid,orgType) {
+        layui.use(['table'], function () {
+            var $ = layui.$
+                , table = layui.table;
+            function tdTitle() {
+                $('th').each(function (index, element) {
+                    $(element).attr('title', $(element).text());
+                });
+                $('td').each(function (index, element) {
+                    $(element).attr('title', $(element).text());
+                });
+            };
+            var str = [
+                {type: 'checkbox', fixed: 'left'}
+                ,{field: 'personId', title: '序号', hide: true}
+                , {field: 'personName', title: '姓名'}
+                , {field: 'identityTypeCode', title: '学工号'}
+                , {field: 'gender', title: '性别',
+                    templet: function (g) {
+                        if (g.gender == 1) {
+                            return "男";
+                        }else {
+                            return "女";
+                        }
+                    }
+                }
+                , {field: 'identityNo', title: '身份证号码'}
+                , {field: 'telephone', title: '手机号'}
+                , {field: 'createTime', title: '创建时间'}
+            ];
+            // 表格渲染
+            tableIns = table.render({
+                elem: '#test-table-operate',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url: basePath + '/baseOrganizition/getPersonTableByorgId'
+                , id: 'tableId'
+                , toolbar: '#toolbarDemo'
+                , height : 300
+                , defaultToolbar: []
+                , height: 'full-131'
+                , loading: true
+                , cols: [str]
+                , parseData: function (res) {
+                    var data = res.data;
+                }, done: function (res) {
+                    // /*// 获得当前页码
+                    // var brforeCurr = tableIns.config.page.curr;
+                    // // 获得当前页的记录数
+                    // var dataLength = table.cache['tableId'].length;
+                    // var count = res.count; // 获得总记录数
+                    // //如果当前页的记录数为0并且总记录数不为0
+                    // if (dataLength == 0 && count != 0) {
+                    //     // 刷新表格到上一页
+                    //     table.reload("tableId", {
+                    //         page: {
+                    //             curr: brforeCurr - 1
+                    //         // }
+                    //     });
+                    // }*/
+                }, where: {
+                    id: parentid,
+                    orgType: orgType,
+                    orgName:personName
+                },
+                page: true,
+                limits: [20, 40],
+                limit: 20
+            });
+        });
+    }
+
+    function logSearch() {
+        personName = $("input[name='personName']").val();
+        queryList();
+    }
+
+    var setting = {
+        data: {//表示tree的数据格式
+            simpleData: {
+                enable: true,//表示使用简单数据模式
+                idKey: "id",//设置之后id为在简单数据模式中的父子节点关联的桥梁
+                pidKey: "pid",//设置之后pid为在简单数据模式中的父子节点关联的桥梁和id互相对应
+                rootPId: "-1"
+            },
+        },
+        view: {
+            dblClickExpand: true,
+            showIcon: true,//设置是否显示节点图标
+            showLine: true,//设置是否显示节点与节点之间的连线
+            showTitle: true,  //设置是否显示节点的title提示信息
+        },
+        callback: {
+            onClick: zTreeOnClick,
+            onRightClick:onRightClick,
+        }
+    }
+
+    function zTreeOnClick(event, treeId, treeNode) {
+        parentid = treeNode.id;
+        orgType = treeNode.orgType;
+        queryList(parentid,orgType);
+    }
+    function onRightClick(event, treeId, treeNode){
+        //判断是否为点击事件;如果是节点点击事件，给全局变量ztreeNode赋值
+        if (treeNode) {
+            ztreeNode = treeNode;
+        }
+        if (!treeNode && event.target.tagName.toLowerCase() != "button"
+            && $(event.target).parents("a").length == 0) {
+            zTree.cancelSelectedNode();
+            showRMenu("root", event.clientX, event.clientY);
+        } else if (treeNode && !treeNode.noR) {
+
+            zTree.selectNode(treeNode,true);
+
+            showRMenu("node", event.clientX, event.clientY,treeNode);
+        }
+    }
+    //显示右键菜单
+    function showRMenu(type, x, y) {
+        if(ztreeNode.orgType == 3){
+            $("#rMenu ul").show();
+            $("#m_add").hide();
+            $("#m_rename").show();
+            $("#m_del").show();
+        }else {
+            $("#rMenu ul").show();
+            $("#m_add").show();
+            $("#m_rename").show();
+            $("#m_del").show();
+        }
+        rMenu.css({"top": y + "px", "left": x + "px","visibility":"visible"});
+        $("body").bind("mousedown", onBodyMouseDown);
+    }
+    function onBodyMouseDown(event){
+        //console.log(event);
+        if (!(event.target.id == "rMenu" || $(event.target).parents("#rMenu").length>0)) {
+            rMenu.css({"visibility" : "hidden"});
+            hideRMenu();
+        }else if(event.target.id == "m_add"){
+            //alert("新增");
+            addOrgName();
+        }else if (event.target.id == "m_rename"){
+            //alert("修改");
+            editOrgName();
+        }else if (event.target.id == "m_del"){
+            //alert("删除");
+            delOrgId();
+        }
+    }
+
+    function hideRMenu() {
+        if (rMenu) rMenu.css({"visibility": "hidden"});
+        $("body").unbind("mousedown", onBodyMouseDown);
+    }
+    function addParkNameInput(){
+        $("#Add-park").html("<input type=\"text\" id=\"parkId_Add\"  class=\"layui-input\" style=\"width: 200px\" autocomplete=\"off\"disabled>\n")
+    }
+    //新增二级节点与三级节点
+    function addOrgName() {
+        hideRMenu();
+        addParkNameInput();
+            $.ajax({
+                url: basePath + "/basePark/queryParkNameById",
+                type: "get",
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                data: "parkId=" + ztreeNode.parkId,
+                success: function (result) {
+                    $("#parkId_Add").val(result);
+                }, error: function (result) {
+                    alert("园区显示失败！！！请联系管理员.")
+                    $("#parkId_Add").val("");
+                }
+            });
+
+        layer.open({
+            type: 1
+            , title: '新增节点'
+            , area: ["330px", "300px"]
+            , btn: ['确认', '取消']
+            , btnAlign: 'c'
+            , content: $("#orgNameAdd")
+            , yes: function (index) {
+                var emptyValidationResult = AddemptyValidationDataDic();
+                if (!emptyValidationResult) {
+                    return false;
+                }
+                var datats = {};
+                datats.baseOrganizition = getAddBaseOrganizition();
+                var formData = new FormData();
+                formData.append("datats", JSON.stringify(datats));
+                $.ajax({
+                    url: basePath + '/baseOrganizition/insertBaseOrganizition',
+                    type: 'POST',
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    data: formData,
+                    dateType: "json",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.code == 2) {
+                            layer.msg('组织机构信息提交成功！！！', {time: 2000, icon: 6}, function () {
+                                //重新渲染表格
+                                //tableIns.reload();
+                                location.reload(true);
+                            })
+                            layer.close(index);
+                        } else if (data.code == 1) {
+                            layer.msg('组织机构提交失败！！！该组织机构编码已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                        } else {
+                            layer.msg('组织机构提交失败！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                        }
+                    },
+                    error: function (returndata) {
+                        alert("error" + returndata);
+                    }
+                })
+                layer.close(index);
+            }
+        });
+    }
+
+    //新增根节点
+    function addGenOrgName(pid) {
+        //console.log(ztreeNode);
+        hideRMenu();
+        layer.open({
+            type: 1
+            , title: '新增节点'
+            , area: ["330px", "300px"]
+            , btn: ['确认', '取消']
+            , btnAlign: 'c'
+            , content: $("#genOrgNameAdd")
+            , yes: function (index) {
+                var emptyValidationResult = AddGenEmptyValidationDataDic();
+                if (!emptyValidationResult) {
+                    return false;
+                }
+                var datats = {};
+                datats.baseOrganizition = getAddGenBaseOrganizition(pid);
+                var formData = new FormData();
+                formData.append("datats", JSON.stringify(datats));
+                $.ajax({
+                    url: basePath + '/baseOrganizition/insertBaseOrganizition',
+                    type: 'POST',
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    data: formData,
+                    dateType: "json",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.code == 2) {
+                            layer.msg('根节点信息提交成功！！！', {time: 2000, icon: 6}, function () {
+                                //重新渲染表格
+                                //tableIns.reload();
+                                location.reload(true);
+                            })
+                            layer.close(index);
+                        } else if (data.code == 1) {
+                            layer.msg('根节点提交失败！！！该组织机构编码已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                        } else {
+                            layer.msg('根节点提交失败！！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                        }
+                    },
+                    error: function (returndata) {
+                        alert("error" + returndata);
+                    }
+                })
+                layer.close(index);
+            }
+        });
+    }
+    //修改节点信息
+    function editOrgName() {
+    layui.use(['table', 'element', 'layer', 'form'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer        //弹层
+            , table = layui.table
+            , form = layui.form
+
+        hideRMenu();
+            layer.open({
+                type: 1
+                , title: '编辑组织机构数据'
+                , area: ["330px", "300px"]
+                , closeBtn: false
+                , btn: ['确认更改', '取消']
+                , btnAlign: 'c'
+                , content: $("#orgNameEdit")
+                , success: function () {
+                    $("#orgId_Edit").val(ztreeNode.id)
+                    $("#orgName_Edit").val(ztreeNode.name);
+                    $("#orgCode_Edit").val(ztreeNode.orgCode);
+                    $("#orgContent_Edit").val(ztreeNode.orgContent);
+                    $("#orgType_Edit").val(ztreeNode.orgType);
+                    if(ztreeNode.orgType != null && ztreeNode.orgType != 0 && ztreeNode.orgType != ""){
+                        if(ztreeNode.orgType==1){
+                            $("#layuiinputinline").show();
+                            $("#layuiinputinline1").hide();
+                        }
+                        if(ztreeNode.orgType==2 || ztreeNode.orgType==3){
+                            $("#layuiinputinline").hide();
+                            $("#layuiinputinline1").show();
+                        }
+                        $("#pid_Edit").val(ztreeNode.pid);
+                        $.ajax({
+                            url: basePath + "/basePark/queryParkNameById",
+                            type: "get",
+                            headers: {
+                                "access_token": access_token//此处放置请求到的用户token
+                            },
+                            data: "parkId=" + ztreeNode.parkId,
+                            success: function (result) {
+                                $("#parkId_Edit").find("option[value=" + ztreeNode.parkId + "]").prop('selected', 'selected');
+                                form.render("select");
+                                $("#parkId-edit").val(result);
+                            }, error: function (result) {
+                                $("#parkId_Edit").val("");
+                            }
+                        });
+                    }
+                }, yes: function (index) {
+                    var emptyValidationResult = emptyValidationDataDic();
+                    if (!emptyValidationResult) {
+                        return false;
+                    }
+                    $.ajax({
+                        type: 'PUT',
+                        url: basePath + '/baseOrganizition/updateBaseOrganizitionById',
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        data: $("#editStaff").serialize(),
+                        success: function (result) {
+                            var code = result.code;
+                            if (code == -4) {
+                                //edit-personIdNumber
+                                $("#edit-personIdNumber").css('border-color', 'red');
+                                layer.msg("修改组织机构信息失败,请检查名称信息", {time: 1000, icon: 5, shift: 6}, function () {
+                                });
+                            } else if (code == -1) {
+                                layer.msg("组织机构编码不能为空！", {time: 1000, icon: 5, shift: 6}, function () {
+                                });
+                            } else {
+                                layer.msg("修改人员信息成功", {time: 800, icon: 6}, function () {
+                                    LoadOrganazationTree();
+                                })
+                                layer.close(index);
+                            }
+                        }
+                        , error: function (msg) {
+                            layer.msg("修改组织机构信息失败", {time: 1000, icon: 5, shift: 6}, function () {
+                            });
+                            layer.close(index);
+                        }
+                    });
+                }
+
+            })
+        })
+        }
+
+    //删除节点
+    function delOrgId() {
+        let id = ztreeNode.id;
+        layer.alert('将要删除该节点,确定吗?', {
+            closeBtn: 0    // 是否显示关闭按钮
+            , anim: 6
+            , btn: ['确定', '取消'] //按钮
+            , yes: function (index) {
+                $.ajax({
+                    url: basePath + '/baseOrganizition/deleteBaseOrganizitionById?id='+id,
+                    type: 'delete',
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    // data:{id},
+                    // contentType: "application/json",
+                    success: function (res) {
+                        if (res > 0) {
+                            layer.msg("删除成功", {time: 800, icon: 1}, function () {
+                                //重新渲染
+                                LoadOrganazationTree();
+                            })
+                        } else {
+                            layer.msg("删除失败", {time: 800, icon: 2, shift: 6}, function () {
+                            })
+                        }
+                    },error: function (msg) {
+                        layer.msg("删除失败", {time: 800, icon: 2, shift: 6}, function () {
+                        })
+                    }
+                });
+                layer.close(index);
+            }
+        })
+    }
+        
+    function getAddBaseOrganizition() {
+        var baseOrganizition = {};
+        baseOrganizition.orgName = $("#orgName_Add").val();
+        baseOrganizition.orgCode = $("#orgCode_Add").val();
+        baseOrganizition.orgContent = $("#orgContent_Add").val();
+        baseOrganizition.parkId = ztreeNode.parkId;
+        baseOrganizition.pid = ztreeNode.id;
+        baseOrganizition.orgType = ztreeNode.orgType+1;
+        return baseOrganizition;
+    }
+
+    function getAddGenBaseOrganizition(pid) {
+        var baseOrganizition = {};
+        baseOrganizition.orgName = $("#orgName-add").val();
+        baseOrganizition.orgCode = $("#orgCode-add").val();
+        baseOrganizition.orgContent = $("#orgContent-add").val();
+        baseOrganizition.parkId = $("option:selected", "[id='parkId-add']").val();
+        baseOrganizition.pid = pid;
+        baseOrganizition.orgType = 1;
+        return baseOrganizition;
+    }
+
+    function AddGenEmptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var orgName = $("#orgName-add").val();
+        if (reg.test(orgName) === true || orgName == null || "" == (orgName)) {
+            layer.msg("名称不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var parkId = $("option:selected", "[id='parkId-add']").val();
+        if (reg.test(parkId) === true || parkId == null || "" == (parkId)) {
+            layer.msg("所属园区为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var orgCode = $("#orgCode-add").val();
+        //验证手机号是否正常
+        if (reg.test(orgCode) === true || orgCode == null || "" == (orgCode)) {
+            layer.msg("编码不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+
+    function AddemptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var orgName = $("#orgName_Add").val();
+        if (reg.test(orgName) === true || orgName == null || "" == (orgName)) {
+            layer.msg("名称不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+
+        var parkId = $("#parkId_Add").val();
+        if (reg.test(parkId) === true || parkId == null || "" == (parkId)) {
+            layer.msg("所属园区为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var orgCode = $("#orgCode_Add").val();
+        //验证手机号是否正常
+        if (reg.test(orgCode) === true || orgCode == null || "" == (orgCode)) {
+            layer.msg("编码不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+
+    function emptyValidationDataDic() {
+        var reg = /\s/;//空白符
+        var orgName = $("#orgName_Edit").val();
+        if (reg.test(orgName) === true || orgName == null || "" == (orgName)) {
+            layer.msg("名称不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var parkId = $("option:selected", "[id='parkId_Edit']").val();
+        if (reg.test(parkId) === true || parkId == null || "" == (parkId)) {
+            layer.msg("所属园区为必选项！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        var orgCode = $("#orgCode_Edit").val();
+        //验证手机号是否正常
+        if (reg.test(orgCode) === true || orgCode == null || "" == (orgCode)) {
+            layer.msg("编码不能为空或存在空格！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+  </script>
+</body>
+</html>

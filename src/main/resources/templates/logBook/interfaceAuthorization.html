@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>接口调用统计</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script  th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+
+    <style>
+        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+        .string { color: green; }
+        .number { color: darkorange; }
+        .boolean { color: blue; }
+        .null { color: magenta; }
+        .key { color: red; }
+    </style>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="interfaceAuthorization" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline">
+            <label class="layui-form-label">调用时间：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="creatTime" id="LAY-component-form-group-date" lay-verify="date"
+                       placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" readonly>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">接口授权名称：</label>
+            <div class="layui-input-inline">
+            <input type="text" name="interfaceName" id="interfaceName" placeholder="接口授权名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">调用状态：</label>
+            <div class="layui-input-inline">
+                <select name="status" lay-verify="required">
+                    <option value="">请选择</option>
+                    <option value="1">成功</option>
+                    <option value="2">异常</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="Search()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary" onclick="refreshService()">重置</button>
+    </div>
+</form>
+<div class="layui-fluid list-box">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                    </script>
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--查看弹框-->
+<div class="layui-row layui-popup" id="tab-chakan" style="display: none;">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="margin-left: 130px">传入参数</label>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label" style="margin-left: 260px">返回信息</label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline" style="margin-left: 10px" >
+                        <textarea style="width:390px;height: 600px" type="text" name="requestParameters" id="requestParameters" class="layui-textarea" readonly="true" disabled >
+                        </textarea>
+        </div>
+        <div class="layui-inline">
+                        <textarea  style="width:390px;height: 600px" type="text" name="exceptionInformation" id="exceptionInformation" class="layui-textarea" readonly="true" disabled >
+                        </textarea>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var callTime = "";
+    var interfaceName = "";
+    var callStatus = "";
+    $(function () {
+        data();
+    });
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    })
+
+    function data() {
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , layer = layui.layer
+                , laydate = layui.laydate
+                , form = layui.form
+                , table = layui.table;
+            form.render(null, 'component-form-group');
+            laydate.render({
+                elem: '#LAY-component-form-group-date'
+            });
+            table.render({
+                elem: '#test-table-operate',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url:basePath + '/InterfaceAuthorization/interfaceAuthorizationList'
+                , height: 'full-85'
+                , cols: [
+                    [
+                        {field: 'id', title: '序号', width: 80}
+                        , {field: 'interfaceName', title: '授权接口名称', width: 200}
+                        , {field: 'interfaceAddress', title: '接口地址', width: 500}
+                        , {field: 'interfaceType', title: '接口类型', width: 120}
+                       /* , {field: 'interfaceExpirationDate', title: '接口有效期', minwidth: 100}*/
+                        , {field: 'callTime', title: '调用时间', width: 200}
+                       /* , {field: 'callNumber', title: '调用次数', minwidth: 50}*/
+                        , {field: 'callStatuss', title: '调用状态', width: 150}
+                        , {field: 'userName', title: '用户名称', width: 150}
+                        ,{field: 'barDemo',align: 'center', title: '常用操作', toolbar: '#barDemo',fixed: 'right'}
+                    ]
+                ],
+                where: {callTime: callTime, status:callStatus,interfaceName: interfaceName},
+                page: true,
+                limits: [20, 40],
+                limit: 20
+            });
+        });
+    }
+
+
+    function Search() {
+        callTime = $("#LAY-component-form-group-date").val();
+        callStatus = $("select[name='status']").val();
+        interfaceName = $("#interfaceName").val();
+        data();
+    }
+
+    function refreshService() {
+        callTime = "";
+        callStatus = "";
+        interfaceName = "";
+        data();
+    }
+</script>
+<script>
+    // 实例化表单,让表单上面的数据显示
+    layui.use(['table', 'element', 'layer', 'form'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer        //弹层
+            , table = layui.table
+            , form = layui.form
+        //表格
+        table.render();
+        //监听工具条
+        table.on('tool(test-table-operate)', function (obj) {
+            //注：tool是工具条事件名，test-table-operate是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+
+            if (layEvent === 'detail') {
+                layer.open({
+                    type: 1
+                    , title: '查看接口调用信息'
+                    , area: ["850px", "660px"]
+//                    ,closeBtn:false
+                    , btn: '确定'
+                    , btnAlign: 'center'
+                    , content: $("#tab-chakan")
+                });
+               /* $("#requestParameters").val(data.requestParameters);
+                $("#exceptionInformation").val(data.exceptionInformation);*/
+                var json1=data.requestParameters;
+                var json2=data.exceptionInformation;
+                if(json1=="{}"){
+                    $('#requestParameters').val("未传参");
+                }else {
+                    $('#requestParameters').val(parse1(json1));
+                }
+                $('#exceptionInformation').val(parse1(json2));
+            }
+        })
+    })
+
+    function parse1(str) {
+        return JSON.stringify(JSON.parse(str), null, "\t");
+    }
+
+</script>
+</body>
+</html>

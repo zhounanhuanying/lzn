@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bfdb.mapper.PermissionMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.Permission">
+        <id column="permission_id" jdbcType="INTEGER" property="permissionId"/>
+        <result column="permission_name" jdbcType="VARCHAR" property="permissionName"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="pid" jdbcType="INTEGER" property="pid"/>
+        <result column="permission_code" jdbcType="VARCHAR" property="permissionCode"/>
+        <result column="permission_type" jdbcType="VARCHAR" property="permissionType"/>
+        <result column="visitor_url" jdbcType="VARCHAR" property="visitorUrl"/>
+        <result column="icon_address" jdbcType="VARCHAR" property="iconAddress"/>
+        <result column="popup_way" jdbcType="VARCHAR" property="popupWay"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+            permission_id, permission_name, description, pid, permission_code, permission_type,
+            visitor_url, popup_way, icon_address, `definition`
+        </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from permission
+        where permission_id = #{permissionId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from permission
+        where permission_id = #{permissionId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.bfdb.entity.Permission">
+        insert into permission (permission_id, permission_name, description
+        )
+        values (#{permissionId,jdbcType=INTEGER}, #{permissionName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.bfdb.entity.Permission">
+        insert into permission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="permissionId != null">
+                permission_id,
+            </if>
+            <if test="permissionName != null">
+                permission_name,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="permissionId != null">
+                #{permissionId,jdbcType=INTEGER},
+            </if>
+            <if test="permissionName != null">
+                #{permissionName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.Permission">
+        update permission
+        <set>
+            <if test="permissionName != null">
+                permission_name = #{permissionName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where permission_id = #{permissionId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.Permission">
+        update permission
+        set permission_name = #{permissionName,jdbcType=VARCHAR},
+        description = #{description,jdbcType=VARCHAR}
+        where permission_id = #{permissionId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectAllPermission" resultType="com.bfdb.entity.Permission">
+       SELECT permission_id,permission_name,description,pid FROM permission limit #{page},#{limit}
+    </select>
+    <select id="dataCount" resultType="int">
+        SELECT COUNT(*)FROM permission
+    </select>
+    <!--根据标识查询web页面权限-->
+    <select id="selectAllPermissionList" resultType="com.bfdb.entity.Permission">
+        SELECT permission_id,permission_name,description,pid FROM permission where definition &lt;&gt;  '2'
+    </select>
+
+    <!--查询Permission的集合 主要用于页面展示-->
+    <select id="findPermissionAll" resultType="com.bfdb.entity.Permission">
+        SELECT permission_id,permission_name,description,pid,visitor_url,icon_address,permission_type FROM permission  where  definition  &lt;&gt;  '3'
+    </select>
+
+    <select id="selectByPermission" resultType="com.bfdb.entity.Permission">
+        SELECT permission_id,permission_name,description,pid,visitor_url,definition,permission_type FROM permission where  definition='1'
+--         SELECT permission_id,permission_name,description,pid,visitor_url,definition FROM permission where pid &lt;&gt;0 and definition='1'
+    </select>
+    <!--根据当前用户id以及请求url查询当前用户是否有接口管理的相关权限-->
+    <select id="selectByPermissionRole" resultType="com.bfdb.entity.Permission" parameterType="map">
+    SELECT	p.`permission_id`,	p.`permission_name`,	p.`pid`,	p.`visitor_url` , p.definition FROM
+	data_permission p
+	 LEFT JOIN role_permission rp ON p.permission_id = rp.permission_id
+    WHERE	rp.role_id IN (SELECT r.role_id	FROM	role r
+    	  LEFT JOIN user_role ur ON r.role_id = ur.role_id
+		WHERE	 ur.user_id = #{userId,jdbcType=INTEGER}	and  p.`visitor_url` = #{visitorUrl,jdbcType=VARCHAR})
+</select>
+
+    <!--根据用户id、url路径、所在部门查询权限信息-->
+    <select id="selectDepartments"  parameterType="map" resultMap="BaseResultMap">
+      select	p.popup_way,	p.`permission_id`,	p.`permission_name`,	p.`pid`,	p.`visitor_url`,	p.definition
+        from	data_permission p
+       left join role_permission rp on p.permission_id = rp.permission_id
+     where	rp.role_id in (
+		select	r.role_id		from role  r
+		left join user_role ur on r.role_id = ur.role_id
+		where
+		ur.user_id =#{userId,jdbcType=INTEGER}  and  p.`visitor_url` = #{visitorUrl,jdbcType=VARCHAR}  and p.popup_way=#{popupWay,jdbcType=VARCHAR}) group by p.`permission_id`
+    </select>
+
+    <!--获取人员接口管理-->
+    <!--<select id="selectPermissionInterface" resultType="com.bfdb.entity.Permission">-->
+    <!--SELECT	p.`permission_id`,	p.`permission_name`,	p.`pid`,	p.`visitor_url` , p.definition FROM-->
+    <!--permission p    WHERE  p.pid=4-->
+    <!--</select>-->
+
+</mapper>

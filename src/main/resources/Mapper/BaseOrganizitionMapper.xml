@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bfdb.mapper.BaseOrganizitionMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.BaseOrganizition">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="org_code" jdbcType="VARCHAR" property="orgCode" />
+        <result column="org_name" jdbcType="VARCHAR" property="orgName" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="org_type" jdbcType="INTEGER" property="orgType" />
+        <result column="org_content" jdbcType="VARCHAR" property="orgContent" />
+        <result column="pcode" jdbcType="VARCHAR" property="pcode" />
+        <result column="pid" jdbcType="VARCHAR" property="pid" />
+        <result column="parkid" jdbcType="VARCHAR" property="parkId" />
+        <result column="personliable" jdbcType="VARCHAR" property="personLiable" />
+        <result column="parentids" jdbcType="VARCHAR" property="parentIds" />
+        <result column="createtime" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id,org_code,org_name,org_type,org_content,pcode,pid,parkid,personliable,parentids,createtime,updatetime
+    </sql>
+
+    <select id="dataCount" resultType="int" >
+        SELECT count(*) FROM base_organizition
+    </select>
+
+    <select id="getBaseOrganizitionList" parameterType="String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM base_organizition
+        <where>
+            <if test='parkId != "" and parkId != null'>
+                parkid = #{parkId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryOrganizitionById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"></include>
+         FROM base_organizition
+        <where>
+            id = #{orgId,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="queryOrgNameById" resultType="String" parameterType="java.lang.String">
+        SELECT org_name FROM base_organizition
+        <where>
+            id = #{orgId,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="queryPorgNameByName" resultType="String" parameterType="java.lang.String">
+        SELECT org_name
+            FROM base_organizition
+            WHERE id =
+            (SELECT pid FROM base_organizition
+                <where>
+                    <if test="orgName != null || orgName != ''">
+                        org_name = #{orgName,jdbcType=VARCHAR}
+                    </if>
+                </where>)
+    </select>
+
+    <select id="queryBaseOrganizition" resultMap="BaseResultMap" >
+        SELECT id,org_name FROM base_organizition
+    </select>
+
+    <select id="queryBaseOrganizitionAll" parameterType="String" resultMap="BaseResultMap" >
+        SELECT id,org_code,org_name as name,org_type,org_content,pcode,pid,parkid,personliable,parentids,createtime,updatetime
+        FROM base_organizition
+        <where>
+            <if test='parkId != "" and parkId != null'>
+                parkid = #{parkId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBaseOrganizitionByOrgCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT * FROM base_organizition
+        <where>
+                org_code = #{orgCode,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="queryBaseOrganizitionByOrgCodeCount" resultType="int" parameterType="java.lang.String">
+        SELECT count(*) FROM base_organizition
+        <where>
+            org_code = #{orgCode,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="queryBaseOrganizitionById" parameterType="java.lang.Integer" resultType="int">
+        SELECT * FROM base_organizition
+        <where>
+                id = #{id,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="queryBaseOrganizitionByPid" resultType="String" parameterType="java.lang.String">
+        SELECT pid FROM base_organizition
+        <where>
+            id = #{pid,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="getOrganizitionById" resultType="String" parameterType="java.lang.String">
+        SELECT pid FROM base_organizition
+        <where>
+            id = #{organizitionId,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <select id="queryBaseOrganizitionByOrgType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM base_organizition
+        <where>
+            org_type = #{orgType,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <insert id="insertBaseOrganizition" keyProperty="id" parameterType="com.bfdb.entity.BaseOrganizition" useGeneratedKeys="true">
+        insert into base_organizition
+        (org_code,org_name,org_type,org_content,pcode,pid,parkid,personliable,parentids,createtime,updatetime)
+        values (#{orgCode,jdbcType=VARCHAR},#{orgName,jdbcType=VARCHAR},#{orgType,jdbcType=INTEGER},#{orgContent,jdbcType=VARCHAR},
+        #{pcode,jdbcType=VARCHAR},#{pid,jdbcType=VARCHAR},#{parkId,jdbcType=VARCHAR},#{personLiable,jdbcType=VARCHAR},
+        #{parentIds,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateBaseOrganizitionById" parameterType="com.bfdb.entity.BaseOrganizition">
+        update base_organizition
+        <set>
+            <if test="orgCode != null">
+                org_code = #{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                org_name = #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgType != null">
+                org_type = #{orgType,jdbcType=INTEGER},
+            </if>
+            <if test="orgContent != null">
+                org_content = #{orgContent,jdbcType=VARCHAR},
+            </if>
+            <if test="pcode != null">
+                pcode = #{pcode,jdbcType=VARCHAR},
+            </if>
+            <if test="pid != null">
+                pid = #{pid,jdbcType=VARCHAR},
+            </if>
+            <if test="parkId != null">
+                parkid = #{parkId,jdbcType=VARCHAR},
+            </if>
+            <if test="personLiable != null">
+                personliable = #{personLiable,jdbcType=VARCHAR},
+            </if>
+            <if test="parentIds != null">
+                parentids = #{parentIds,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                createtime = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                updatetime = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteBaseOrganizitionById" parameterType="java.lang.Integer">
+        delete from base_organizition where id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

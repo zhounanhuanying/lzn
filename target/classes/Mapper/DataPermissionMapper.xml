@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.DataPermissionMapper">
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.DataPermission">
+        <id column="permission_id" jdbcType="INTEGER" property="permissionId"/>
+        <result column="permission_name" jdbcType="VARCHAR" property="permissionName"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="pid" jdbcType="INTEGER" property="pid"/>
+        <result column="permission_code" jdbcType="VARCHAR" property="permissionCode"/>
+        <result column="permission_type" jdbcType="INTEGER" property="permissionType"/>
+        <result column="visitor_url" jdbcType="VARCHAR" property="visitorUrl"/>
+        <result column="popup_way" jdbcType="VARCHAR" property="popupWay"/>
+        <result column="icon_address" jdbcType="VARCHAR" property="iconAddress"/>
+        <result column="definition" jdbcType="VARCHAR" property="definition"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    permission_id, permission_name, description, pid, permission_code, permission_type, 
+    visitor_url, popup_way, icon_address, `definition`
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from data_permission
+        where permission_id = #{permissionId,jdbcType=INTEGER}
+    </select>
+
+    <!--查询数据权限-->
+    <select id="selectDataPermissionList" resultType="com.bfdb.entity.DataPermission">
+        select
+        <include refid="Base_Column_List"/>
+        from data_permission
+    </select>
+
+    <!--根据用户id查询部门信息  数据权限 -->
+    <select id="selectByPopupWay" parameterType="map" resultMap="BaseResultMap">
+  select	p.popup_way,	p.`permission_id`,	p.`permission_name`,	p.`pid`,	p.`visitor_url`,	p.definition
+    from	data_permission p
+     left join role_permission rp on p.permission_id = rp.permission_id
+     where	rp.role_id in (
+		select	r.role_id		from	role r		left join user_role ur on r.role_id = ur.role_id
+		where			ur.user_id = #{userId,jdbcType=INTEGER}  and  p.`visitor_url` = #{visitorUrl,jdbcType=VARCHAR}) and rp.web_data_permission=0
+</select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from data_permission
+    where permission_id = #{permissionId,jdbcType=INTEGER}
+  </delete>
+    <!--删除数据权限-->
+    <delete id="deleteBydataPermission" parameterType="java.lang.String">
+          delete from data_permission  where popup_way = #{popupWay,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.bfdb.entity.DataPermission">
+    insert into data_permission (permission_id, permission_name, description, 
+      pid, permission_code, permission_type, 
+      visitor_url, popup_way, icon_address, 
+      `definition`)
+    values (#{permissionId,jdbcType=INTEGER}, #{permissionName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{pid,jdbcType=INTEGER}, #{permissionCode,jdbcType=VARCHAR}, #{permissionType,jdbcType=INTEGER}, 
+      #{visitorUrl,jdbcType=VARCHAR}, #{popupWay,jdbcType=VARCHAR}, #{iconAddress,jdbcType=VARCHAR},
+      #{definition,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.bfdb.entity.DataPermission" keyColumn="permission_id"
+            keyProperty="permissionId" useGeneratedKeys="true">
+        insert into data_permission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="permissionId != null">
+                permission_id,
+            </if>
+            <if test="permissionName != null">
+                permission_name,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="permissionCode != null">
+                permission_code,
+            </if>
+            <if test="permissionType != null">
+                permission_type,
+            </if>
+            <if test="visitorUrl != null">
+                visitor_url,
+            </if>
+            <if test="popupWay != null">
+                popup_way,
+            </if>
+            <if test="iconAddress != null">
+                icon_address,
+            </if>
+            <if test="definition != null">
+                `definition`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="permissionId != null">
+                #{permissionId,jdbcType=INTEGER},
+            </if>
+            <if test="permissionName != null">
+                #{permissionName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="pid != null">
+                #{pid,jdbcType=INTEGER},
+            </if>
+            <if test="permissionCode != null">
+                #{permissionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionType != null">
+                #{permissionType,jdbcType=INTEGER},
+            </if>
+            <if test="visitorUrl != null">
+                #{visitorUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="popupWay != null">
+                #{popupWay,jdbcType=VARCHAR},
+            </if>
+            <if test="iconAddress != null">
+                #{iconAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="definition != null">
+                #{definition,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bfdb.entity.DataPermission">
+        update data_permission
+        <set>
+            <if test="permissionName != null">
+                permission_name = #{permissionName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="pid != null">
+                pid = #{pid,jdbcType=INTEGER},
+            </if>
+            <if test="permissionCode != null">
+                permission_code = #{permissionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionType != null">
+                permission_type = #{permissionType,jdbcType=INTEGER},
+            </if>
+            <if test="visitorUrl != null">
+                visitor_url = #{visitorUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="popupWay != null">
+                popup_way = #{popupWay,jdbcType=VARCHAR},
+            </if>
+            <if test="iconAddress != null">
+                icon_address = #{iconAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="definition != null">
+                `definition` = #{definition,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where permission_id = #{permissionId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bfdb.entity.DataPermission">
+    update data_permission
+    set permission_name = #{permissionName,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      permission_code = #{permissionCode,jdbcType=VARCHAR},
+      permission_type = #{permissionType,jdbcType=INTEGER},
+      visitor_url = #{visitorUrl,jdbcType=VARCHAR},
+      popup_way = #{popupWay,jdbcType=VARCHAR},
+      icon_address = #{iconAddress,jdbcType=VARCHAR},
+      `definition` = #{definition,jdbcType=VARCHAR}
+    where permission_id = #{permissionId,jdbcType=INTEGER}
+  </update>
+</mapper>

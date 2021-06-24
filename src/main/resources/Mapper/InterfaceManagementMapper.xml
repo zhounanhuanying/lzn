@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bfdb.mapper.InterfaceManagementMapper">
+
+    <resultMap id="BaseResultMap" type="com.bfdb.entity.PersonTable">
+        <id column="person_id" jdbcType="INTEGER" property="personId"/>
+        <result column="person_name" jdbcType="VARCHAR" property="personName"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="identityNo" jdbcType="VARCHAR" property="identityNo"/>
+        <result column="birthday" jdbcType="VARCHAR" property="birthday"/>
+        <result column="residentialAddress" jdbcType="VARCHAR" property="residentialAddress"/>
+        <result column="ethnicity" jdbcType="VARCHAR" property="ethnicity"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="identication_info" jdbcType="VARCHAR" property="identicationInfo"/>
+        <result column="student_level" jdbcType="VARCHAR" property="studentLevel"/>
+        <result column="student_levels" jdbcType="VARCHAR" property="studentLevels"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="grades" jdbcType="VARCHAR" property="grades"/>
+        <result column="departments" jdbcType="VARCHAR" property="departments"/>
+        <result column="departmentss" jdbcType="VARCHAR" property="departmentss"/>
+        <result column="identity_type_code" jdbcType="VARCHAR" property="identityTypeCode"/>
+        <result column="out_person_infomation" jdbcType="VARCHAR" property="outPersonInfomation"/>
+        <result column="person_code" jdbcType="VARCHAR" property="personCode"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="is_deleted" jdbcType="INTEGER" property="isDeleted"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="genders" jdbcType="VARCHAR" property="genders"/>
+    </resultMap>
+
+    <resultMap id="FaceResultMap" type="com.bfdb.entity.PersonFaceInfomationTable">
+        <id column="id" property="id"></id>
+        <result column="person_id" property="personId"></result>
+        <result column="face_address" property="faceAddress"></result>
+        <result column="campus_card_address" property="campusCardAddress"></result>
+        <result column="idcardImage" property="idcardImage"></result>
+        <result column="faceImage" property="faceImage"></result>
+        <result column="data_source" property="dataSource"></result>
+        <result column="photo_level" property="photoLevel"></result>
+    </resultMap>
+
+    <!--查询未删除的人员集合信息-->
+    <select id="queryPersonTableALLList" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+        person_id, person_name,
+        gender,
+        (CASE gender WHEN '1' THEN '男'
+        WHEN '0' THEN '女' ELSE ' ' END ) AS genders,identityNo,birthday,residentialAddress,ethnicity,
+        telephone, identication_info, student_level AS student_levels,student_level, grade AS grades,grade,
+        departments as departmentss, departments,identity_type_code, out_person_infomation,
+        person_code, create_time, modify_time,is_deleted, description
+        FROM
+        persontable
+        <where>
+            AND is_deleted=1
+--             and create_time BETWEEN DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00') AND DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments != null and departments !=''">
+                    AND departments =#{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="personCode != null and personCode !=''">
+                    AND person_code =#{personCode,jdbcType=VARCHAR}
+                </if>
+                <if test="departmentsarr != null and departmentsarr !=''">
+                    AND departments in
+                    <foreach item="item" index="index" collection="departmentsarr" open="("  close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time desc LIMIT #{page},#{limit}
+    </select>
+    <!--查询未删除的人员条数-->
+    <select id="dataCountALL" parameterType="com.bfdb.entity.PersonTable" resultType="int">
+        SELECT COUNT(person_id) FROM persontable
+        <where>
+            AND is_deleted=1
+            <if test="_parameter != null">
+                <if test="personName!=null and personName!=''">
+                    AND person_name LIKE CONCAT('%',#{personName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="identicationInfo!=null and identicationInfo!=''">
+                    AND identication_info =#{identicationInfo,jdbcType=VARCHAR}
+                </if>
+                <if test="departments != null and departments !=''">
+                    AND departments = #{departments,jdbcType=VARCHAR}
+                </if>
+                <if test="personCode != null and personCode !=''">
+                    AND person_code =#{personCode,jdbcType=VARCHAR}
+                </if>
+                <if test="departmentsarr != null and departmentsarr !=''">
+                    AND departments in
+                    <foreach item="item" index="index" collection="departmentsarr" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--根据personid查询人脸图片信息-->
+    <select id="queryPersonFaceInfomationTableByPersonId" resultMap="FaceResultMap" parameterType="int">
+        select * from person_face_infomation_table where person_id=#{id}
+    </select>
+
+    <!--根据字典类型和code获取名称-->
+    <select id="queryDicNameByDicTypeAndDicCode" parameterType="com.bfdb.entity.DataDictionary" resultType="com.bfdb.entity.DataDictionary">
+        select * from datadictionary where dic_type=#{dicType} and dic_code=#{dicCode}
+    </select>
+    <!--根据personCode查询用户信息-->
+    <select id="selectPersonTable" resultType="com.bfdb.entity.PersonTable">
+        select person_id from persontable where person_code=#{personCode,jdbcType=VARCHAR}
+    </select>
+
+    <!--根据IdentityTypeCode查询用户信息-->
+    <select id="selectPersonTableByIdentityTypeCode" resultType="com.bfdb.entity.PersonTable">
+        select person_id,person_code from persontable where identity_type_code=#{identityTypeCode,jdbcType=VARCHAR}
+    </select>
+    <!--教工号或学号或一卡通号查重-->
+    <select id="selectByIdentityTypeCode" parameterType="com.bfdb.entity.PersonTable"  resultMap="BaseResultMap">
+        select identity_type_code,person_code  from persontable where identity_type_code=#{identityTypeCode,jdbcType=VARCHAR} and is_deleted='1'
+    </select>
+    <!--身份证号查重-->
+    <select id="selectByIdentityNo"  parameterType="com.bfdb.entity.PersonTable"  resultMap="BaseResultMap">
+        select identityNo  from persontable where identityNo=#{identityNo,jdbcType=VARCHAR}  and is_deleted='1'
+    </select>
+
+    <!-- 批量新增人员信息-->
+    <insert id="insertPersonTableList" parameterType="java.util.List" keyColumn="person_id" keyProperty="personId"
+            useGeneratedKeys="true">
+        insert into persontable (person_name, gender,identityNo,birthday,residentialAddress,ethnicity,
+        telephone, identication_info, student_level,
+        grade, departments, identity_type_code,
+        out_person_infomation, person_code, create_time,
+        modify_time, is_deleted,description)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.personName},
+            #{item.gender},
+            #{item.identityNo},
+            #{item.birthday},
+            #{item.residentialAddress},
+            #{item.ethnicity},
+            #{item.telephone},
+            #{item.identicationInfo},
+            #{item.studentLevel},
+            #{item.grade},
+            #{item.departments},
+            #{item.identityTypeCode},
+            #{item.outPersonInfomation},
+            #{item.personCode},
+            #{item.createTime},
+            #{item.modifyTime},
+            #{item.isDeleted},
+            #{item.description}
+            )
+        </foreach>
+    </insert>
+    <!--修改人员信息-->
+    <!--<update id="updatePersonTableList" parameterType="com.bfdb.entity.PersonTable">-->
+        <!--update persontable-->
+        <!--<set>-->
+            <!--&lt;!&ndash;<if test="personId != null">&ndash;&gt;-->
+                <!--&lt;!&ndash;person_id = #{personId,jdbcType=INTEGER},&ndash;&gt;-->
+            <!--&lt;!&ndash;</if>&ndash;&gt;-->
+            <!--<if test="personName != null">-->
+                <!--person_name = #{personName,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="gender != null">-->
+                <!--gender = #{gender,jdbcType=INTEGER},-->
+            <!--</if>-->
+            <!--<if test="identityNo != null">-->
+                <!--identityNo = #{identityNo,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="birthday != null">-->
+                <!--birthday = #{birthday,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="residentialAddress != null">-->
+                <!--residentialAddress = #{residentialAddress,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="ethnicity != null">-->
+                <!--ethnicity = #{ethnicity,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="telephone != null">-->
+                <!--telephone = #{telephone,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="identicationInfo != null">-->
+                <!--identication_info = #{identicationInfo,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="studentLevel != null">-->
+                <!--student_level = #{studentLevel,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="grade != null">-->
+                <!--grade = #{grade,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="departments != null">-->
+                <!--departments = #{departments,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="identityTypeCode != null">-->
+                <!--identity_type_code = #{identityTypeCode,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="outPersonInfomation != null">-->
+                <!--out_person_infomation = #{outPersonInfomation,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--&lt;!&ndash;<if test="personCode != null">&ndash;&gt;-->
+                <!--&lt;!&ndash;person_code = #{personCode,jdbcType=VARCHAR},&ndash;&gt;-->
+            <!--&lt;!&ndash;</if>&ndash;&gt;-->
+            <!--<if test="createTime != null">-->
+                <!--create_time = #{createTime,jdbcType=TIMESTAMP},-->
+            <!--</if>-->
+            <!--<if test="modifyTime != null">-->
+                <!--modify_time = #{modifyTime,jdbcType=TIMESTAMP},-->
+            <!--</if>-->
+            <!--<if test="isDeleted != null">-->
+                <!--is_deleted = #{isDeleted,jdbcType=INTEGER},-->
+            <!--</if>-->
+            <!--<if test="description != null">-->
+                <!--description = #{description,jdbcType=VARCHAR},-->
+            <!--</if>-->
+        <!--</set>-->
+        <!--where person_code = #{personCode,jdbcType=VARCHAR}-->
+    <!--</update>-->
+
+
+    <!-- 批量修改人员信息 -->
+    <update id="updatePersonTableList" parameterType="java.util.List">
+        <foreach collection="personTableList" item="label" index="index" open="" close="" separator=";">
+            update persontable
+            <set>
+                <if test="label.personName != null and label.personName != ''">
+                    person_name = #{label.personName,jdbcType=VARCHAR},
+                </if>
+                <if test="label.gender != null and label.gender != ''">
+                    gender = #{label.gender,jdbcType=INTEGER},
+                </if>
+                <if test="label.identityNo != null and label.identityNo != ''">
+                    identityNo = #{label.identityNo,jdbcType=VARCHAR},
+                </if>
+                <if test="label.birthday != null and label.birthday != ''">
+                    birthday = #{label.birthday,jdbcType=VARCHAR},
+                </if>
+                <if test="label.residentialAddress != null and label.residentialAddress != ''">
+                    residentialAddress = #{label.residentialAddress,jdbcType=VARCHAR},
+                </if>
+                <if test="label.ethnicity != null and label.ethnicity != ''">
+                    ethnicity = #{label.ethnicity,jdbcType=VARCHAR},
+                </if>
+                <if test="label.telephone != null and label.telephone != ''">
+                    telephone = #{label.telephone,jdbcType=VARCHAR},
+                </if>
+                <if test="label.identicationInfo != null and label.identicationInfo != ''">
+                    identication_info = #{label.identicationInfo,jdbcType=VARCHAR},
+                </if>
+                <if test="label.studentLevel != null">
+                    student_level = #{label.studentLevel,jdbcType=VARCHAR},
+                </if>
+                <if test="label.grade != null">
+                    grade = #{label.grade,jdbcType=VARCHAR},
+                </if>
+                <if test="label.departments != null and label.departments != ''">
+                    departments = #{label.departments,jdbcType=VARCHAR},
+                </if>
+                <if test="label.identityTypeCode != null and label.identityTypeCode != ''">
+                    identity_type_code = #{label.identityTypeCode,jdbcType=VARCHAR},
+                </if>
+                <if test="label.outPersonInfomation != null and label.outPersonInfomation != ''">
+                    out_person_infomation = #{label.outPersonInfomation,jdbcType=VARCHAR},
+                </if>
+                <if test="label.createTime != null">
+                    create_time = #{label.createTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="label.modifyTime != null">
+                    modify_time = #{label.modifyTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="label.isDeleted != null and label.isDeleted != ''">
+                    is_deleted = #{label.isDeleted,jdbcType=INTEGER},
+                </if>
+                <if test="label.description != null and label.description != ''">
+                    description = #{label.description,jdbcType=VARCHAR},
+                </if>
+            </set>
+            <where>
+               person_code = #{label.personCode,jdbcType=VARCHAR}
+            </where>
+        </foreach>
+    </update>
+
+    <!-- 根据教工号批量修改人员信息 -->
+    <update id="updatePersonTableListByidentityTypeCode" parameterType="java.util.List">
+        <foreach collection="personTableList" item="label" index="index" open="" close="" separator=";">
+            update persontable
+            <set>
+                <if test="label.personName != null and label.personName != ''">
+                    person_name = #{label.personName,jdbcType=VARCHAR},
+                </if>
+                <if test="label.gender != null and label.gender != ''">
+                    gender = #{label.gender,jdbcType=INTEGER},
+                </if>
+                <if test="label.identityNo != null and label.identityNo != ''">
+                    identityNo = #{label.identityNo,jdbcType=VARCHAR},
+                </if>
+                <if test="label.birthday != null and label.birthday != ''">
+                    birthday = #{label.birthday,jdbcType=VARCHAR},
+                </if>
+                <if test="label.residentialAddress != null and label.residentialAddress != ''">
+                    residentialAddress = #{label.residentialAddress,jdbcType=VARCHAR},
+                </if>
+                <if test="label.ethnicity != null and label.ethnicity != ''">
+                    ethnicity = #{label.ethnicity,jdbcType=VARCHAR},
+                </if>
+                <if test="label.telephone != null and label.telephone != ''">
+                    telephone = #{label.telephone,jdbcType=VARCHAR},
+                </if>
+                <if test="label.identicationInfo != null and label.identicationInfo != ''">
+                    identication_info = #{label.identicationInfo,jdbcType=VARCHAR},
+                </if>
+                <if test="label.studentLevel != null">
+                    student_level = #{label.studentLevel,jdbcType=VARCHAR},
+                </if>
+                <if test="label.grade != null">
+                    grade = #{label.grade,jdbcType=VARCHAR},
+                </if>
+                <if test="label.departments != null and label.departments != ''">
+                    departments = #{label.departments,jdbcType=VARCHAR},
+                </if>
+                <if test="label.outPersonInfomation != null and label.outPersonInfomation != ''">
+                    out_person_infomation = #{label.outPersonInfomation,jdbcType=VARCHAR},
+                </if>
+<!--                <if test="label.createTime != null">-->
+<!--                    create_time = #{label.createTime,jdbcType=TIMESTAMP},-->
+<!--                </if>-->
+                <if test="label.modifyTime != null">
+                    modify_time = #{label.modifyTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="label.isDeleted != null and label.isDeleted != ''">
+                    is_deleted = #{label.isDeleted,jdbcType=INTEGER},
+                </if>
+                <if test="label.description != null and label.description != ''">
+                    description = #{label.description,jdbcType=VARCHAR},
+                </if>
+            </set>
+            <where>
+                identity_type_code = #{label.identityTypeCode,jdbcType=VARCHAR}
+            </where>
+        </foreach>
+    </update>
+</mapper>

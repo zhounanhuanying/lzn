@@ -1,0 +1,268 @@
+﻿input,button,select,textarea{
+    color:#666;
+}
+.layui-layer-page .layui-layer-btn{
+    border-top: 1px solid #ddd;
+    padding-top: 3px !important;
+    /*padding-bottom:10px;*/
+}
+
+.layui-popup .layui-textarea{
+    min-height: inherit;
+}
+.layui-popup .layui-form{
+    width: 300px;
+    margin-left: 20px;
+    float: left;
+}
+.layui-popup .layui-form-item{
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+.layui-popup .layui-form-label{
+    padding:0;
+    width:auto;
+    line-height: 29px;
+    min-width: 70px;
+    text-align: left;
+}
+.layui-popup .layui-inline{
+    margin-bottom:0;
+    margin-right: 0;
+}
+.layui-popup .inline-margin-right{
+    /*margin-right: 55px;*/
+}
+.layui-popup .layui-input-inline{
+    width: 197px;
+    margin-right:0;
+}
+.layui-popup .layui-input{
+    height: 29px;
+}
+.layui-popup .layui-textarea{
+    height:60px;
+    resize: none;
+}
+.layui-popup .layui-input-block{
+    margin-left: 78px;
+    width: 197px;
+}
+.layui-popup .layui-form-radio{
+    line-height: 33px;
+    margin:0;
+}
+.layui-popup .layui-form-radio>i{
+    font-size: 16px;
+}
+.asterisk{
+    float: left;
+    width: 5px;
+    height: 20px;
+    margin-top: 6px;
+    margin-right: 5px;
+    color: red;
+}
+.border-style{
+    border: 1px solid rgba(255, 0, 0, 0.15);
+    background: rgba(255, 0, 0, 0.08);
+}
+a.btn-check{
+    padding: 0 10px !important;
+    color: #fff !important;
+}
+.tips{
+    position: absolute;
+    left: 290px;
+    width: 120px;
+    height: 29px;
+    line-height: 29px;
+    text-align: center;
+    color: #333;
+    background: #f7f3c9;
+    border: 1px solid #f9d492;
+    border-radius: 3px;
+    z-index: 1;
+}
+.tips:after,.tips:before{
+    bottom: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.tips:after {
+    border-color: rgba(136, 183, 213, 0);
+    border-right-color: #f7f3c9;
+    border-width: 7px;
+    left: -14px;
+    top: 8px;
+    margin-left: 0;
+}
+.tips:before {
+    border-color: rgba(194, 225, 245, 0);
+    border-right-color: #f9d492;
+    border-width: 8px;
+    left: -14px;
+    top: 7px;
+    margin-left: -2px;
+}
+.ztree-box{
+    float: left;
+    margin-left: 50px;
+    width: 200px;
+    height: 288px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    overflow-y: auto;
+}
+.person-img{
+    width: 600px !important;
+    height: 300px;
+    /*border: 1px solid #ddd;*/
+    /*display: table-cell;*/
+    /*vertical-align: middle;*/
+    /*text-align: center;*/
+    top: 10px;
+    left: 0px;
+}
+.person-img img{
+    width: 140px;
+    height:150px;
+}
+.layui-popup .textarea-line{
+    width: 540px;
+}
+.layui-popup .inline-margin-no{
+    margin-right:0;
+}
+.layui-popup .textarea-inline{
+    width:539px;
+}
+
+
+/*小弹窗*/
+.layui-popup .small-form{
+    width: 275px;
+    margin: 0 auto;
+    float: none;
+}
+.layui-popup .small-form1{
+    width: 295px;
+    margin: 0 auto;
+    float: none;
+}
+.layui-popup .small-form1 .layui-form-label{
+    min-width:85px;
+}
+
+/*大弹窗*/
+.layui-popup .large-form{
+    width:620px;
+}
+.layui-popup .large-form .inline-margin-right{
+    margin-right: 55px;
+}
+
+.layui-popup .large-form1{
+    width:630px;
+}
+.layui-popup .large-form1 .layui-form-label{
+    min-width: 85px;
+}
+.layui-popup .large-form1 .inline-margin-right{
+    margin-right: 55px;
+}
+
+/*中弹窗*/
+.layui-popup .middle-form{
+    width:620px;
+    margin: 0 auto;
+    float: none;
+}
+.layui-popup .middle-form .inline-margin-right{
+    margin-right: 55px;
+}
+.upload {
+    height: 140px;
+    width: 150px;
+    background: #eee url(../images/add.png) no-repeat center center;
+    background-size: 30px;
+    border: none;
+    cursor: pointer;
+    margin:5px 0 0 0;
+}
+/*label宽度*/
+.label-width-reset{
+    width: 90px;
+}
+/*input偏移量*/
+.input-margin-reset{
+    margin-left: 120px;
+}
+/*必填项*/
+.layui-form-required:before {
+    content: "*";
+    display: inline-block;
+    font-family: SimSun;
+    margin-right: 4px;
+    font-size: 14px;
+    line-height: 1;
+    color: #ed4014;
+}
+/*layui弹窗样式问题*/
+div.layui-layer-page .layui-layer-content{
+    overflow: visible;
+}
+div.layui-layer-title{
+    color:#fff;
+    background-color: #197ac1;
+}
+a.layui-layer-ico{
+    background: none;
+    color: #fff;
+    position: relative;
+}
+a.layui-layer-ico:before{
+       content: "";
+       width:15px;
+       height: 15px;
+       background: url(../images/popup_close.png) no-repeat;
+       background-size:100%;
+       position: absolute;
+       top:0;
+       right:0;
+}
+.popup-set .layui-form{
+    padding: 10px;
+}
+.popup-set .layui-form-item{
+    margin-bottom:10px;
+}
+.popup-set .layui-form-item:last-child{
+    margin-bottom: 0;
+}
+.popup-set .layui-textarea{
+    min-height: 50px;
+}
+
+/*添加角色*/
+.add-role-popup .layui-card{
+    box-shadow: none;
+}
+.add-role-popup .layui-card-body{
+    width: 478px;
+    margin: 0 auto;
+    padding:0;
+    overflow: hidden;
+}
+.add-role-popup .ztree-box{
+    width: 229px;
+    margin:0;
+    margin-right:15px;
+}
+.add-role-popup .ztree-box:last-child{
+    margin:0;
+}

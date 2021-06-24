@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>园区管理页面</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/style/admin.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/zTree/css/zTreeStyle/zTreeStyle.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/list_public.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/style/css/popup.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/zTree/js/jquery.ztree.all.min.js}"></script>
+    <!--自定义js 文件 主要为了token过期后跳转登陆页面-->
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <!--解决数据表格复选框位置不对-->
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            top: 35%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form search-form" action="" id="baseParkManagement" lay-filter="component-form-group">
+    <div class="layui-form-item screen_form">
+        <div class="layui-inline">
+            <label class="layui-form-label">园区名称：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="parkName" id="parkName" class="layui-input">
+            </div>
+        </div>
+        <button type="button" class="layui-btn test layui-btn-normal" onclick="serverSearch()">查询</button>
+        <button type="reset" class="layui-btn test layui-btn-primary" onclick="refreshService()">重置</button>
+    </div>
+</form>
+<div class="layui-fluid list-box">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container list-btn-group">
+                            <a class="layui-btn test icon-add" lay-event="getCheckData" onclick="addService()">添加</a>
+                            <a class="layui-btn test icon-revise" data-type="batchEdit" id="edit"
+                               onclick="editService()">修改</a>
+                            <a class="layui-btn test icon-delete" data-type="batchDelete" id="delete"
+                               onclick="deleteService()">删除</a>
+                        </div>
+                    </script>
+                    <script type="text/html" id="barGreenAndRed">
+                        {{#  if(d.subId != null){ }}
+                        <div><img src="../../Content/style/images/greep.png">
+                        </div>
+                        {{#  } else{ }}
+                        <div><img src="../../Content/style/images/red.png">
+                        </div>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                    </script>
+                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看园区弹窗-->
+<div class="layui-row layui-popup" id="tab-chakan" style="display: none;">
+    <div id="chakanPark" onclick="closeImg();"
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 200%;
+      height: 100%;
+      margin-left: -500px;
+      top: 0;
+      "
+    ></div>
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="chakan">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label layui-form-required">园区名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="parkName" id="chakan-parkName" class="layui-input" disabled>
+                    </div>
+                </div>
+            </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label layui-form-required">园区编码：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="parkCode" id="chakan-parkCode" class="layui-input" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label layui-form-required">园区类型：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="parkType" id="chakan-parkType" class="layui-input" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="width:100%">
+                        <label class="layui-form-label">备注说明：</label>
+                        <div class="layui-input-inline textarea-inline">
+                        <textarea type="text" name="content" id="chakan-content" style="width: 300px;" class="layui-textarea"
+                                  placeholder="不超过500字符" disabled></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-input-inline person-img" id="imgDiv"
+                     style="height:auto;margin-bottom:10px;width:92%!important">
+                    <div class="person_img">
+                        <label class="layui-form-label layui-form-required" style="line-height: 150px;">园区logo:</label>
+                        <div id="parkLogoImage">
+
+                        </div>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+<!--添加园区弹窗-->
+<div class="layui-row layui-popup" id="tab-add" style="display: none;">
+    <div id="PreviewImgAdd" onclick="closeAddImg();"
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 200%;
+      height: 100%;
+      margin-left: -500px;
+      top: 0;
+      "
+    ></div>
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="addStaff">
+            <input type="text" name="parkId" id="addParkId" class="layui-input" style="display: none">
+            <div id="tianshanServer">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">园区名称：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="parkName" id="Add-parkName" class="layui-input" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">园区编码：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="parkCode" id="Add-parkCode" class="layui-input" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">园区类型：</label>
+                        <div class="layui-input-inline">
+                            <select name="parkType" id="Add-parkType"
+                                    class="form-control" lay-filter="identicationInfo">
+                                <option value="">请选择</option>
+                                <option th:each="parkTypeList:${parkTypeList}"
+                                        th:value="${parkTypeList.dicCode}"
+                                        th:text="${parkTypeList.dicName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="width:50%">
+                        <label class="layui-form-label">备注说明：</label>
+                        <div class="layui-input-inline textarea-inline">
+                        <textarea type="text" name="content" id="Add-content" style="width: 300px;"
+                                  class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!--<div style="color: #ff0000">(提示：人脸照片至少上传一张，校园卡照片和人证校验照片非必填项)</div>-->
+                <!--            bugs审查-->
+                <div class="layui-input-inline person-img" id="addImg" style="height: 150px;width: 730px">
+                    <div id="faceAddImage" style="height: 150px;width: 730px">
+                        <label class="layui-form-label" style="line-height: 150px;">园区logo：</label>
+                        <div id="button5" style="display: inline">
+                            <button type="button" class="upload" id="test6"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--编辑园区弹窗-->
+<div class="layui-row layui-popup" id="tab-editService" style="display: none;">
+    <div id="PreviewImg" onclick="closeImg();"
+         style="
+      display: none;
+      position: fixed;
+      z-index: 99;
+      width: 200%;
+      height: 100%;
+      margin-left: -500px;
+      top: 0;
+      "
+    ></div>
+    <div>
+        <form class="layui-form small-form1" lay-filter="formTestFilter" id="editStaff">
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    <input type="hidden" name="id" id="parkIdId" class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <span class="asterisk">*</span>
+                    <label class="layui-form-label">园区名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="parkName" id="parkNameId" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div id="tianshanServer-edit">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">园区编码：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="parkCode" id="parkCodeId" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <span class="asterisk">*</span>
+                        <label class="layui-form-label">园区类型：</label>
+                        <div class="layui-input-inline">
+                            <select name="parkType"
+                                    class="form-control" lay-filter="parkType" id="parkTypeId">
+                                <option value="">请选择</option>
+                                <option th:each="parkTypeList:${parkTypeList}"
+                                        th:value="${parkTypeList.dicCode}"
+                                        th:text="${parkTypeList.dicName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline" style="width:100%">
+                        <label class="layui-form-label">备注说明：</label>
+                        <div class="layui-input-inline textarea-inline">
+                        <textarea type="text" name="content" id="contentId" style="width: 300px;" class="layui-textarea"
+                                  placeholder="不超过500字符"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-input-inline person-img" id="editImg" style="height: 150px;width: 730px">
+                    <div id="faceEditImage" style="height: 150px;width: 730px">
+                        <label class="layui-form-label" style="line-height: 150px">园区logo：</label>
+                        <div id="button10" style="display: inline;width: 140px;height:150px;">
+                            <button type="button" class="upload" id="test20"></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--表格渲染js-->
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+    var parkName = "";
+    $(function () {
+        data();
+    });
+    layui.config({
+        base: '../../Content/Scripts/Master/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    })
+
+    function data() {
+        layui.use(['index', 'form', 'laydate', 'table'], function () {
+            var $ = layui.$
+                , admin = layui.admin
+                , element = layui.element
+                , layer = layui.layer
+                , laydate = layui.laydate
+                , form = layui.form
+                , table = layui.table;
+            form.render(null, 'component-form-group');
+
+            laydate.render({
+                elem: '#LAY-component-form-group-date'
+            });
+            table.render({
+                elem: '#test-table-operate',
+                headers: {
+                    "access_token": access_token//此处放置请求到的用户token
+                },
+                url: basePath + '/basePark/getBaseParkAll?&&ieRandom=' + new Date().getTime()
+                , id: 'tableId'
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: []
+                , height: 'full-85'
+                , cols: [
+                    [
+                        {type: 'checkbox', fixed: 'left'},
+                        {field: 'id', title: '序号', hide: true}
+                        , {field: 'parkName', title: '园区名称'}
+                        , {field: 'parkCode', title: '园区编码'}
+                        , {field: 'dicName', title: '园区类型'}
+                        , {field: 'barDemo', align: 'center', title: '常用操作', toolbar: '#barDemo', fixed: 'right'}
+                    ]
+                ],
+                where: {parkName: parkName},
+                page: true,
+                limits: [20, 40],
+                limit: 20
+            });
+
+            function edit() {
+                alert("编辑弹窗");
+            }
+        });
+    }
+
+    function serverSearch() {
+        parkName = $("#parkName").val();
+        data();
+    }
+</script>
+
+<!--添加、删除,修改园区js-->
+<script>
+    //查看园区
+    //监听工具条
+    layui.use(['table', 'element', 'layer', 'form'], function () {
+        var $ = layui.jquery
+            , layer = layui.layer        //弹层
+            , table = layui.table
+            , form = layui.form
+        //表格
+        table.render();
+            table.on('tool(test-table-operate)', function (obj) {
+                //注：tool是工具条事件名，test-table-operate是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data //获得当前行数据
+                    , layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent === 'detail') {
+                    layer.open({
+                        type: 1
+                        , title: '查看园区信息'
+                        , area: ["450px", "550px"]
+//                    ,closeBtn:false
+                        , btn: '确定'
+                        , btnAlign: 'center'
+                        , content: $("#tab-chakan")
+                        , yes: function (index) {
+                            closeImg()
+                            layer.close(index)
+                        }
+                        , cancel: function () {
+                            closeImg();
+                        }
+                    });
+                    $("#chakan-parkName").val(data.parkName);
+                    $("#chakan-parkCode").val(data.parkCode);
+                    //$("#chakan-parkType").val(data.parkType);
+                    $("#chakan-content").val(data.content);
+                    $.ajax({
+                        url: basePath + "/dataDictionary/queryDataDictionaryByCode",
+                        type: "get",
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        data: "dicCode=" + data.parkType,
+                        success: function (result) {
+                            $("#chakan-parkType").val(result);
+                        }, error: function (result) {
+                            alert(result)
+                        }
+                    });
+
+                    // console.log(data);
+                    var arr = data.personFaceInfomationTable;
+                    $('#imgDiv').find('img').remove();
+                    $('#parkLogoImage').empty();
+                        if (data.parkLogoImage != null) {
+                            // $('#parkLogoImage').append('<img style="margin: 10px" id="' + 'faceImg' + i + '" src="/image/toFindImg?imgUrl=' + arr[i].faceAddress + '">')
+                            $('#parkLogoImage').html('<div style="display: inline;position:relative;width: 140px;height:150px;padding: 0 10px"><img src="/imageEcho/' + data.parkLogoImage + '" onclick="chakanPark(this.src)"></div>')
+                        }
+                    }
+            });
+        });
+    //添加园区
+    function addService() {
+        layer.open({
+            title: '添加园区信息'
+            , type: 1
+            , area: ["450px", "550px"]
+            , btn: ['确认', '取消']
+            , btnAlign: 'c'
+            , shade: 0.3
+            , content: $("#tab-add")
+            , btn2: function () {
+                $("#add-parkName").val("");//园区名称
+                $("#Add-parkCode").val("");//园区编码
+                $("#Add-content").val("");//备注说明
+                $("#Add-parkType").val("");//园区类型
+                $("#button5").find("img").remove();
+                $("#button5").find("input").remove();
+                closeAddImg()
+            },
+            yes: function (index) {
+                var emptyValidationResult = emptyValidation();
+                if (!emptyValidationResult) {
+                    return false;
+                }
+                var datats = {};
+                datats.basePark = getAddbasePark();
+                datats.baseParkImg = getAddFaceAddressList();
+                var formData = new FormData();
+                formData.append("datats", JSON.stringify(datats));
+                $.ajax({
+                    url: basePath + '/basePark/insertBasePark',
+                    type: 'POST',
+                    headers: {
+                        "access_token": access_token//此处放置请求到的用户token
+                    },
+                    data: formData,
+                    dateType: "json",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.code == 2) {
+                            layer.msg('园区信息提交成功！！！', {time: 2000, icon: 6}, function () {
+                                //重新渲染表格
+                                location.reload(true);
+                            })
+                            layer.close(index);
+                        } else if (data.code == 1) {
+                            layer.msg('园区信息提交失败！！！该园区编码已存在！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                        } else {
+                            layer.msg('园区信息提交失败！ ！！', {time: 2000, icon: 5, offset: '250px'});//icon 1:对号2：x号 3：？号 4：锁号 5：哭脸 6：笑脸
+                        }
+                    },
+                    error: function (returndata) {
+                        alert("error" + returndata);
+                    }
+                })
+                closeAddImg()
+            }
+            , cancel: function () {
+                closeAddImg()
+            }
+        });
+    }
+    //修改删除图片
+    function deleteImg3(obj) {
+        $(obj).parent("div").parent("div").find('button').show();
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").remove();
+    }
+    //获取删除的照片，传到后端删除旧照片
+    let delImg = null;
+    function deleteImg(obj) {
+        delImg = $(obj).parent("div").find("img").attr("src");
+        $(obj).parent("div").next().remove();
+        $(obj).parent("div").parent("div").find('button').show();
+        $(obj).parent("div").remove();
+    }
+    //新增园区logo上传
+    layui.use(['form', 'upload', 'element', 'layer'], function () {
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        upload.render({
+            elem: '#test6'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test6').hide();
+                    $('#button5').append('<div class="faceAdd" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button5").append('<input type="hidden"  name="add_pic6" value="' + result + '"/>');
+                });
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                } else {
+                }
+            }
+        })
+    });
+
+    function refreshService() {
+        parkName = "";
+        data();
+    }
+
+    //修改园区logo上传
+    layui.use(['form', 'upload', 'element', 'layer'], function () {
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        upload.render({
+            elem: '#test20'
+            , url: basePath + '/personTable/upload'
+            , headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            }
+            // , size: 300 //限制文件大小，单位 KB
+            , multiple: true
+            , auto: false
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    canvasDataURL(result, {quality: 0.4}, function (base64Codes) {
+                        obj.upload(index, convertBase64UrlTo(base64Codes, file.name));
+                    });
+                });
+            }
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test20').hide();
+                    $('#button10').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img style="width: 100%" src="' + result + '" alt="' + file.name + '" class="layui-upload-img" onclick="PreviewImgAdd(this.src)">' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0;right:0;color: red" onclick="deleteImg3(this)">' +
+                        '</i></div>')
+                    $("#button10").append('<input type="hidden"  name="add_pic23" value="' + result + '"/>');
+                });
+            }
+        })
+    });
+
+    /*    /!**
+     * 读取文件
+     * @param {file or Blob} file 上传文件
+     * @param {object} config 压缩配置 可配置压缩长宽、质量等
+     * @param {function} callback
+     *!/*/
+    function canvasDataURL(path, config, callback) {
+        var img = new Image();
+        img.src = path;
+        img.onload = function () {
+            var that = this, quality = 0.7;
+            var w = that.width, h = that.height, scale = w / h;
+            w = config.width || w;
+            h = config.height || (w / scale);
+            //生成canvas
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var anw = document.createAttribute("width");
+            anw.nodeValue = w;
+            var anh = document.createAttribute("height");
+            anh.nodeValue = h;
+            canvas.setAttributeNode(anw);
+            canvas.setAttributeNode(anh);
+            ctx.drawImage(that, 0, 0, w, h);
+
+            if (config.quality && config.quality <= 1 && config.quality > 0) {
+                quality = config.quality;
+            }
+            callback(canvas.toDataURL('image/jpeg', quality));
+        }
+    }
+
+    /**
+     * 将图片 base64 转为 File 对象或者 Blob
+     * @param {*} urlData 图片 base64
+     * @param {*} filename 图片名 没有图片名将转为 Blob
+     */
+    function convertBase64UrlTo(urlData, filename) {
+        var base64Arr = urlData.split(','), mime = base64Arr[0].match(/:(.*?);/)[1],
+            bstr = atob(base64Arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+
+        return filename ? new File([u8arr], filename, {type: mime}) : new Blob([u8arr], {type: mime});
+    }
+
+    // 新增园区logo信息
+    function getAddFaceAddressList() {
+        var faceAddressList = new Array();
+        //获取value值
+        var apm = document.getElementsByName("add_pic6");
+        for (var i = 0; i < apm.length; i++) {
+            var arr =
+                {
+                    "faceAddress": apm[i].value,
+                }
+            //把创建的arr添加
+            faceAddressList.push(arr);
+        }
+        return faceAddressList;
+    }
+
+    //关闭查看预览
+    function closeImg() {
+        $("#chakan").css('filter', '');
+        $("#chakanPark").css("display","none");
+
+    }
+
+    //预览查看图片
+    function chakanPark(that) {
+        $("#chakan").css('filter', 'blur(10px)');
+        $("#chakanPark").css("display","block");
+        $("#chakanPark").html("<img src="+that+" style='height: 500px;width: 500px;z-index: 150;margin-top: 200px;margin-left: 650px;'/>");
+
+    }
+
+    //关闭新增预览
+    function closeAddImg() {
+        $("#addStaff").css('filter', '');
+        $("#PreviewImgAdd").css("display", "none");
+    }
+
+    //预览新增图片
+    function PreviewImgAdd(that) {
+        $("#addStaff").css('filter', 'blur(10px)');
+        $("#PreviewImgAdd").css("display", "block");
+        $("#PreviewImgAdd").html("<img src=" + that + " style='height: 500px;width: 500px;z-index: 150;margin-top: 200px;margin-left: 650px;'/>");
+    }
+
+    //修改园区
+    function editService() {
+        layui.use(['table', 'layer', 'jquery', 'form'], function () {
+            var table = layui.table
+                , layer = layui.layer
+                , $ = layui.$
+                , form = layui.form;
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+            if (data.length > 0) {
+                if (data.length > 1) {
+                    layer.alert("只能选择一条要编辑的数据!")
+                } else {
+                    var str = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        str[i] = data[i]
+                    }
+                    ;
+                    $("#parkIdId").val(str[0].id);
+                    $("#parkNameId").val(str[0].parkName);
+                    $("#parkCodeId").val(str[0].parkCode);
+                    $("#contentId").val(str[0].content);
+                    //判断园区类型
+                    if (str[0].parkType != "" && str[0].parkType != null) {
+                        $("#parkTypeId").find("option[value='" + str[0].parkType + "']").prop("selected", 'selected');
+                    } else {
+                        $("#parkTypeId").val("");
+                        form.render('select');
+                    }
+                    $('#test20').hide();
+                    $('.faceEdit').remove();
+                    $("input[name=add_pic23]").remove();
+                    $('#button10').append('<div class="faceEdit" style="position: relative;width: 140px;height:150px;margin: 0 10px;float: left">' +
+                        '<img src="/imageEcho/' + str[0].parkLogoImage + '" >' +
+                        '<i class="layui-icon layui-icon-close" style="font-size: 30px;position: absolute;top:0px;right:0;color: red" onclick="deleteImg(this)">' +
+                        '</i><input type="hidden"  name="add_pic23" value="' + str[0].parkLogoImage + '"/></div>')
+                    if (str[0].parkLogoImage == null) {
+                        $('#test20').show();
+                    }
+
+                    closeEditImg();
+                    form.render();
+                    layer.open({
+                        title: '编辑修改园区信息'
+                        , type: 1
+                        , area: ["450px", "550px"]
+                        , content: $("#tab-editService")
+                        , btn: ['确定', '取消']
+                        , btnAlign: 'c'
+                        , shade: 0.3
+                        , success: function (layero, index) {
+                            layui.use('form', function () {
+                                var form = layui.form;
+                                form.render(null, 'formTestFilter');  //加载成功后重新渲染当前表单
+                            })
+                        }, yes: function (index) {
+                            var emptyValidationResult = emptyValidationForUpdate();
+                            if (!emptyValidationResult) {
+                                return false;
+                            }
+                            $.ajax({
+                                type: "POST",
+                                headers: {
+                                    "access_token": access_token//此处放置请求到的用户token
+                                },
+                                url: basePath + "/basePark/updateBaseParkById",
+                                data: getEditbasePark(),
+                                dateType: "json",
+                                success: function (result) {
+                                    if (result.code == 2) {
+                                        layer.close(index);
+                                        layer.msg("修改园区信息成功！", {time: 1000, icon: 1}, function () {
+                                            location.reload(true);
+                                        });
+                                    } else {
+                                        layer.msg("修改园区信息失败,请重新添加！", {time: 1000, icon: 2, shift: 6}, function () {
+                                            closeEditImg();
+                                        });
+                                    }
+                                }
+                                , error: function (msg) {
+                                    layer.msg("修改园区信息失败,请重新添加", {time: 1000, icon: 2, shift: 6}, function () {
+                                    });
+                                }
+                            });
+                        }, btn2: function (index) {
+                            layer.close(index);
+                        }
+                    });
+                }
+            } else {
+                layer.alert("请选择一条要编辑的数据!")
+            }
+            ;
+        });
+    };
+
+    //编辑人员信息 获取照片地址  input拿不到数据  使用img中的src地址
+    function selectimg() {
+        var parkLogoImage = $("[name='add_pic23']").val();
+        return parkLogoImage;
+    }
+
+
+    //关闭编辑预览
+    function closeEditImg() {
+        // $("#PreviewImgEdit").hide()
+        $("#editStaff").css('filter', '');
+        $("#PreviewImgEdit").css("display", "none");
+    }
+
+    //预览编辑图片
+    function PreviewImgEdit(that) {
+        $("#editStaff").css('filter', 'blur(10px)');
+        $("#PreviewImgEdit").css("display", "block");
+        $("#PreviewImgEdit").html("<img src=" + that + " style='height: 500px;width: 500px;z-index: 150;margin-top: 200px;margin-left: 650px;'/>");
+    }
+
+    //删除园区
+    function deleteService() {
+        layui.use(['table', 'layer', 'jquery'], function () {
+            var table = layui.table
+                , layer = layui.layer;
+            var checkStatus = table.checkStatus('tableId')
+                , data = checkStatus.data;
+            var ids = new Array();
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    ids[i] = data[i].id
+                }
+                ;
+                //是否删除这'+data.length+'数据
+                layer.confirm('确定删除所选数据吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        traditional: true,
+                        type: 'delete',
+                        headers: {
+                            "access_token": access_token//此处放置请求到的用户token
+                        },
+                        url: basePath + '/basePark/deleteBaseParkById',
+                        contentType: "application/json",
+                        data: JSON.stringify(ids),
+                        success: function (result) {
+                            if (result.code == 0) {
+                                layer.msg("删除成功！", {time: 2000, icon: 6}, function () {
+                                    location.reload(true);
+                                });
+                            } else {
+                                layer.msg("删除失败！", {time: 2000, icon: 2, shift: 6}, function () {
+                                    location.reload(true);
+                                });
+                            }
+                        },
+                        error: function () {
+                            alert("删除错误,请重新编写!");
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else {
+                layer.alert("请选择要删除的数据!")
+            }
+        });
+    };
+
+    //新增非空校验
+    function emptyValidation() {
+        var parkNameAdd = $("#Add-parkName").val();
+        var parkCodeAdd = $("#Add-parkCode").val();
+
+        if (parkNameAdd == null || "" == (parkNameAdd)) {
+            layer.msg("园区名称不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (parkCodeAdd == null || "" == (parkCodeAdd)) {
+            layer.msg("园区编码不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var parkTypeAdd = $("option:selected", "[name='parkType']").val();
+        if (parkTypeAdd == null || "" == (parkTypeAdd)) {
+            layer.msg("园区类型不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+
+    function emptyValidationForUpdate() {
+        var parkNameAdd = $("#parkNameId").val();
+        var parkCodeAdd = $("#parkCodeId").val();
+
+        if (parkNameAdd == null || "" == (parkNameAdd)) {
+            layer.msg("园区名称不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        if (parkCodeAdd == null || "" == (parkCodeAdd)) {
+            layer.msg("园区编码不能为空！", {time: 1000, icon: 2, shift: 6}, function () {
+            });
+            return false;
+        }
+        var parkTypeAdd = $("option:selected", "[id='parkTypeId']").val();
+        if (parkTypeAdd == null || "" == (parkTypeAdd)) {
+            layer.msg("园区类型不能为空！", {time: 1000, icon: 5, offset: '250px'});
+            return false;
+        }
+        return true;
+    }
+
+</script>
+<script>
+    function showloading(t) {
+        if (t) {//如果是true则显示loading
+            console.log(t);
+            var loadingIndex = layer.load(2, { //icon支持传入0-2
+                shade: [0.3, 'gray'], //0.5透明度的灰色背景
+                content: '请稍等...',
+                success: function (layero) {
+                    layero.find('.layui-layer-content').css({
+                        'padding-top': '39px',
+                        'width': '60px'
+                    });
+                }
+            });
+        } else {
+            console.log("关闭loading层:" + t);
+            layer.closeAll('loading');
+        }
+    }
+
+    //新增园区基础信息
+    function getAddbasePark() {
+        var basePark = {};
+        basePark.parkName = $("[id='Add-parkName']").val();//园区名称
+        basePark.parkCode = $("[id='Add-parkCode']").val();//园区编码
+        basePark.content = $("[id='Add-content']").val();//备注说明
+        basePark.parkType = $("option:selected", "[id='Add-parkType']").val();//园区类型
+        return basePark;
+    }
+
+    //修改园区基础信息
+    function getEditbasePark() {
+        var basePark = {};
+        basePark.id = $("[id='parkIdId']").val();//园区id
+        basePark.parkName = $("[id='parkNameId']").val();//园区名称
+        basePark.parkCode = $("[id='parkCodeId']").val();//园区编码
+        basePark.content = $("[id='contentId']").val();//备注说明
+        basePark.parkType = $("option:selected", "[id='parkTypeId']").val();//园区类型
+        basePark.parkLogoImage = selectimg();
+        basePark.imgs=delImg;
+        return basePark;
+    }
+</script>
+</body>
+</html>

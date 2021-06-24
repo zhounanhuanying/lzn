@@ -1,0 +1,26 @@
+﻿/*分页*/
+
+.apart_page{
+    position: fixed;
+    bottom:10px;
+    right:40px;
+}
+.apart_page ul{
+    margin:0;
+}
+
+.apart_page .pagination>li>a, .apart_page .pager>li>a {
+    background: #2283c5!important;
+    color: #fff!important;
+    padding: 0 5px!important;
+    margin: 0 2px;
+    border: 0!important;
+}
+.apart_page .pager li>span {
+    display: inline-block;
+    padding: 0!important;
+    background-color: transparent!important;
+    border: 0!important;
+    border-radius: 0!important;
+}
+

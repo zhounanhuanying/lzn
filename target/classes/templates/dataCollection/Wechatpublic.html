@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信公众号</title>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/Content/Scripts/Master/steps/steps.css}" media="all"/>
+    <script th:src="@{/Content/Scripts/Master/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/check_token.js}"></script>
+    <script th:src="@{/Content/Scripts/Master/layuiadmin/layui/layui.js}"></script>
+    <style>
+        #h3{
+            line-height: 90px;
+            font-size: 35px;
+            text-align: center;
+            font-weight: bold;
+            margin-left: -90px;
+        }
+        .official-account .layui-card{
+            box-shadow: none;
+            height: 800px;
+        }
+        .official-account .layui-tab-title{
+            padding: 10px;
+        }
+        .official-account .layui-tab.layui-steps>.layui-tab-title>li{
+            width: 33.3%;
+            padding: 0 0 0 45px;
+            flex: none;
+        }
+        .official-account .layui-tab.layui-steps>.layui-tab-title>li:before{
+            height: auto;
+            border-top: 1px dashed #438eb9;
+            background-color: transparent;
+            top: 13px;
+        }
+        .official-account .layui-tab.layui-steps>.layui-tab-title>li>.layui-icon{
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            color: #555;
+            border-radius: 50%;
+            border: 1px solid #438eb9;
+            top: -5px;
+        }
+        .official-account .layui-tab.layui-steps>.layui-tab-title>li>.layui-icon::before{
+            content: "";
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 50%;
+            border: 1px dashed #438eb9;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+        }
+        .official-account .layui-tab.layui-steps>.layui-tab-title>li>.layui-steps-title{
+            font-size:16px;
+            font-weight: normal;
+            color: #555;
+            padding-left: 3px;
+            margin-right: 110px;
+        }
+        .official-account .layui-tab-content{
+            overflow: hidden;
+        }
+        .official-account .layui-tab-item{
+            width:33.3%;
+            float: left;
+        }
+        .official-account .layui-tab-item>div{
+            width:90%;
+            height: 70vh;
+            line-height: 70vh;
+            text-align: center;
+            background-color: #fcfcfc;
+        }
+    </style>
+</head>
+<body>
+<div class="official-account">
+    <div style="height: 20px">
+    </div>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div>
+                <h3 id="h3">公众号人脸采集流程图</h3>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-tab layui-steps" style="max-width: 1285px;margin-left: 250px">
+                    <ul class="layui-tab-title">
+                        <li>
+                            <i class="layui-icon">1</i>
+                            <span class="layui-steps-title">请扫描二维码，进入公众号</span>
+                        </li>
+                        <li>
+                            <i class="layui-icon">2</i>
+                            <span class="layui-steps-title">点击鼎立-人脸照片采集</span>
+                        </li>
+                        <li>
+                            <i class="layui-icon">3</i>
+                            <span class="layui-steps-title">进入人脸信息采集页面</span>
+                        </li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show" style="margin-left: -55px">
+                            <div >
+                                <img id="img1" style="width: 328px;height: 328px" src="/Content/style/images/step1.png" alt="">
+                            </div>
+                        </div>
+                        <div class="layui-tab-item layui-show" style="margin-left: -10px">
+                            <div>
+                                <img id="img2" style="width: 328px;height: 584px" src="/Content/style/images/step2.png" alt="">
+                            </div>
+                        </div>
+                        <div class="layui-tab-item layui-show" >
+                            <div>
+                                <img id="img3" style="width: 328px;height: 584px" src="/Content/style/images/step3.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var access_token = window.localStorage.getItem("access_token"); //获取指定key本地存储的值
+
+    $(function () {
+        initwechatPublic();
+    });
+    var initwechatPublic = function () {
+        $.ajax({
+            type: "get",
+            headers: {
+                "access_token": access_token//此处放置请求到的用户token
+            },
+            url: basePath + "/wechatPublic/selectwechatPublic",
+            success: function (data) {
+                if (data!=null && data!=""){
+                    $('#img1').attr("src","/imageEcho/"+data.qrCodePath)
+                    $('#img2').attr("src","/imageEcho/"+data.collectionEntryPath)
+                    $('#img3').attr("src","/imageEcho/"+data.faceCollectionPagePath)
+                }
+
+            }
+        })
+    }
+</script>
+</body>
+</html>
